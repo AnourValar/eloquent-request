@@ -1,0 +1,27 @@
+<?php
+
+namespace DummyNamespace;
+
+use Illuminate\Http\Request;
+use DummyRootNamespaceHttp\Controllers\Controller;
+use AnourValar\EloquentRequest\Services\EloquentRequestService;
+
+class DummyClass extends Controller
+{
+    use \AnourValar\EloquentRequest\ControllerTrait;
+
+    /**
+     * Profile
+     *
+     * @var array
+     */
+    protected $profile = [
+        'filter' => [],
+
+        'scope' => [],
+
+        'sort' => [],
+
+        'default_request' => [],
+    ];
+}

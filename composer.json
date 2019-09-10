@@ -1,0 +1,24 @@
+{
+    "name": "anourvalar/eloquent-request",
+    "description": "Dynamic Query Builder based on request",
+    "keywords": ["laravel", "eloquent", "model", "querybuilder", "request", "dynamic", "filter", "anourvalar"],
+    "homepage": "https://github.com/AnourValar/eloquent-request",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.0.0",
+        "laravel/framework": ">=5.5.0"
+    },
+    "autoload": {
+        "psr-4": {"AnourValar\\EloquentRequest\\": "src/"}
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AnourValar\\EloquentRequest\\Providers\\EloquentRequestServiceProvider"
+            ],
+            "aliases": {
+                "EloquentRequest": "AnourValar\\EloquentRequest\\Facades\\EloquentRequestFacade"
+            }
+        }
+    }
+}
