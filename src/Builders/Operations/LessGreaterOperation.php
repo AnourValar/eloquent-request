@@ -5,6 +5,11 @@ namespace AnourValar\EloquentRequest\Builders\Operations;
 class LessGreaterOperation
 {
     /**
+     * @var integer
+     */
+    protected const MAX_LENGTH = 30;
+
+    /**
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param string $field
      * @param mixed $value
@@ -97,5 +102,14 @@ class LessGreaterOperation
         }
 
         return 'date';
+    }
+
+    /**
+     * @param mixed $value
+     * @return boolean
+     */
+    public static function validate($value)
+    {
+        return ( is_scalar($value) && mb_strlen($value) <= static::MAX_LENGTH );
     }
 }

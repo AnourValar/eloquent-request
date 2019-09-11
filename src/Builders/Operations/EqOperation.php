@@ -5,6 +5,11 @@ namespace AnourValar\EloquentRequest\Builders\Operations;
 class EqOperation
 {
     /**
+     * @var integer
+     */
+    protected const MAX_LENGTH = 1000;
+
+    /**
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param string $field
      * @param mixed $value
@@ -45,6 +50,6 @@ class EqOperation
      */
     public static function validate($value)
     {
-        return is_scalar($value) || is_null($value);
+        return (is_scalar($value) && mb_strlen($value) <= static::MAX_LENGTH) || is_null($value);
     }
 }

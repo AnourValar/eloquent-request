@@ -5,6 +5,16 @@ namespace AnourValar\EloquentRequest\Builders\Operations;
 class InOperation
 {
     /**
+     * @var integer
+     */
+    protected const MAX_LENGTH = 100;
+
+    /**
+     * @var integer
+     */
+    protected const MAX_COUNT = 1000;
+
+    /**
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param string $field
      * @param mixed $value
@@ -71,8 +81,16 @@ class InOperation
             return false;
         }
 
+        if (count($value) > static::MAX_COUNT) {
+            return false;
+        }
+
         foreach ($value as $item) {
             if (!is_scalar($item) && !is_null($item)) {
+                return false;
+            }
+
+            if (mb_strlen($item) > static::MAX_LENGTH) {
                 return false;
             }
         }

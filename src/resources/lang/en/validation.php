@@ -2,7 +2,7 @@
 
 return [
     'scalar' => 'Filter for :attribute must be a string.',
-    'like' => 'Filter for :attribute must be at least 3 characters.',
+    'like' => 'Filter for :attribute contains invalid length.',
     'list' => 'Filter for :attribute must be a list.',
 
     'filter_not_supported' => 'Filter for :attribute not available.',

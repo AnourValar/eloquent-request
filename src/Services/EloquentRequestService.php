@@ -45,22 +45,22 @@ class EloquentRequestService
             ],
 
             '<' => [
-                'validate' => 'is_scalar',
+                'validate' => [\AnourValar\EloquentRequest\Builders\Operations\LessGreaterOperation::class, 'validate'],
                 'error_message' => 'eloquent-request::validation.scalar',
                 'apply' => [\AnourValar\EloquentRequest\Builders\Operations\LessGreaterOperation::class, 'lt'],
             ],
             '<=' => [
-                'validate' => 'is_scalar',
+                'validate' => [\AnourValar\EloquentRequest\Builders\Operations\LessGreaterOperation::class, 'validate'],
                 'error_message' => 'eloquent-request::validation.scalar',
                 'apply' => [\AnourValar\EloquentRequest\Builders\Operations\LessGreaterOperation::class, 'le'],
             ],
             '>' => [
-                'validate' => 'is_scalar',
+                'validate' => [\AnourValar\EloquentRequest\Builders\Operations\LessGreaterOperation::class, 'validate'],
                 'error_message' => 'eloquent-request::validation.scalar',
                 'apply' => [\AnourValar\EloquentRequest\Builders\Operations\LessGreaterOperation::class, 'gt'],
             ],
             '>=' => [
-                'validate' => 'is_scalar',
+                'validate' => [\AnourValar\EloquentRequest\Builders\Operations\LessGreaterOperation::class, 'validate'],
                 'error_message' => 'eloquent-request::validation.scalar',
                 'apply' => [\AnourValar\EloquentRequest\Builders\Operations\LessGreaterOperation::class, 'ge'],
             ],
@@ -85,6 +85,10 @@ class EloquentRequestService
                 'validate' => [\AnourValar\EloquentRequest\Builders\Operations\InOperation::class, 'validate'],
                 'error_message' => 'eloquent-request::validation.list',
                 'apply' => [\AnourValar\EloquentRequest\Builders\Operations\InOperation::class, 'notIn'],
+            ],
+
+            'is-null' => [
+                'apply' => [\AnourValar\EloquentRequest\Builders\Operations\MixOperation::class, 'isNull'],
             ],
         ],
     ];

@@ -25,7 +25,7 @@ class FilterAndScopeBuilder
     ) {
         $tasks = [];
 
-        // filter
+        // Filter
         foreach ((array)optional($request)[$options['filter_key']] as $field => $values) {
             foreach ((array)$values as $operation => $value) {
                 $task = static::getFilter($profile, $field, $operation, $value, $options, $validator);
@@ -36,7 +36,7 @@ class FilterAndScopeBuilder
             }
         }
 
-        // scope
+        // Scope
         foreach ((array)optional($request)[$options['scope_key']] as $scope => $value) {
             $task = static::getScope($profile, $scope, $value, $options, $validator);
 
@@ -123,7 +123,7 @@ class FilterAndScopeBuilder
 
         $rules = $options['filter_operations'][$operation];
 
-        if (!$rules['validate']($value)) {
+        if (isset($rules['validate']) && !$rules['validate']($value)) {
             if (isset($rules['error_message'])) {
                 $validator->after(function ($validator) use ($field, $key, $rules)
                 {

@@ -10,6 +10,11 @@ class LikeOperation
     protected const MIN_LENGTH = 3;
 
     /**
+     * @var integer
+     */
+    protected const MAX_LENGTH = 1000;
+
+    /**
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param string $field
      * @param mixed $value
@@ -39,7 +44,9 @@ class LikeOperation
      */
     public static function validate($value)
     {
-        return ( is_scalar($value) && (mb_strlen($value) >= static::MIN_LENGTH) );
+        $value = trim($value);
+
+        return (is_scalar($value) && mb_strlen($value) >= static::MIN_LENGTH && mb_strlen($value) <= static::MAX_LENGTH);
     }
 
     /**
