@@ -7,6 +7,11 @@ use \Illuminate\Validation\Validator;
 class FilterAndScopeBuilder
 {
     /**
+     * @var string
+     */
+    const OPTION_SEPARATE = 'fasb-separate'; // prevents grouping for relations
+
+    /**
      * Filters, Scopes
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
@@ -47,7 +52,7 @@ class FilterAndScopeBuilder
 
         // Apply tasks
         if ($tasks) {
-            static::applyTasks($query, $tasks);
+            static::applyTasks($query, $tasks, in_array(self::OPTION_SEPARATE, $profile['options']));
         }
 
         return $query;
@@ -187,11 +192,20 @@ class FilterAndScopeBuilder
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param array $tasks
+     * @param boolean $separate
+     * @return void
      */
-    protected static function applyTasks(\Illuminate\Database\Eloquent\Builder &$query, array $tasks)
+    protected static function applyTasks(\Illuminate\Database\Eloquent\Builder &$query, array $tasks, bool $separate)
     {
         foreach ($tasks as $relation => $actions) {
-            if ($relation) {
+            if ($relation && $separate) {
+                foreach ($actions as $action) {
+                    $query->whereHas($relation, function ($query) use ($action)
+                    {
+                        static::applyTask($query, $action);
+                    });
+                }
+            } else if ($relation) {
                 $query->whereHas($relation, function ($query) use ($actions)
                 {
                     foreach ($actions as $action) {
@@ -209,6 +223,7 @@ class FilterAndScopeBuilder
     /**
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param array $action
+     * @return void
      */
     private static function applyTask(\Illuminate\Database\Eloquent\Builder &$query, array $action)
     {

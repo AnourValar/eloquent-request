@@ -144,7 +144,8 @@ class EloquentRequestService
         }
 
         // Prepare profile & request
-        $request = array_replace(($profile['default_request'] ?? []), $request);
+        $profile = array_replace(['options' => [], 'default_request' => []], $profile);
+        $request = array_replace($profile['default_request'], $request);
 
         // Builders
         foreach ($this->builders as $builder) {
