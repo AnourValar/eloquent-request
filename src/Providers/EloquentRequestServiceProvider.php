@@ -32,9 +32,9 @@ class EloquentRequestServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(\AnourValar\EloquentRequest\Services\EloquentRequestService::class, function ($app)
+        $this->app->singleton(\AnourValar\EloquentRequest\Service::class, function ($app)
         {
-            return new \AnourValar\EloquentRequest\Services\EloquentRequestService;
+            return new \AnourValar\EloquentRequest\Service;
         });
     }
 }

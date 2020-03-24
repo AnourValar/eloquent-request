@@ -4,7 +4,7 @@ namespace DummyNamespace;
 
 use Illuminate\Http\Request;
 use DummyRootNamespaceHttp\Controllers\Controller;
-use AnourValar\EloquentRequest\Services\EloquentRequestService;
+use AnourValar\EloquentRequest\Service;
 
 class DummyClass extends Controller
 {
@@ -16,12 +16,24 @@ class DummyClass extends Controller
      * @var array
      */
     protected $profile = [
-        'filter' => [],
+        'filter' => [
 
-        'scope' => [],
+        ],
 
-        'sort' => [],
+        'scope' => [
 
-        'default_request' => [],
+        ],
+
+        'sort' => [
+
+        ],
+
+        'options' => [
+
+        ],
+
+        'default_request' => [
+
+        ],
     ];
 }

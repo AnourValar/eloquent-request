@@ -2,7 +2,9 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
-class LikeOperation
+use AnourValar\EloquentRequest\Helpers\Fail;
+
+class LikeOperation implements OperationInterface
 {
     /**
      * @var integer
@@ -15,45 +17,60 @@ class LikeOperation
     protected const MAX_LENGTH = 1000;
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $field
-     * @param mixed $value
-     * @return void
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::cast()
      */
-    public static function like(\Illuminate\Database\Eloquent\Builder $query, $field, $value)
+    public function cast() : bool
     {
-        $value = static::canonizeValue($value);
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::passes()
+     */
+    public function passes($value) : bool
+    {
+        if (is_null($value) || (is_scalar($value) && !mb_strlen($value))) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::validate()
+     */
+    public function validate($value, \Closure $fail) : ?Fail
+    {
+        if (is_string($value)) {
+            $value = trim($value);
+        }
+
+        if (is_scalar($value) && mb_strlen($value) >= static::MIN_LENGTH && mb_strlen($value) <= static::MAX_LENGTH) {
+            return null;
+        }
+
+        return $fail('eloquent-request::validation.like');
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
+     */
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value) : void
+    {
+        $value = $this->canonizeValue($value);
+
         $query->where($field, 'LIKE', "%$value%");
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $field
      * @param mixed $value
-     * @return void
+     * @return mixed
      */
-    public static function notLike(\Illuminate\Database\Eloquent\Builder $query, $field, $value)
-    {
-        $value = static::canonizeValue($value);
-        $query->where($field, 'NOT LIKE', "%$value%");
-    }
-
-    /**
-     * @param mixed $value
-     * @return boolean
-     */
-    public static function validate($value)
-    {
-        $value = trim($value);
-
-        return (is_scalar($value) && mb_strlen($value) >= static::MIN_LENGTH && mb_strlen($value) <= static::MAX_LENGTH);
-    }
-
-    /**
-     * @param string $value
-     * @return string
-     */
-    protected static function canonizeValue($value)
+    protected function canonizeValue($value)
     {
         return addCslashes($value, '_%\\');
     }

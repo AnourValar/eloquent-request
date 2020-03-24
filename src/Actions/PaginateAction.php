@@ -2,52 +2,91 @@
 
 namespace AnourValar\EloquentRequest\Actions;
 
-class PaginateAction
+use AnourValar\EloquentRequest\Helpers\Fail;
+use Illuminate\Database\Eloquent\Builder;
+
+class PaginateAction implements ActionInterface
 {
+    /**
+     * @var string
+     */
+    const OPTION_SIMPLE_PAGINATE = 'action.paginate.simple';
+
+    /**
+     * @var string
+     */
+    const OPTION_PAGE_OVER_LAST = 'action.paginate.page_over_last';
+
+    /**
+     * @var string
+     */
+    const OPTION_PAGE_MAX = 'action.paginate.page_max';
+
     /**
      * @var integer
      */
     protected const DEFAULT_PER_PAGE = 15;
 
     /**
-     * Pagination
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param array $profile
-     * @param array $request
-     * @param array $options
-     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @var integer
      */
-    public static function act(
-        \Illuminate\Database\Eloquent\Builder $query,
-        array $profile,
-        array $request,
-        array $options
-    ) {
-        $keyPerPage = $options['per_page_key'];
+    protected const DEFAULT_PAGE = 1;
 
-        $perPage = static::DEFAULT_PER_PAGE;
-        if (isset($request[$keyPerPage]) && is_numeric($request[$keyPerPage]) && $request[$keyPerPage] > 0) {
-            $perPage = (int)$request[$keyPerPage];
-        }
-
-        return $query->paginate($perPage, ['*'], $options['page_key'], static::getPage($profile, $request, $options));
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Actions\ActionInterface::passes()
+     */
+    public function passes(array $profile, array $request, array $config) : bool
+    {
+        return true;
     }
 
     /**
-     * @param array $profile
-     * @param array $request
-     * @param array $options
-     * @return integer
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Actions\ActionInterface::validate()
      */
-    private static function getPage(array $profile, array $request, array $options)
+    public function validate(array $profile, array $request, array $config, \Closure $fail) : ?Fail
     {
-        $page = $request[$options['page_key']] ?? null;
-
-        if (filter_var($page, FILTER_VALIDATE_INT) !== false && (int) $page >= 1) {
-            return (int) $page;
+        // per page
+        $keyPerPage = $config['per_page_key'];
+        if (isset($request[$keyPerPage]) && !filter_var($request[$keyPerPage], FILTER_VALIDATE_INT)) {
+            return $fail('eloquent-request::validation.per_page');
         }
 
-        return 1;
+        // page
+        $keyPage = $config['page_key'];
+        if (isset($request[$keyPage]) && !filter_var($request[$keyPage], FILTER_VALIDATE_INT)) {
+            return $fail('eloquent-request::validation.page');
+        }
+
+        $page = $request[$config['page_key']] ?? static::DEFAULT_PAGE;
+        $pageOverMax = $profile['options'][self::OPTION_PAGE_MAX] ?? null;
+        if ($pageOverMax && $page > $pageOverMax) {
+            return $fail('eloquent-request::validation.page_over_max', ['max' => $pageOverMax]);
+        }
+
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Actions\ActionInterface::action()
+     */
+    public function action(Builder &$query, array $profile, array $request, array $config, \Closure $fail)
+    {
+        $perPage = $request[$config['per_page_key']] ?? static::DEFAULT_PER_PAGE;
+        $page = $request[$config['page_key']] ?? static::DEFAULT_PAGE;
+
+        if (in_array(self::OPTION_SIMPLE_PAGINATE, $profile['options'])) {
+            $collection = $query->simplePaginate($perPage, ['*'], $config['page_key'], $page);
+        } else {
+            $collection = $query->paginate($perPage, ['*'], $config['page_key'], $page);
+        }
+
+        if (in_array(self::OPTION_PAGE_OVER_LAST, $profile['options']) && $page > 1 && !$collection->count()) {
+            return $fail('eloquent-request::validation.page_over_last');
+        }
+
+        return $collection;
     }
 }

@@ -4,12 +4,12 @@ namespace AnourValar\EloquentRequest\Builders\Operations;
 
 use AnourValar\EloquentRequest\Helpers\Fail;
 
-class EqOperation implements OperationInterface
+class LtOperation implements OperationInterface
 {
     /**
      * @var integer
      */
-    protected const MAX_LENGTH = 1000;
+    protected const MAX_LENGTH = 30;
 
     /**
      * {@inheritDoc}
@@ -26,6 +26,10 @@ class EqOperation implements OperationInterface
      */
     public function passes($value) : bool
     {
+        if (is_null($value) || (is_scalar($value) && !mb_strlen($value))) {
+            return false;
+        }
+
         return true;
     }
 
@@ -35,7 +39,7 @@ class EqOperation implements OperationInterface
      */
     public function validate($value, \Closure $fail) : ?Fail
     {
-        if ((is_scalar($value) && mb_strlen($value) <= static::MAX_LENGTH) || is_null($value)) {
+        if (is_scalar($value) && mb_strlen($value) <= static::MAX_LENGTH) {
             return null;
         }
 
@@ -48,15 +52,31 @@ class EqOperation implements OperationInterface
      */
     public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value) : void
     {
-        if ($value === '' || is_null($value)) {
-            $query->where(function ($query) use ($field)
-            {
-                $query
-                    ->where($field, '=', '')
-                    ->orWhereNull($field);
-            });
-        } else {
-            $query->where($field, '=', $value);
+        $value = $this->canonizeValue($value, '<');
+
+        $query->where($field, '<', $value);
+    }
+
+    /**
+     * @param mixed $value
+     * @param string $direction
+     * @return mixed
+     */
+    protected function canonizeValue($value, string $direction)
+    {
+        preg_match('|^\d{2,4}([\/\.\-])\d{2,4}\1\d{2,4}(.*)$|', $value, $result);
+
+        if (! $result) {
+            return $value;
         }
+
+        if (stripos($result[2], ':')) {
+            return date('Y-m-d H:i:s', strtotime($value));
+        }
+
+        if ($direction == '<') {
+            return date('Y-m-d 23:59:59', strtotime($value));
+        }
+        return date('Y-m-d 00:00:00', strtotime($value));
     }
 }

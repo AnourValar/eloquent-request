@@ -2,64 +2,48 @@
 
 namespace AnourValar\EloquentRequest\Builders;
 
-use \Illuminate\Validation\Validator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Validator;
 
-class SortBuilder
+class SortBuilder extends AbstractBuilder
 {
     /**
-     * Sort
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param array $profile
-     * @param array $request
-     * @param array $options
-     * @param \Illuminate\Validation\Validator $validator
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @var array
      */
-    public static function build(
-        \Illuminate\Database\Eloquent\Builder $query,
-        array $profile,
-        array $request,
-        array $options,
-        Validator &$validator
-    ) {
-        foreach ((array)optional($request)[$options['sort_key']] as $field => $value) {
-            static::applySort($query, $profile, $field, $value, $options, $validator);
-        }
+    protected $directions = ['ASC', 'DESC'];
 
-        return $query;
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Builders\BuilderInterface::build()
+     */
+    public function build(Builder &$query, array $profile, array $request, array $config, Validator &$validator) : void
+    {
+        parent::build($query, $profile, $request, $config, $validator);
+
+        foreach ((array)optional($request)[$config['sort_key']] as $field => $value) {
+            $this->applySort($query, $field, $value);
+        }
     }
 
     /**
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param array $profile
      * @param string $field
      * @param mixed $value
-     * @param array $options
      * @return void
      */
-    protected static function applySort(
-        \Illuminate\Database\Eloquent\Builder &$query,
-        array $profile,
-        $field,
-        $value,
-        array $options,
-        Validator &$validator
-    ) {
-        $key = $options['sort_key'];
-
-        // Availables options
-        $values = ['ASC', 'DESC'];
+    private function applySort(Builder &$query, string $field, $value) : void
+    {
+        $key = $this->config['sort_key'];
 
         // Described in profile?
-        if (!isset($profile[$key]) || !in_array($field, $profile[$key])) {
-            $validator->after(function ($validator) use ($field, $key)
+        if (! in_array($field, $this->profile[$key])) {
+            $this->validator->after(function ($validator) use ($query, $key, $field)
             {
                 $validator->errors()->add(
                     $key . '.' . $field,
                     trans(
                         'eloquent-request::validation.sort_not_supported',
-                        ['attribute' => ($validator->customAttributes[$field] ?? $field)]
+                        ['attribute' => $this->getDisplayAttribute($query, $field)]
                     )
                 );
             });
@@ -72,14 +56,14 @@ class SortBuilder
             $value = mb_strtoupper($value);
         }
 
-        if (! in_array($value, $values)) {
-            $validator->after(function ($validator) use ($field, $key)
+        if (! in_array($value, $this->directions)) {
+            $this->validator->after(function ($validator) use ($query, $key, $field)
             {
                 $validator->errors()->add(
                     $key . '.' . $field,
                     trans(
                         'eloquent-request::validation.sort_not_exists',
-                        ['attribute' => ($validator->customAttributes[$field] ?? $field)]
+                        ['attribute' => $this->getDisplayAttribute($query, $field)]
                     )
                 );
             });
@@ -87,6 +71,7 @@ class SortBuilder
             return;
         }
 
+        // Apply
         $query->orderBy($field, $value);
     }
 }

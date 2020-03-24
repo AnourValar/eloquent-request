@@ -2,7 +2,9 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
-class InOperation
+use AnourValar\EloquentRequest\Helpers\Fail;
+
+class InOperation implements OperationInterface
 {
     /**
      * @var integer
@@ -15,12 +17,55 @@ class InOperation
     protected const MAX_COUNT = 1000;
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $field
-     * @param mixed $value
-     * @return void
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::cast()
      */
-    public static function in(\Illuminate\Database\Eloquent\Builder $query, $field, $value)
+    public function cast() : bool
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::passes()
+     */
+    public function passes($value) : bool
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::validate()
+     */
+    public function validate($value, \Closure $fail) : ?Fail
+    {
+        if (! is_array($value)) {
+            return $fail('eloquent-request::validation.list');
+        }
+
+        if (count($value) > static::MAX_COUNT) {
+            return $fail('eloquent-request::validation.list');
+        }
+
+        foreach ($value as $item) {
+            if (!is_scalar($item) && !is_null($item)) {
+                return $fail('eloquent-request::validation.list');
+            }
+
+            if (mb_strlen($item) > static::MAX_LENGTH) {
+                return $fail('eloquent-request::validation.list');
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
+     */
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value) : void
     {
         $nullable = false;
         foreach ($value as $key => $item) {
@@ -36,65 +81,14 @@ class InOperation
                 $query
                     ->where(function ($query) use ($field)
                     {
-                        $query->where($field, '=', '')->orWhereNull($field);
+                        $query
+                            ->where($field, '=', '')
+                            ->orWhereNull($field);
                     })
                     ->orWhereIn($field, $value);
             });
         } else {
             $query->whereIn($field, $value);
         }
-    }
-
-    /**
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $field
-     * @param mixed $value
-     * @return void
-     */
-    public static function notIn(\Illuminate\Database\Eloquent\Builder $query, $field, $value)
-    {
-        $nullable = false;
-        foreach ($value as $key => $item) {
-            if ($item === '' || is_null($item)) {
-                $nullable = true;
-                unset($value[$key]);
-            }
-        }
-
-        if ($nullable) {
-            $query
-                ->whereNotIn($field, $value)
-                ->where($field, '!=', '')
-                ->whereNotNull($field);
-        } else {
-            $query->whereNotIn($field, $value);
-        }
-    }
-
-    /**
-     * @param mixed $value
-     * @return boolean
-     */
-    public static function validate($value)
-    {
-        if (!is_array($value)) {
-            return false;
-        }
-
-        if (count($value) > static::MAX_COUNT) {
-            return false;
-        }
-
-        foreach ($value as $item) {
-            if (!is_scalar($item) && !is_null($item)) {
-                return false;
-            }
-
-            if (mb_strlen($item) > static::MAX_LENGTH) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

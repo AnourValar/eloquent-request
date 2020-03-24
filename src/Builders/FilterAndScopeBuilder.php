@@ -2,38 +2,34 @@
 
 namespace AnourValar\EloquentRequest\Builders;
 
-use \Illuminate\Validation\Validator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Validator;
 
-class FilterAndScopeBuilder
+class FilterAndScopeBuilder extends AbstractBuilder
 {
     /**
      * @var string
      */
-    const OPTION_SEPARATE = 'fasb-separate'; // prevents grouping for relations
+    const OPTION_DO_NOT_GROUP = 'builder.filter_and_scope.do_not_group'; // prevents grouping for relations
 
     /**
-     * Filters, Scopes
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param array $profile
-     * @param array $request
-     * @param array $options
-     * @param \Illuminate\Validation\Validator $validator
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @var string
      */
-    public static function build(
-        \Illuminate\Database\Eloquent\Builder $query,
-        array $profile,
-        array $request,
-        array $options,
-        Validator &$validator
-    ) {
+    const OPTION_CASTS_NOT_REQUIRED = 'builder.filter_and_scope.casts_not_required';
+
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Builders\BuilderInterface::build()
+     */
+    public function build(Builder &$query, array $profile, array $request, array $config, Validator &$validator) : void
+    {
+        parent::build($query, $profile, $request, $config, $validator);
         $tasks = [];
 
-        // Filter
-        foreach ((array)optional($request)[$options['filter_key']] as $field => $values) {
+        // Get filters tasks
+        foreach ((array)optional($request)[$config['filter_key']] as $field => $values) {
             foreach ((array)$values as $operation => $value) {
-                $task = static::getFilter($profile, $field, $operation, $value, $options, $validator);
+                $task = $this->getFilter($query, $field, $operation, $value);
 
                 if ($task) {
                     $tasks[$task['key']][] = $task['value'];
@@ -41,9 +37,9 @@ class FilterAndScopeBuilder
             }
         }
 
-        // Scope
-        foreach ((array)optional($request)[$options['scope_key']] as $scope => $value) {
-            $task = static::getScope($profile, $scope, $value, $options, $validator);
+        // Get scopes tasks
+        foreach ((array)optional($request)[$config['scope_key']] as $scope => $value) {
+            $task = $this->getScope($scope, $value);
 
             if ($task) {
                 $tasks[$task['key']][] = $task['value'];
@@ -51,122 +47,117 @@ class FilterAndScopeBuilder
         }
 
         // Apply tasks
-        if ($tasks) {
-            static::applyTasks($query, $tasks, in_array(self::OPTION_SEPARATE, $profile['options']));
-        }
-
-        return $query;
-    }
-
-    /**
-     * @param array $profile
-     * @param string $field
-     * @param string $operation
-     * @param mixed $value
-     * @param array $options
-     * @param \Illuminate\Validation\Validator $validator
-     * @return array
-     */
-    protected static function getFilter(
-        array $profile,
-        string $field,
-        string $operation,
-        $value,
-        array $options,
-        Validator &$validator
-    ) {
-        $key = $options['filter_key'];
-
-        // Field described in profile?
-        if (!isset($profile[$key][$field])) {
-            $validator->after(function ($validator) use ($field, $key)
-            {
-                $validator->errors()->add(
-                    $key . '.' . $field,
-                    trans(
-                        'eloquent-request::validation.filter_not_supported',
-                        ['attribute' => ($validator->customAttributes[$field] ?? $field)]
-                    )
-                );
-            });
-
-            return;
-        }
-        $profile[$key][$field] = (array)$profile[$key][$field];
-
-        // Operation described in profile?
-        if (!in_array($operation, $profile[$key][$field])) {
-            $validator->after(function ($validator) use ($field, $key)
-            {
-                $validator->errors()->add(
-                    $key . '.' . $field,
-                    trans(
-                        'eloquent-request::validation.operation_not_supported',
-                        ['attribute' => ($validator->customAttributes[$field] ?? $field)]
-                    )
-                );
-            });
-
-            return;
-        }
-
-        // Operation exists?
-        if (!isset($options['filter_operations'][$operation])) {
-            $validator->after(function ($validator) use ($field, $key)
-            {
-                $validator->errors()->add(
-                    $key . '.' . $field,
-                    trans(
-                        'eloquent-request::validation.operation_not_exists',
-                        ['attribute' => ($validator->customAttributes[$field] ?? $field)]
-                    )
-                );
-            });
-
-            return;
-        }
-
-        $rules = $options['filter_operations'][$operation];
-
-        if (isset($rules['validate']) && !$rules['validate']($value)) {
-            if (isset($rules['error_message'])) {
-                $validator->after(function ($validator) use ($field, $key, $rules)
-                {
-                    $validator->errors()->add(
-                        $key . '.' . $field,
-                        trans($rules['error_message'], ['attribute' => ($validator->customAttributes[$field] ?? $field)])
-                    );
-                });
-            }
-
-            return;
-        }
-
-        $path = explode('.', $field);
-        $field = array_pop($path);
-        $relation = implode('.', $path);
-
-        return [
-            'key' => $relation,
-            'value' => ['field' => $field, 'apply' => $rules['apply'], 'value' => $value],
-        ];
+        $this->applyTasks($query, $tasks);
     }
 
     /**
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param array $profile
+     * @param string $field
+     * @param string $operation
+     * @param mixed $value
+     * @return array|NULL
+     */
+    protected function getFilter(Builder $query, string $field, string $operation, $value) : ?array
+    {
+        $key = $this->config['filter_key'];
+
+        // Field described in profile?
+        if (! isset($this->profile[$key][$field])) {
+            $this->validator->after(function ($validator) use ($query, $key, $field, $operation)
+            {
+                $validator->errors()->add(
+                    $key . '.' . $field . '.' . $operation,
+                    trans(
+                        'eloquent-request::validation.filter_not_supported',
+                        ['attribute' => $this->getDisplayAttribute($query, $field)]
+                    )
+                );
+            });
+
+            return null;
+        }
+        $this->profile[$key][$field] = (array)$this->profile[$key][$field];
+
+        // Operation described in profile?
+        if (! in_array($operation, $this->profile[$key][$field])) {
+            $this->validator->after(function ($validator) use ($query, $key, $field, $operation)
+            {
+                $validator->errors()->add(
+                    $key . '.' . $field . '.' . $operation,
+                    trans(
+                        'eloquent-request::validation.operation_not_supported',
+                        ['attribute' => $this->getDisplayAttribute($query, $field)]
+                    )
+                );
+            });
+
+            return null;
+        }
+
+        // Operation exists?
+        if (! isset($this->config['filter_operations'][$operation])) {
+            $this->validator->after(function ($validator) use ($query, $key, $field, $operation)
+            {
+                $validator->errors()->add(
+                    $key . '.' . $field . '.' . $operation,
+                    trans(
+                        'eloquent-request::validation.operation_not_exists',
+                        ['attribute' => $this->getDisplayAttribute($query, $field)]
+                    )
+                );
+            });
+
+            return null;
+        }
+
+        $path = explode('.', $field);
+        $fieldFact = array_pop($path);
+        $relation = implode('.', $path);
+
+
+        // Handler's workflow
+        $handler = \App::make($this->config['filter_operations'][$operation]);
+
+        if ($handler->cast()) {
+            $value = $this->canonizeFilterValue($query, $relation, $fieldFact, $value);
+        }
+
+        if (! $handler->passes($value)) {
+            return null;
+        }
+
+        $fail = $handler->validate($value, $this->getFailClosure());
+        if ($fail) {
+            $this->validator->after(function ($validator) use ($query, $key, $field, $operation, $fail)
+            {
+                $validator->errors()->add(
+                    $key . '.' . $field . '.' . $operation,
+                    trans($fail->message(), $fail->params(['attribute' => $this->getDisplayAttribute($query, $field)]))
+                );
+            });
+
+            return null;
+        }
+
+        // Add task
+        return [
+            'key' => $relation,
+            'value' => ['field' => $fieldFact, 'handler' => $handler, 'value' => $value],
+        ];
+    }
+
+    /**
      * @param string $scope
      * @param mixed $value
-     * @param array $options
-     * @return array
+     * @return array|NULL
      */
-    protected static function getScope(array $profile, string $scope, $value, array $options, Validator &$validator)
+    protected function getScope(string $scope, $value) : ?array
     {
-        $key = $options['scope_key'];
+        $key = $this->config['scope_key'];
 
         // Described in profile?
-        if (!in_array($scope, ($profile[$key] ?? []))) {
-            $validator->after(function ($validator) use ($scope, $key)
+        if (! in_array($scope, $this->profile[$key])) {
+            $this->validator->after(function ($validator) use ($key, $scope)
             {
                 $validator->errors()->add(
                     $key . '.' . $scope,
@@ -174,16 +165,16 @@ class FilterAndScopeBuilder
                 );
             });
 
-            return;
+            return null;
         }
 
         $path = explode('.', $scope);
-        $scope = array_pop($path);
+        $scopeFact = array_pop($path);
         $relation = implode('.', $path);
 
         return [
             'key' => $relation,
-            'value' => ['scope' => $scope, 'value' => $value],
+            'value' => ['scope' => $scopeFact, 'value' => $value, 'error_key' => $key . '.' . $scope],
         ];
     }
 
@@ -192,29 +183,28 @@ class FilterAndScopeBuilder
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param array $tasks
-     * @param boolean $separate
      * @return void
      */
-    protected static function applyTasks(\Illuminate\Database\Eloquent\Builder &$query, array $tasks, bool $separate)
+    protected function applyTasks(Builder &$query, array $tasks) : void
     {
         foreach ($tasks as $relation => $actions) {
-            if ($relation && $separate) {
+            if ($relation && in_array(self::OPTION_DO_NOT_GROUP, $this->profile['options'])) {
                 foreach ($actions as $action) {
                     $query->whereHas($relation, function ($query) use ($action)
                     {
-                        static::applyTask($query, $action);
+                        $this->applyTask($query, $action);
                     });
                 }
             } else if ($relation) {
                 $query->whereHas($relation, function ($query) use ($actions)
                 {
                     foreach ($actions as $action) {
-                        static::applyTask($query, $action);
+                        $this->applyTask($query, $action);
                     }
                 });
             } else {
                 foreach ($actions as $action) {
-                    static::applyTask($query, $action);
+                    $this->applyTask($query, $action);
                 }
             }
         }
@@ -225,12 +215,99 @@ class FilterAndScopeBuilder
      * @param array $action
      * @return void
      */
-    private static function applyTask(\Illuminate\Database\Eloquent\Builder &$query, array $action)
+    protected function applyTask(Builder &$query, array $action) : void
     {
         if (isset($action['scope'])) {
-            $query->{$action['scope']}($action['value']);
+            $fail = $query->{$action['scope']}($action['value'], $this->getFailClosure());
+            if ($fail instanceof \AnourValar\EloquentRequest\Helpers\Fail) {
+                $this->validator->after(function ($validator) use ($action, $fail)
+                {
+                    $validator->errors()->add($action['error_key'], trans($fail->message(), $fail->params()));
+                });
+            }
         } else {
-            $action['apply']($query, $action['field'], $action['value']);
+            $action['handler']->apply($query, $action['field'], $action['value']);
         }
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $relation
+     * @param string $field
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function canonizeFilterValue(Builder $query, ?string $relation, string $field, $value)
+    {
+        foreach (explode('.', $relation) as $relation) {
+            if ($relation) {
+                $query = $query->getModel()->$relation();
+            }
+        }
+        $casts = $query->getModel()->getCasts();
+
+        if (! isset($casts[$field])) {
+            if (! in_array(self::OPTION_CASTS_NOT_REQUIRED, $this->profile['options'])) {
+                $this->validator->after(function ($validator) use ($field)
+                {
+                    $validator->errors()->add(
+                        $this->config['filter_key'] . '.' . $field,
+                        "Cast is not set for attribute \"$field\"."
+                    );
+                });
+            }
+
+            return $value;
+        }
+
+        return $this->castValue($value, mb_strtolower($casts[$field]));
+    }
+
+    /**
+     * @param mixed $value
+     * @param string $cast
+     * @return mixed
+     */
+    protected function castValue($value, string $cast)
+    {
+        if (is_scalar($value)) {
+            if ($value === '') {
+                return $value;
+            }
+
+            if (in_array($cast, ['int', 'integer'])) {
+                return (int)$value;
+            }
+
+            if (in_array($cast, ['real', 'float', 'double'])) {
+                return (float)$value;
+            }
+
+            if (in_array($cast, ['date'])) {
+                return date('Y-m-d', strtotime($value));
+            }
+
+            if (in_array($cast, ['datetime', 'timestamp'])) {
+                preg_match('|^\d{2,4}([\/\.\-])\d{2,4}\1\d{2,4}(.*)$|', $value, $check);
+
+                if ($check && stripos($check[2], ':')) {
+                    return date('Y-m-d H:i:s', strtotime($value));
+                }
+                return date('Y-m-d', strtotime($value));
+            }
+
+            return $value;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as &$item) {
+                $item = $this->castValue($item, $cast);
+            }
+            unset($item);
+
+            return $value;
+        }
+
+        return null;
     }
 }

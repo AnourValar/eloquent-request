@@ -4,20 +4,15 @@ namespace AnourValar\EloquentRequest\Builders\Operations;
 
 use AnourValar\EloquentRequest\Helpers\Fail;
 
-class EqOperation implements OperationInterface
+class IsNullOperation implements OperationInterface
 {
-    /**
-     * @var integer
-     */
-    protected const MAX_LENGTH = 1000;
-
     /**
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::cast()
      */
     public function cast() : bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -35,11 +30,7 @@ class EqOperation implements OperationInterface
      */
     public function validate($value, \Closure $fail) : ?Fail
     {
-        if ((is_scalar($value) && mb_strlen($value) <= static::MAX_LENGTH) || is_null($value)) {
-            return null;
-        }
-
-        return $fail('eloquent-request::validation.scalar');
+        return null;
     }
 
     /**
@@ -48,15 +39,24 @@ class EqOperation implements OperationInterface
      */
     public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value) : void
     {
-        if ($value === '' || is_null($value)) {
-            $query->where(function ($query) use ($field)
-            {
-                $query
-                    ->where($field, '=', '')
-                    ->orWhereNull($field);
-            });
+        $range = [];
+
+        foreach ((array)$value as $item) {
+            if ($item) {
+                $range[1] = 1;
+            } else {
+                $range[0] = 0;
+            }
+        }
+
+        if (count($range) != 1) {
+            return;
+        }
+
+        if (isset($range[1])) {
+            $query->whereNull($field);
         } else {
-            $query->where($field, '=', $value);
+            $query->whereNotNull($field);
         }
     }
 }

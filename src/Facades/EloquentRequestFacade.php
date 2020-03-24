@@ -11,6 +11,6 @@ class EloquentRequestFacade extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return \AnourValar\EloquentRequest\Services\EloquentRequestService::class;
+        return \AnourValar\EloquentRequest\Service::class;
     }
 }

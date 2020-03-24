@@ -9,7 +9,7 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
      *
      * @var string
      */
-    protected $name = 'make:controller-request';
+    protected $name = 'make:controller-buildby';
 
     /**
      * The console command description.
@@ -24,10 +24,6 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
      */
     protected function getStub()
     {
-        if ($this->option('parent') || $this->option('model') || $this->option('resource')) {
-            return parent::getStub();
-        }
-
         return __DIR__.'/../../resources/controller.plain.stub';
     }
 }
