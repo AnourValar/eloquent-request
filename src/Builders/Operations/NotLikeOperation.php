@@ -12,6 +12,6 @@ class NotLikeOperation extends LikeOperation
     {
         $value = $this->canonizeValue($value);
 
-        $query->where($field, 'NOT LIKE', "%$value%");
+        $query->where($field, 'NOT LIKE', $value);
     }
 }

@@ -115,13 +115,19 @@ class Service
 
         // Builders
         foreach ($this->builders as $builder) {
-            (new $builder)->build($query, $profile, $request, $this->config, $validator);
+            if (! $builder instanceof \AnourValar\EloquentRequest\Builders\BuilderInterface) {
+                $builder = \App::make($builder);
+            }
+
+            $builder->build($query, $profile, $request, $this->config, $validator);
         }
 
 
         // Actions
         foreach ($this->actions as $actionName => $action) {
-            $action = new $action;
+            if (! $action instanceof \AnourValar\EloquentRequest\Actions\ActionInterface) {
+                $action = \App::make($action);
+            }
 
             // Can handle?
             if (! $action->passes($profile, $request, $this->config)) {
@@ -256,7 +262,12 @@ class Service
      */
     private function prepareRequest(array $profile, array $request) : \AnourValar\EloquentRequest\Helpers\Request
     {
-        $request = (new $profile['adapter'])->canonize($request);
+        $adapter = $profile['adapter'];
+        if (! $adapter instanceof \AnourValar\EloquentRequest\Adapters\AdapterInterface) {
+            $adapter = \App::make($adapter);
+        }
+
+        $request = $adapter->canonize($request);
 
         return new \AnourValar\EloquentRequest\Helpers\Request(
             array_replace($profile['default_request'], $request),

@@ -63,7 +63,7 @@ class LikeOperation implements OperationInterface
     {
         $value = $this->canonizeValue($value);
 
-        $query->where($field, 'LIKE', "%$value%");
+        $query->where($field, 'LIKE', $value);
     }
 
     /**
@@ -72,6 +72,6 @@ class LikeOperation implements OperationInterface
      */
     protected function canonizeValue($value)
     {
-        return addCslashes($value, '_%\\');
+        return '%'.addCslashes($value, '_%\\').'%';
     }
 }

@@ -116,7 +116,10 @@ class FilterAndScopeBuilder extends AbstractBuilder
 
 
         // Handler's workflow
-        $handler = \App::make($this->config['filter_operations'][$operation]);
+        $handler = $this->config['filter_operations'][$operation];
+        if (! $handler instanceof \AnourValar\EloquentRequest\Builders\Operations\OperationInterface) {
+            $handler = \App::make($handler);
+        }
 
         if ($handler->cast()) {
             $value = $this->canonizeFilterValue($query, $relation, $fieldFact, $value);
