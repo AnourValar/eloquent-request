@@ -68,9 +68,9 @@ class LikeOperation implements OperationInterface
 
     /**
      * @param mixed $value
-     * @return mixed
+     * @return string
      */
-    protected function canonizeValue($value)
+    protected function canonizeValue($value) : string
     {
         return '%'.addCslashes($value, '_%\\').'%';
     }
