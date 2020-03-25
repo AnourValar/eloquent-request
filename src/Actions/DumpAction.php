@@ -10,7 +10,7 @@ class DumpAction implements ActionInterface
     /**
      * @var string
      */
-    const OPTION_TURN_ON = 'action.dump.turn_on';
+    const OPTION_APPLY = 'action.dump.apply';
 
     /**
      * {@inheritDoc}
@@ -18,7 +18,7 @@ class DumpAction implements ActionInterface
      */
     public function passes(array $profile, array $request, array $config) : bool
     {
-        return in_array(self::OPTION_TURN_ON, $profile['options']);
+        return in_array(self::OPTION_APPLY, $profile['options']);
     }
 
     /**

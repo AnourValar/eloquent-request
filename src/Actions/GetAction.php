@@ -10,7 +10,7 @@ class GetAction implements ActionInterface
     /**
      * @var string
      */
-    const OPTION_TURN_ON = 'action.get.turn_on';
+    const OPTION_APPLY = 'action.get.apply';
 
     /**
      * @var string
@@ -23,7 +23,7 @@ class GetAction implements ActionInterface
      */
     public function passes(array $profile, array $request, array $config) : bool
     {
-        return in_array(self::OPTION_TURN_ON, $profile['options']);
+        return in_array(self::OPTION_APPLY, $profile['options']);
     }
 
     /**
