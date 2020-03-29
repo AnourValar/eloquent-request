@@ -17,7 +17,8 @@
                 "AnourValar\\EloquentRequest\\Providers\\EloquentRequestServiceProvider"
             ],
             "aliases": {
-                "EloquentRequest": "AnourValar\\EloquentRequest\\Facades\\EloquentRequestFacade"
+                "EloquentRequest": "AnourValar\\EloquentRequest\\Facades\\EloquentRequestFacade",
+                "EloquentRequestSearch": "AnourValar\\EloquentRequest\\Facades\\EloquentRequestSearchFacade"
             }
         }
     }

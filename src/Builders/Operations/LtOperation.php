@@ -70,13 +70,36 @@ class LtOperation implements OperationInterface
             return $value;
         }
 
+        // datetime
         if (stripos($result[2], ':')) {
-            return date('Y-m-d H:i:s', strtotime($value));
+            if ($direction == '<') {
+                return date('Y-m-d H:i:00', strtotime($value));
+            }
+            if ($direction == '<=') {
+                return date('Y-m-d H:i:59', strtotime($value));
+            }
+
+            if ($direction == '>') {
+                return date('Y-m-d H:i:59', strtotime($value));
+            }
+            if ($direction == '>=') {
+                return date('Y-m-d H:i:00', strtotime($value));
+            }
         }
 
+        // date
         if ($direction == '<') {
+            return date('Y-m-d 00:00:00', strtotime($value));
+        }
+        if ($direction == '<=') {
             return date('Y-m-d 23:59:59', strtotime($value));
         }
-        return date('Y-m-d 00:00:00', strtotime($value));
+
+        if ($direction == '>') {
+            return date('Y-m-d 23:59:59', strtotime($value));
+        }
+        if ($direction == '>=') {
+            return date('Y-m-d 00:00:00', strtotime($value));
+        }
     }
 }

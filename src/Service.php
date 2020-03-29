@@ -44,6 +44,7 @@ class Service
             '>' => \AnourValar\EloquentRequest\Builders\Operations\GtOperation::class,
             '>=' => \AnourValar\EloquentRequest\Builders\Operations\GeOperation::class,
 
+            'search' => \AnourValar\EloquentRequest\Builders\Operations\SearchOperation::class,
             'like' => \AnourValar\EloquentRequest\Builders\Operations\LikeOperation::class,
             'not-like' => \AnourValar\EloquentRequest\Builders\Operations\NotLikeOperation::class,
 
@@ -248,7 +249,8 @@ class Service
                 $this->config['sort_key'] => [],
 
                 'options' => [],
-                'default_request' => []
+                'default_request' => [],
+                'custom_attributes_path' => null,
             ],
             $this->config['default_profile'],
             $profile

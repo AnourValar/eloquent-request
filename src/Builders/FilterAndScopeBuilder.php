@@ -69,7 +69,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                     $key . '.' . $field . '.' . $operation,
                     trans(
                         'eloquent-request::validation.filter_not_supported',
-                        ['attribute' => $this->getDisplayAttribute($query, $field)]
+                        ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
                     )
                 );
             });
@@ -86,7 +86,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                     $key . '.' . $field . '.' . $operation,
                     trans(
                         'eloquent-request::validation.operation_not_supported',
-                        ['attribute' => $this->getDisplayAttribute($query, $field)]
+                        ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
                     )
                 );
             });
@@ -102,7 +102,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                     $key . '.' . $field . '.' . $operation,
                     trans(
                         'eloquent-request::validation.operation_not_exists',
-                        ['attribute' => $this->getDisplayAttribute($query, $field)]
+                        ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
                     )
                 );
             });
@@ -135,7 +135,10 @@ class FilterAndScopeBuilder extends AbstractBuilder
             {
                 $validator->errors()->add(
                     $key . '.' . $field . '.' . $operation,
-                    trans($fail->message(), $fail->params(['attribute' => $this->getDisplayAttribute($query, $field)]))
+                    trans(
+                        $fail->message(),
+                        $fail->params(['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)])
+                    )
                 );
             });
 

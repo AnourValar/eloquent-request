@@ -10,7 +10,7 @@ class LeOperation extends LtOperation
      */
     public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value) : void
     {
-        $value = $this->canonizeValue($value, '<');
+        $value = $this->canonizeValue($value, '<=');
 
         $query->where($field, '<=', $value);
     }

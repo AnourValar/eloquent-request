@@ -43,7 +43,7 @@ class SortBuilder extends AbstractBuilder
                     $key . '.' . $field,
                     trans(
                         'eloquent-request::validation.sort_not_supported',
-                        ['attribute' => $this->getDisplayAttribute($query, $field)]
+                        ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
                     )
                 );
             });
@@ -63,7 +63,7 @@ class SortBuilder extends AbstractBuilder
                     $key . '.' . $field,
                     trans(
                         'eloquent-request::validation.sort_not_exists',
-                        ['attribute' => $this->getDisplayAttribute($query, $field)]
+                        ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
                     )
                 );
             });

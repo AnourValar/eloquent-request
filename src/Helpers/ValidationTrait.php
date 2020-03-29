@@ -11,10 +11,21 @@ trait ValidationTrait
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param string $field
+     * @param array $profile
      * @return string
      */
-    protected function getDisplayAttribute(Builder $query, string $field) : string
+    protected function getDisplayAttribute(Builder $query, string $field, array $profile) : string
     {
+        // From profile
+        if ($profile['custom_attributes_path']) {
+            $customAttributes = (array)trans($profile['custom_attributes_path']);
+
+            if (isset($customAttributes[$field])) {
+                return $customAttributes[$field];
+            }
+        }
+
+        // From model
         $relations = explode('.', $field);
         $attribute = array_pop($relations);
 
@@ -31,6 +42,7 @@ trait ValidationTrait
             }
         }
 
+        // As is
         return $attribute;
     }
 
