@@ -3,7 +3,7 @@
 namespace AnourValar\EloquentRequest\Builders;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Validation\Validator;
+use AnourValar\EloquentRequest\Helpers\Validator;
 
 class FilterAndScopeBuilder extends AbstractBuilder
 {
@@ -63,16 +63,13 @@ class FilterAndScopeBuilder extends AbstractBuilder
 
         // Field described in profile?
         if (! isset($this->profile[$key][$field])) {
-            $this->validator->after(function ($validator) use ($query, $key, $field, $operation)
-            {
-                $validator->errors()->add(
-                    $key . '.' . $field . '.' . $operation,
-                    trans(
-                        'eloquent-request::validation.filter_not_supported',
-                        ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
-                    )
-                );
-            });
+            $this->validator->addError(
+                [$key, $field, $operation],
+                trans(
+                    'eloquent-request::validation.filter_not_supported',
+                    ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
+                )
+            );
 
             return null;
         }
@@ -80,32 +77,26 @@ class FilterAndScopeBuilder extends AbstractBuilder
 
         // Operation described in profile?
         if (! in_array($operation, $this->profile[$key][$field])) {
-            $this->validator->after(function ($validator) use ($query, $key, $field, $operation)
-            {
-                $validator->errors()->add(
-                    $key . '.' . $field . '.' . $operation,
-                    trans(
-                        'eloquent-request::validation.operation_not_supported',
-                        ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
-                    )
-                );
-            });
+            $this->validator->addError(
+                [$key, $field, $operation],
+                trans(
+                    'eloquent-request::validation.operation_not_supported',
+                    ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
+                )
+            );
 
             return null;
         }
 
         // Operation exists?
         if (! isset($this->config['filter_operations'][$operation])) {
-            $this->validator->after(function ($validator) use ($query, $key, $field, $operation)
-            {
-                $validator->errors()->add(
-                    $key . '.' . $field . '.' . $operation,
-                    trans(
-                        'eloquent-request::validation.operation_not_exists',
-                        ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
-                    )
-                );
-            });
+            $this->validator->addError(
+                [$key, $field, $operation],
+                trans(
+                    'eloquent-request::validation.operation_not_exists',
+                    ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
+                )
+            );
 
             return null;
         }
@@ -132,16 +123,13 @@ class FilterAndScopeBuilder extends AbstractBuilder
         try {
             $handler->validate($value, $this->getFailClosure());
         } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
-            $this->validator->after(function ($validator) use ($query, $key, $field, $operation, $e)
-            {
-                $validator->errors()->add(
-                    $key . '.' . $field . '.' . $operation,
-                    trans(
-                        $e->getMessage(),
-                        $e->getParams(['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)])
-                    )
-                );
-            });
+            $this->validator->addError(
+                [$key, $field, $operation],
+                trans(
+                    $e->getMessage(),
+                    $e->getParams(['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)])
+                )
+            );
 
             return null;
         }
@@ -164,13 +152,10 @@ class FilterAndScopeBuilder extends AbstractBuilder
 
         // Described in profile?
         if (! in_array($scope, $this->profile[$key])) {
-            $this->validator->after(function ($validator) use ($key, $scope)
-            {
-                $validator->errors()->add(
-                    $key . '.' . $scope,
-                    trans('eloquent-request::validation.scope_not_supported', ['scope' => $scope])
-                );
-            });
+            $this->validator->addError(
+                [$key, $scope],
+                trans('eloquent-request::validation.scope_not_supported', ['scope' => $scope])
+            );
 
             return null;
         }
@@ -228,13 +213,10 @@ class FilterAndScopeBuilder extends AbstractBuilder
             try {
                 $query->{$action['scope']}($action['value'], $this->getFailClosure());
             } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
-                $this->validator->after(function ($validator) use ($action, $e)
-                {
-                    $validator->errors()->add(
-                        $action['error_key'].$e->getSuffix('.'),
-                        trans($e->getMessage(), $e->getParams())
-                    );
-                });
+                $this->validator->addError(
+                    [$action['error_key'], $e->getSuffix()],
+                    trans($e->getMessage(), $e->getParams())
+                );
             }
         } else {
             $action['handler']->apply($query, $action['field'], $action['value']);
@@ -259,13 +241,10 @@ class FilterAndScopeBuilder extends AbstractBuilder
 
         if (! isset($casts[$field])) {
             if (! in_array(self::OPTION_CASTS_NOT_REQUIRED, $this->profile['options'])) {
-                $this->validator->after(function ($validator) use ($field)
-                {
-                    $validator->errors()->add(
-                        $this->config['filter_key'] . '.' . $field,
-                        "Cast is not set for attribute \"$field\"."
-                    );
-                });
+                $this->validator->addError(
+                    [$this->config['filter_key'], $field],
+                    "Cast is not set for attribute \"$field\"."
+                );
             }
 
             return $value;

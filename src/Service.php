@@ -54,6 +54,10 @@ class Service
             'is-null' => \AnourValar\EloquentRequest\Builders\Operations\IsNullOperation::class,
         ],
 
+        // validator
+        'validator' => \AnourValar\EloquentRequest\Helpers\Validator::class,
+        'validator_key_delimiter' => '.',
+
         // etc
         'default_profile' => [
             'adapter' => \AnourValar\EloquentRequest\Adapters\CanonicalAdapter::class,
@@ -108,7 +112,7 @@ class Service
 
 
         // Other prepares
-        $validator = \Validator::make([], []);
+        $validator = \App::make($this->config['validator'])->setConfig($this->config);
 
         $profile = $this->prepareProfile($profile);
         $request = $this->prepareRequest($profile, $request)->get();
@@ -139,10 +143,7 @@ class Service
             try {
                 $action->validate($profile, $request, $this->config, $this->getFailClosure());
             } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
-                $validator->after(function ($validator) use ($e)
-                {
-                    $validator->errors()->add(($e->getSuffix() ?? 'action'), trans($e->getMessage(), $e->getParams()));
-                });
+                $validator->addError($e->getSuffix('action'), trans($e->getMessage(), $e->getParams()));
             }
             $validator->validate();
 
@@ -150,15 +151,8 @@ class Service
             try {
                 $collection = $action->action($query, $profile, $request, $this->config, $this->getFailClosure());
             } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
-                \Validator
-                    ::make([], [])
-                    ->after(function ($validator) use ($e)
-                    {
-                        $validator->errors()->add(
-                            ($e->getSuffix() ?? 'action'),
-                            trans($e->getMessage(), $e->getParams())
-                        );
-                    })
+                $validator
+                    ->addError($e->getSuffix('action'), trans($e->getMessage(), $e->getParams()))
                     ->validate();
             }
 

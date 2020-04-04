@@ -3,7 +3,7 @@
 namespace AnourValar\EloquentRequest\Builders;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Validation\Validator;
+use AnourValar\EloquentRequest\Helpers\Validator;
 
 class SortBuilder extends AbstractBuilder
 {
@@ -37,16 +37,13 @@ class SortBuilder extends AbstractBuilder
 
         // Described in profile?
         if (! in_array($field, $this->profile[$key])) {
-            $this->validator->after(function ($validator) use ($query, $key, $field)
-            {
-                $validator->errors()->add(
-                    $key . '.' . $field,
-                    trans(
-                        'eloquent-request::validation.sort_not_supported',
-                        ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
-                    )
-                );
-            });
+            $this->validator->addError(
+                [$key, $field],
+                trans(
+                    'eloquent-request::validation.sort_not_supported',
+                    ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
+                )
+            );
 
             return;
         }
@@ -57,16 +54,13 @@ class SortBuilder extends AbstractBuilder
         }
 
         if (! in_array($value, $this->directions)) {
-            $this->validator->after(function ($validator) use ($query, $key, $field)
-            {
-                $validator->errors()->add(
-                    $key . '.' . $field,
-                    trans(
-                        'eloquent-request::validation.sort_not_exists',
-                        ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
-                    )
-                );
-            });
+            $this->validator->addError(
+                [$key, $field],
+                trans(
+                    'eloquent-request::validation.sort_not_exists',
+                    ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
+                )
+            );
 
             return;
         }

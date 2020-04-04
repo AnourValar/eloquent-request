@@ -40,16 +40,11 @@ class FailException extends \Exception
     }
 
     /**
-     * @param string $prefix
+     * @param string $default
      * @return string|NULL
      */
-    public function getSuffix(string $prefix = null) : ?string
+    public function getSuffix(string $default = null) : ?string
     {
-        $suffix = $this->suffix;
-        if (! is_null($suffix)) {
-            $suffix = $prefix.$suffix;
-        }
-
-        return $suffix;
+        return $this->suffix ?? $default;
     }
 }

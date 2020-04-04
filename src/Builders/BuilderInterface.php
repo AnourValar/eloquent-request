@@ -3,7 +3,7 @@
 namespace AnourValar\EloquentRequest\Builders;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Validation\Validator;
+use AnourValar\EloquentRequest\Helpers\Validator;
 
 interface BuilderInterface
 {
@@ -14,7 +14,8 @@ interface BuilderInterface
      * @param array $profile
      * @param array $request
      * @param array $config
-     * @param \Illuminate\Validation\Validator $validator
+     * @param \AnourValar\EloquentRequest\Helpers\Validator $validator
+     * @return void
      */
     public function build(Builder &$query, array $profile, array $request, array $config, Validator &$validator) : void;
 }
