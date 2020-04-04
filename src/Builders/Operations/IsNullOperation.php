@@ -2,8 +2,6 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
-use AnourValar\EloquentRequest\Helpers\Fail;
-
 class IsNullOperation implements OperationInterface
 {
     /**
@@ -28,9 +26,9 @@ class IsNullOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::validate()
      */
-    public function validate($value, \Closure $fail) : ?Fail
+    public function validate($value, \Closure $fail) : void
     {
-        return null;
+
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace AnourValar\EloquentRequest\Actions;
 
-use AnourValar\EloquentRequest\Helpers\Fail;
 use Illuminate\Database\Eloquent\Builder;
 
 interface ActionInterface
@@ -24,9 +23,10 @@ interface ActionInterface
      * @param array $request
      * @param array $config
      * @param \Closure $fail
-     * @return \AnourValar\EloquentRequest\Helpers\Fail|NULL
+     * @throws \AnourValar\EloquentRequest\Helpers\FailException
+     * @return void
      */
-    public function validate(array $profile, array $request, array $config, \Closure $fail) : ?Fail;
+    public function validate(array $profile, array $request, array $config, \Closure $fail) : void;
 
     /**
      * Get collection
@@ -36,6 +36,7 @@ interface ActionInterface
      * @param array $request
      * @param array $config
      * @param \Closure $fail
+     * @throws \AnourValar\EloquentRequest\Helpers\FailException
      * @return mixed
      */
     public function action(Builder &$query, array $profile, array $request, array $config, \Closure $fail);

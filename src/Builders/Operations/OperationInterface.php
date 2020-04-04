@@ -2,8 +2,6 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
-use AnourValar\EloquentRequest\Helpers\Fail;
-
 interface OperationInterface
 {
     /**
@@ -26,9 +24,10 @@ interface OperationInterface
      *
      * @param mixed $value
      * @param \Closure $fail
-     * @return \Closure|NULL
+     * @throws \AnourValar\EloquentRequest\Helpers\FailException
+     * @return void
      */
-    public function validate($value, \Closure $fail) : ?Fail;
+    public function validate($value, \Closure $fail) : void;
 
     /**
      * Apply filter

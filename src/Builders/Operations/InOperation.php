@@ -2,8 +2,6 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
-use AnourValar\EloquentRequest\Helpers\Fail;
-
 class InOperation implements OperationInterface
 {
     /**
@@ -38,27 +36,25 @@ class InOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::validate()
      */
-    public function validate($value, \Closure $fail) : ?Fail
+    public function validate($value, \Closure $fail) : void
     {
         if (! is_array($value)) {
-            return $fail('eloquent-request::validation.list');
+            $fail('eloquent-request::validation.list');
         }
 
         if (count($value) > static::MAX_COUNT) {
-            return $fail('eloquent-request::validation.list');
+            $fail('eloquent-request::validation.list');
         }
 
         foreach ($value as $item) {
             if (!is_scalar($item) && !is_null($item)) {
-                return $fail('eloquent-request::validation.list');
+                $fail('eloquent-request::validation.list');
             }
 
             if (mb_strlen($item) > static::MAX_LENGTH) {
-                return $fail('eloquent-request::validation.list');
+                $fail('eloquent-request::validation.list');
             }
         }
-
-        return null;
     }
 
     /**

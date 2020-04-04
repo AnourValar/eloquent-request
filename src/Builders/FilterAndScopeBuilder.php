@@ -129,15 +129,16 @@ class FilterAndScopeBuilder extends AbstractBuilder
             return null;
         }
 
-        $fail = $handler->validate($value, $this->getFailClosure());
-        if ($fail) {
-            $this->validator->after(function ($validator) use ($query, $key, $field, $operation, $fail)
+        try {
+            $handler->validate($value, $this->getFailClosure());
+        } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
+            $this->validator->after(function ($validator) use ($query, $key, $field, $operation, $e)
             {
                 $validator->errors()->add(
                     $key . '.' . $field . '.' . $operation,
                     trans(
-                        $fail->message(),
-                        $fail->params(['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)])
+                        $e->getMessage(),
+                        $e->getParams(['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)])
                     )
                 );
             });
@@ -224,11 +225,15 @@ class FilterAndScopeBuilder extends AbstractBuilder
     protected function applyTask(Builder &$query, array $action) : void
     {
         if (isset($action['scope'])) {
-            $fail = $query->{$action['scope']}($action['value'], $this->getFailClosure());
-            if ($fail instanceof \AnourValar\EloquentRequest\Helpers\Fail) {
-                $this->validator->after(function ($validator) use ($action, $fail)
+            try {
+                $query->{$action['scope']}($action['value'], $this->getFailClosure());
+            } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
+                $this->validator->after(function ($validator) use ($action, $e)
                 {
-                    $validator->errors()->add($action['error_key'], trans($fail->message(), $fail->params()));
+                    $validator->errors()->add(
+                        $action['error_key'].$e->getSuffix('.'),
+                        trans($e->getMessage(), $e->getParams())
+                    );
                 });
             }
         } else {

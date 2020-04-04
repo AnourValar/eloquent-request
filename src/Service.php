@@ -136,23 +136,28 @@ class Service
             }
 
             // Validation (at last)
-            $fail = $action->validate($profile, $request, $this->config, $this->getFailClosure());
-            if ($fail) {
-                $validator->after(function ($validator) use ($fail)
+            try {
+                $action->validate($profile, $request, $this->config, $this->getFailClosure());
+            } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
+                $validator->after(function ($validator) use ($e)
                 {
-                    $validator->errors()->add('action', trans($fail->message(), $fail->params()));
+                    $validator->errors()->add(($e->getSuffix() ?? 'action'), trans($e->getMessage(), $e->getParams()));
                 });
             }
             $validator->validate();
 
             // Handle
-            $collection = $action->action($query, $profile, $request, $this->config, $this->getFailClosure());
-            if ($collection instanceof \AnourValar\EloquentRequest\Helpers\Fail) {
+            try {
+                $collection = $action->action($query, $profile, $request, $this->config, $this->getFailClosure());
+            } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
                 \Validator
                     ::make([], [])
-                    ->after(function ($validator) use ($collection)
+                    ->after(function ($validator) use ($e)
                     {
-                        $validator->errors()->add('action', trans($collection->message(), $collection->params()));
+                        $validator->errors()->add(
+                            ($e->getSuffix() ?? 'action'),
+                            trans($e->getMessage(), $e->getParams())
+                        );
                     })
                     ->validate();
             }
@@ -275,7 +280,7 @@ class Service
             }
         }
 
-        $request = $adapter->canonize($request);
+        $request = $adapter->canonize($request, $profile, $this->config);
 
         return new \AnourValar\EloquentRequest\Helpers\Request(
             array_replace($profile['default_request'], $request),

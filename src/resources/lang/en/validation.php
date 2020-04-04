@@ -14,6 +14,7 @@ return [
     'sort_not_exists' => 'Sorting for :attribute is contains not exist direction.',
 
     'per_page' => 'The number of entries per page must be a natural number.',
+    'per_page_over_max' => 'Maximum number of entries per page is :max.',
     'page' => 'The page number must be a natural number.',
     'page_over_last' => 'Page not exists.',
     'page_over_max' => 'Maximum available page is :max.',

@@ -2,7 +2,6 @@
 
 namespace AnourValar\EloquentRequest\Actions;
 
-use AnourValar\EloquentRequest\Helpers\Fail;
 use Illuminate\Database\Eloquent\Builder;
 
 class DumpAction implements ActionInterface
@@ -25,9 +24,9 @@ class DumpAction implements ActionInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Actions\ActionInterface::validate()
      */
-    public function validate(array $profile, array $request, array $config, \Closure $fail) : ?Fail
+    public function validate(array $profile, array $request, array $config, \Closure $fail) : void
     {
-        return null;
+
     }
 
     /**

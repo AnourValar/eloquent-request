@@ -53,9 +53,9 @@ trait ValidationTrait
      */
     protected function getFailClosure() : \Closure
     {
-        return function (string $message, array $params = [])
+        return function (string $message, array $params = [], string $suffix = null)
         {
-            return new \AnourValar\EloquentRequest\Helpers\Fail($message, $params);
+            throw new \AnourValar\EloquentRequest\Helpers\FailException($message, $params, $suffix);
         };
     }
 }

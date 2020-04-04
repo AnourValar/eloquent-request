@@ -2,8 +2,6 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
-use AnourValar\EloquentRequest\Helpers\Fail;
-
 class EqOperation implements OperationInterface
 {
     /**
@@ -33,13 +31,13 @@ class EqOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::validate()
      */
-    public function validate($value, \Closure $fail) : ?Fail
+    public function validate($value, \Closure $fail) : void
     {
         if ((is_scalar($value) && mb_strlen($value) <= static::MAX_LENGTH) || is_null($value)) {
-            return null;
+            return;
         }
 
-        return $fail('eloquent-request::validation.scalar');
+        $fail('eloquent-request::validation.scalar');
     }
 
     /**

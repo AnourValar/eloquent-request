@@ -2,7 +2,6 @@
 
 namespace AnourValar\EloquentRequest\Actions;
 
-use AnourValar\EloquentRequest\Helpers\Fail;
 use Illuminate\Database\Eloquent\Builder;
 
 class PaginateAction implements ActionInterface
@@ -30,6 +29,11 @@ class PaginateAction implements ActionInterface
     /**
      * @var integer
      */
+    protected const MAX_PER_PAGE = 200;
+
+    /**
+     * @var integer
+     */
     protected const DEFAULT_PAGE = 1;
 
     /**
@@ -45,27 +49,33 @@ class PaginateAction implements ActionInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Actions\ActionInterface::validate()
      */
-    public function validate(array $profile, array $request, array $config, \Closure $fail) : ?Fail
+    public function validate(array $profile, array $request, array $config, \Closure $fail) : void
     {
         // per page
         $keyPerPage = $config['per_page_key'];
-        if (isset($request[$keyPerPage]) && !filter_var($request[$keyPerPage], FILTER_VALIDATE_INT)) {
-            return $fail('eloquent-request::validation.per_page');
+        $perPage = $request[$keyPerPage] ?? static::DEFAULT_PER_PAGE;
+
+        if (! filter_var($perPage, FILTER_VALIDATE_INT)) {
+            $fail('eloquent-request::validation.per_page', [], $keyPerPage);
         }
+
+        if (static::MAX_PER_PAGE && $perPage > static::MAX_PER_PAGE) {
+            $fail('eloquent-request::validation.per_page_over_max', ['max' => static::MAX_PER_PAGE], $keyPerPage);
+        }
+
 
         // page
         $keyPage = $config['page_key'];
-        if (isset($request[$keyPage]) && !filter_var($request[$keyPage], FILTER_VALIDATE_INT)) {
-            return $fail('eloquent-request::validation.page');
+        $page = $request[$keyPage] ?? static::DEFAULT_PAGE;
+
+        if (! filter_var($page, FILTER_VALIDATE_INT)) {
+            $fail('eloquent-request::validation.page', [], $keyPage);
         }
 
-        $page = $request[$config['page_key']] ?? static::DEFAULT_PAGE;
         $pageOverMax = $profile['options'][self::OPTION_PAGE_MAX] ?? null;
         if ($pageOverMax && $page > $pageOverMax) {
-            return $fail('eloquent-request::validation.page_over_max', ['max' => $pageOverMax]);
+            $fail('eloquent-request::validation.page_over_max', ['max' => $pageOverMax], $keyPage);
         }
-
-        return null;
     }
 
     /**
@@ -84,7 +94,7 @@ class PaginateAction implements ActionInterface
         }
 
         if (in_array(self::OPTION_PAGE_OVER_LAST, $profile['options']) && $page > 1 && !$collection->count()) {
-            return $fail('eloquent-request::validation.page_over_last');
+            $fail('eloquent-request::validation.page_over_last', [], $config['page_key']);
         }
 
         return $collection;
