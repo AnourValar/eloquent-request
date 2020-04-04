@@ -55,7 +55,7 @@ class Service
         ],
 
         // validator
-        'validator' => \AnourValar\EloquentRequest\Helpers\Validator::class,
+        'validator' => \AnourValar\EloquentRequest\Validators\IlluminateValidator::class,
         'validator_key_delimiter' => '.',
 
         // etc
@@ -112,7 +112,10 @@ class Service
 
 
         // Other prepares
-        $validator = \App::make($this->config['validator'])->setConfig($this->config);
+        $validator = $this->config['validator'];
+        if (! $validator instanceof \AnourValar\EloquentRequest\Validators\ValidatorInterface) {
+            $validator = \App::make($validator);
+        }
 
         $profile = $this->prepareProfile($profile);
         $request = $this->prepareRequest($profile, $request)->get();
@@ -145,7 +148,7 @@ class Service
             } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
                 $validator->addError($e->getSuffix('action'), trans($e->getMessage(), $e->getParams()));
             }
-            $validator->validate();
+            $validator->validate($profile, $this->config);
 
             // Handle
             try {
@@ -153,7 +156,7 @@ class Service
             } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
                 $validator
                     ->addError($e->getSuffix('action'), trans($e->getMessage(), $e->getParams()))
-                    ->validate();
+                    ->validate($profile, $this->config);
             }
 
             if ($collection instanceof \Illuminate\Support\Collection ||

@@ -3,7 +3,7 @@
 namespace AnourValar\EloquentRequest\Builders;
 
 use Illuminate\Database\Eloquent\Builder;
-use AnourValar\EloquentRequest\Helpers\Validator;
+use AnourValar\EloquentRequest\Validators\ValidatorInterface;
 
 abstract class AbstractBuilder implements BuilderInterface
 {
@@ -25,7 +25,7 @@ abstract class AbstractBuilder implements BuilderInterface
     protected $config;
 
     /**
-     * @var \AnourValar\EloquentRequest\Helpers\Validator
+     * @var \AnourValar\EloquentRequest\Validators\ValidatorInterface
      */
     protected $validator;
 
@@ -33,7 +33,7 @@ abstract class AbstractBuilder implements BuilderInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\BuilderInterface::build()
      */
-    public function build(Builder &$query, array $profile, array $request, array $config, Validator &$validator) : void
+    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator) : void
     {
         $this->profile = $profile;
         $this->request = $request;
