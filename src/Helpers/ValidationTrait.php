@@ -42,6 +42,12 @@ trait ValidationTrait
             }
         }
 
+        // Custom Validation Attributes
+        $attributes = trans('validation.attributes');
+        if (isset($attributes[$attribute])) {
+            return $attributes[$attribute];
+        }
+
         // As is
         return $attribute;
     }
