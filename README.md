@@ -1,3 +1,12 @@
+# Dynamic filters for QueryBuilder
+
+## Installation
+
+```bash
+composer require anourvalar/eloquent-request
+```
+
+
 ## Usage: filters
 
 ```php
