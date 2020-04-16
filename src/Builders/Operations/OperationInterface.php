@@ -7,7 +7,7 @@ interface OperationInterface
     /**
      * Casts filter value
      *
-     * @return bool
+     * @return boolean
      */
     public function cast() : bool;
 

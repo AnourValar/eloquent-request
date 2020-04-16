@@ -5,6 +5,27 @@ namespace AnourValar\EloquentRequest;
 class SearchService
 {
     /**
+     * Keyboard layout (typo)
+     *
+     * @param string $value
+     * @param string $typoLocale
+     * @return string|NULL
+     */
+    public function typo(?string $value, string $typoLocale) : ?string
+    {
+        if (is_null($value)) {
+            return $value;
+        }
+
+        $typoLocale = config("eloquent_request.typo.$typoLocale");
+        if (! $typoLocale) {
+            return null;
+        }
+
+        return str_replace($typoLocale['correct'], $typoLocale['incorrect'], mb_strtolower($value));
+    }
+
+    /**
      * Generates search string for storing
      *
      * @param array $values

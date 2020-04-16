@@ -238,3 +238,21 @@ class UserController extends Controller
 }
 
 ```
+
+
+## Via facade
+
+```php
+$profile = [
+    'filter' => [
+        'id' => ['in'],
+    ],
+];
+
+$request = [
+    'filter' => ['id' => ['in' => [1,2,3]]],
+];
+
+$collection = \EloquentRequestFacade::buildBy(\App\User::class, $profile, $request);
+
+```
