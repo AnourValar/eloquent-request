@@ -253,6 +253,6 @@ $request = [
     'filter' => ['id' => ['in' => [1,2,3]]],
 ];
 
-$collection = \EloquentRequestFacade::buildBy(\App\User::class, $profile, $request);
+$collection = \EloquentRequest::buildBy(\App\User::class, $profile, $request);
 
 ```
