@@ -91,7 +91,7 @@ class Service
      * @param mixed $query
      * @param array $profile
      * @param array $request
-     * @throws \Exception
+     * @throws \LogicException
      * @throws \Illuminate\Validation\ValidationException
      * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Pagination\Paginator
      */
@@ -107,7 +107,7 @@ class Service
         }
 
         if (! $query instanceof \Illuminate\Database\Eloquent\Builder) {
-            throw new \Exception('First argument must to be Eloquent model.');
+            throw new \LogicException('First argument must to be Eloquent model.');
         }
 
 
@@ -169,7 +169,7 @@ class Service
                 return $collection;
             }
 
-            throw new \Exception('Unexpected return data.');
+            throw new \LogicException('Unexpected return data.');
         }
 
         return collect();

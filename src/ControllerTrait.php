@@ -36,7 +36,7 @@ trait ControllerTrait
     /**
      * @param array $profile
      * @param array $request
-     * @throws \Exception
+     * @throws \LogicException
      * @return void
      */
     private function buildingContext(array &$profile = null, array &$request = null) : void
@@ -46,7 +46,7 @@ trait ControllerTrait
             $profile = $this->profile;
         }
         if (is_null($profile)) {
-            throw new \Exception('Profile cannot be null');
+            throw new \LogicException('Profile cannot be null');
         }
 
         // Request
