@@ -261,16 +261,16 @@ class FilterAndScopeBuilder extends AbstractBuilder
     protected function castValue($value, string $cast)
     {
         if (is_scalar($value)) {
-            if ($value === '') {
-                return $value;
-            }
-
             if (in_array($cast, ['int', 'integer'])) {
                 return (int)$value;
             }
 
             if (in_array($cast, ['real', 'float', 'double'])) {
                 return (float)$value;
+            }
+
+            if ($value === '') {
+                return $value;
             }
 
             if (in_array($cast, ['date'])) {
