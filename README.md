@@ -16,12 +16,17 @@ class UserController extends Controller
 
     /**
      * Allows to filter by column 'created_at' using several operations
+     * With constraint: minimum date
      *
      * @var array
      */
     protected $profile = [
         'filter' => [
             'created_at' => ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'],
+        ],
+
+        'ranges' => [
+            'created_at' => ['min' => '2018-01-01'],
         ],
     ];
 
