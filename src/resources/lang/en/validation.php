@@ -18,4 +18,9 @@ return [
     'page' => 'The page number must be a natural number.',
     'page_over_last' => 'Page not exists.',
     'page_over_max' => 'Maximum available page is :max.',
+
+    'ranges' => [
+        'min' => 'Filter for :attribute below range.',
+        'max' => 'Filter for :attribute above range.',
+    ],
 ];

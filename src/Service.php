@@ -250,6 +250,8 @@ class Service
                 $this->config['scope_key'] => [],
                 $this->config['sort_key'] => [],
 
+                'ranges' => [],
+
                 'options' => [],
                 'default_request' => [],
                 'custom_attributes_path' => null,

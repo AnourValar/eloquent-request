@@ -116,6 +116,10 @@ class FilterAndScopeBuilder extends AbstractBuilder
             $value = $this->canonizeFilterValue($query, $relation, $fieldFact, $value);
         }
 
+        if (! $this->validateRanges($query, $field, $value, $operation)) {
+            return null;
+        }
+
         if (! $handler->passes($value)) {
             return null;
         }
@@ -299,5 +303,61 @@ class FilterAndScopeBuilder extends AbstractBuilder
         }
 
         return null;
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $field
+     * @param mixed $value
+     * @param string $operation
+     * @return boolean
+     */
+    protected function validateRanges(Builder $query, string $field, $value, string $operation) : bool
+    {
+        $key = $this->config['filter_key'];
+
+        if (is_scalar($value)) {
+            if (isset($this->profile['ranges'][$field]['min']) && $this->profile['ranges'][$field]['min'] > $value) {
+                $this->validator->addError(
+                    [$key, $field, $operation],
+                    trans(
+                        'eloquent-request::validation.ranges.min',
+                        [
+                            'attribute' => $this->getDisplayAttribute($query, $field, $this->profile),
+                            'min' => ( $this->profile['ranges'][$field]['min'] ?? null ),
+                            'max' => ( $this->profile['ranges'][$field]['max'] ?? null ),
+                        ]
+                    )
+                );
+
+                return false;
+            }
+
+            if (isset($this->profile['ranges'][$field]['max']) && $this->profile['ranges'][$field]['max'] < $value) {
+                $this->validator->addError(
+                    [$key, $field, $operation],
+                    trans(
+                        'eloquent-request::validation.ranges.max',
+                        [
+                            'attribute' => $this->getDisplayAttribute($query, $field, $this->profile),
+                            'min' => ( $this->profile['ranges'][$field]['min'] ?? null ),
+                            'max' => ( $this->profile['ranges'][$field]['max'] ?? null ),
+                        ]
+                    )
+                );
+
+                return false;
+            }
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $item) {
+                if (! $this->validateRanges($query, $field, $item, $operation)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
