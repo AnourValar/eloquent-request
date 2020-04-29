@@ -13,12 +13,24 @@ class Service
      *
      * @var array
      */
-    const PROFILE_PRESET_ID = ['=', '!=', 'in', 'not-in'];
-    const PROFILE_PRESET_BOOLEAN = ['=', '!=', 'in', 'not-in'];
-    const PROFILE_PRESET_NUMBER = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
-    const PROFILE_PRESET_DATE = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
-    const PROFILE_PRESET_TEXT = ['=', '!=', 'like', 'not-like'];
-    const PROFILE_PRESET_IS_NULL = ['is-null'];
+    const PROFILE_FILTER_ID = ['=', '!=', 'in', 'not-in'];
+    const PROFILE_FILTER_BOOLEAN = ['=', '!=', 'in', 'not-in'];
+    const PROFILE_FILTER_NUMBER = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
+    const PROFILE_FILTER_DATE = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
+    const PROFILE_FILTER_TEXT = ['=', '!=', 'like', 'not-like'];
+    const PROFILE_FILTER_IS_NULL = ['is-null'];
+    const PROFILE_FILTER_SEARCH = ['search'];
+
+    /**
+     * Presets of availables ranges
+     *
+     * @var array
+     */
+    const PROFILE_RANGE_TINYINT = 127;
+    const PROFILE_RANGE_SMALLINT = 32767;
+    const PROFILE_RANGE_MEDIUMINT = 8388607;
+    const PROFILE_RANGE_INT = 2147483647;
+    const PROFILE_RANGE_BIGINT = 9223372036854775807; // just in case :)
 
     /**
      * Config

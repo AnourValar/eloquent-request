@@ -116,11 +116,11 @@ class FilterAndScopeBuilder extends AbstractBuilder
             $value = $this->canonizeFilterValue($query, $relation, $fieldFact, $value);
         }
 
-        if (! $this->validateRanges($query, $field, $value, $operation)) {
+        if (! $handler->passes($value)) {
             return null;
         }
 
-        if (! $handler->passes($value)) {
+        if (! $this->validateRanges($query, $field, $value, $operation)) {
             return null;
         }
 
