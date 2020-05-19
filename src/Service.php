@@ -20,6 +20,7 @@ class Service
     const PROFILE_FILTER_TEXT = ['=', '!=', 'like', 'not-like'];
     const PROFILE_FILTER_IS_NULL = ['is-null'];
     const PROFILE_FILTER_SEARCH = ['search'];
+    const PROFILE_FILTER_JSON  = ['json-in', 'json-not-in'];
 
     /**
      * Presets of availables ranges
@@ -64,6 +65,9 @@ class Service
             'not-in' => \AnourValar\EloquentRequest\Builders\Operations\NotInOperation::class,
 
             'is-null' => \AnourValar\EloquentRequest\Builders\Operations\IsNullOperation::class,
+
+            'json-in' => \AnourValar\EloquentRequest\Builders\Operations\JsonInOperation::class,
+            'json-not-in' => \AnourValar\EloquentRequest\Builders\Operations\JsonNotInOperation::class,
         ],
 
         // validator
