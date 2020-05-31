@@ -33,6 +33,7 @@ class SearchService
      */
     public function generate(array $values) : ?string
     {
+        $replacers = config('eloquent_request.replacers');
         $list = [];
 
         foreach ($values as $value) {
@@ -41,6 +42,7 @@ class SearchService
             }
 
             $value = mb_strtolower($value);
+            $value = strtr($value, $replacers);
             $value = explode(' ', $value);
             $value = array_map('trim', $value);
 
