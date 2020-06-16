@@ -42,10 +42,6 @@ class LikeOperation implements OperationInterface
      */
     public function validate($value, \Closure $fail) : void
     {
-        if (is_string($value)) {
-            $value = trim($value);
-        }
-
         if (is_scalar($value) && mb_strlen($value) >= static::MIN_LENGTH && mb_strlen($value) <= static::MAX_LENGTH) {
             return;
         }
