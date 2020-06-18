@@ -88,6 +88,7 @@ class Service
     protected $actions = [
         'dump' => \AnourValar\EloquentRequest\Actions\DumpAction::class,
         'get' => \AnourValar\EloquentRequest\Actions\GetAction::class,
+        'cursor' => \AnourValar\EloquentRequest\Actions\CursorAction::class,
         'paginate' => \AnourValar\EloquentRequest\Actions\PaginateAction::class,
     ];
 
@@ -109,7 +110,7 @@ class Service
      * @param array $request
      * @throws \LogicException
      * @throws \Illuminate\Validation\ValidationException
-     * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Pagination\Paginator
+     * @return mixed
      */
     public function buildBy($query, array $profile, array $request)
     {
@@ -178,7 +179,8 @@ class Service
             if ($collection instanceof \Illuminate\Support\Collection ||
                 $collection instanceof \Illuminate\Pagination\LengthAwarePaginator ||
                 $collection instanceof \Illuminate\Pagination\Paginator ||
-                $collection instanceof \Illuminate\Database\Eloquent\Collection
+                $collection instanceof \Illuminate\Database\Eloquent\Collection ||
+                $collection instanceof \Illuminate\Support\LazyCollection
             ) {
                 event(new RequestBuiltEvent($collection, $profile, $request, $this->config, $actionName));
 

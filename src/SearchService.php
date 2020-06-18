@@ -26,6 +26,28 @@ class SearchService
     }
 
     /**
+     * Convert similar letters
+     *
+     * @param string $value
+     * @param string $referenceLocale
+     * @return string
+     */
+    public function similar(string $value, string $referenceLocale) : string
+    {
+        $referenceRules = config("eloquent_request.similar.$referenceLocale");
+
+        foreach (config("eloquent_request.similar") as $locale => $rules) {
+            if ($locale == $referenceLocale) {
+                continue;
+            }
+
+            $value = str_replace($rules, $referenceRules, $value);
+        }
+
+        return $value;
+    }
+
+    /**
      * Generates search string for storing
      *
      * @param array $values
