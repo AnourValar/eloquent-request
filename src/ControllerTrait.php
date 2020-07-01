@@ -10,7 +10,7 @@ trait ControllerTrait
      * @param mixed $query
      * @param array $profile
      * @param array $request
-     * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Pagination\Paginator
+     * @return mixed
      */
     protected function buildBy($query, array $profile = null, array $request = null)
     {

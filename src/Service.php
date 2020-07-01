@@ -87,6 +87,7 @@ class Service
      */
     protected $actions = [
         'dump' => \AnourValar\EloquentRequest\Actions\DumpAction::class,
+        'null' => \AnourValar\EloquentRequest\Actions\NullAction::class,
         'get' => \AnourValar\EloquentRequest\Actions\GetAction::class,
         'cursor' => \AnourValar\EloquentRequest\Actions\CursorAction::class,
         'paginate' => \AnourValar\EloquentRequest\Actions\PaginateAction::class,
@@ -180,7 +181,8 @@ class Service
                 $collection instanceof \Illuminate\Pagination\LengthAwarePaginator ||
                 $collection instanceof \Illuminate\Pagination\Paginator ||
                 $collection instanceof \Illuminate\Database\Eloquent\Collection ||
-                $collection instanceof \Illuminate\Support\LazyCollection
+                $collection instanceof \Illuminate\Support\LazyCollection ||
+                $collection instanceof \Illuminate\Database\Eloquent\Builder
             ) {
                 event(new RequestBuiltEvent($collection, $profile, $request, $this->config, $actionName));
 
