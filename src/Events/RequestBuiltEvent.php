@@ -7,7 +7,7 @@ class RequestBuiltEvent
     /**
      * @var mixed
      */
-    public $collection;
+    public $result;
 
     /**
      * @var array
@@ -32,16 +32,16 @@ class RequestBuiltEvent
     /**
      * Create a new event instance.
      *
-     * @param object $collection
+     * @param mixed $result
      * @param array $profile
      * @param array $request
      * @param array $config
      * @param string $actionName
      * @return void
      */
-    public function __construct(object $collection, array $profile, array $request, array $config, string $actionName)
+    public function __construct($result, array $profile, array $request, array $config, string $actionName)
     {
-        $this->collection = $collection;
+        $this->result = $result;
         $this->profile = $profile;
         $this->request = $request;
         $this->config = $config;

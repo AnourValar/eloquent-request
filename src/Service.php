@@ -86,8 +86,8 @@ class Service
      * @var array
      */
     protected $actions = [
-        'dump' => \AnourValar\EloquentRequest\Actions\DumpAction::class,
         'null' => \AnourValar\EloquentRequest\Actions\NullAction::class,
+        'generator' => \AnourValar\EloquentRequest\Actions\GeneratorAction::class,
         'get' => \AnourValar\EloquentRequest\Actions\GetAction::class,
         'cursor' => \AnourValar\EloquentRequest\Actions\CursorAction::class,
         'paginate' => \AnourValar\EloquentRequest\Actions\PaginateAction::class,
@@ -170,26 +170,15 @@ class Service
 
             // Handle
             try {
-                $collection = $action->action($query, $profile, $request, $this->config, $this->getFailClosure());
+                $result = $action->action($query, $profile, $request, $this->config, $this->getFailClosure());
             } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
                 $validator
                     ->addError($e->getSuffix('action'), trans($e->getMessage(), $e->getParams()))
                     ->validate($profile, $this->config);
             }
 
-            if ($collection instanceof \Illuminate\Support\Collection ||
-                $collection instanceof \Illuminate\Pagination\LengthAwarePaginator ||
-                $collection instanceof \Illuminate\Pagination\Paginator ||
-                $collection instanceof \Illuminate\Database\Eloquent\Collection ||
-                $collection instanceof \Illuminate\Support\LazyCollection ||
-                $collection instanceof \Illuminate\Database\Eloquent\Builder
-            ) {
-                event(new RequestBuiltEvent($collection, $profile, $request, $this->config, $actionName));
-
-                return $collection;
-            }
-
-            throw new \LogicException('Unexpected return data.');
+            event(new RequestBuiltEvent($result, $profile, $request, $this->config, $actionName));
+            return $result;
         }
 
         return collect();
