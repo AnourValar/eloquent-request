@@ -65,17 +65,13 @@ class GeneratorAction implements ActionInterface
                 throw new \LogicException('You must specify an orderBy clause when using this function.');
             }
 
-            $page = 1;
+            $page = 0;
 
             do {
+                $page++;
+
                 if (! isset($results[$page])) {
                     $results = [$page => $query->forPage($page, $chunkSize)->get()];
-                }
-
-                $countResults = $results[$page]->count();
-                if ($countResults == 0) {
-                    yield from [];
-                    break;
                 }
 
                 foreach ($results[$page] as $result) {
@@ -88,10 +84,7 @@ class GeneratorAction implements ActionInterface
                         }
                     }
                 }
-                unset($results);
-
-                $page++;
-            } while ($countResults == $chunkSize);
+            } while ($results[$page]->count() == $chunkSize);
         };
     }
 }
