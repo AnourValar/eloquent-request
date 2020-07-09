@@ -29,7 +29,7 @@ class PaginateAction implements ActionInterface
     /**
      * @var integer
      */
-    protected const MAX_PER_PAGE = 200;
+    protected const MAX_PER_PAGE = 500;
 
     /**
      * @var integer
