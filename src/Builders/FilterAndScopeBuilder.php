@@ -28,6 +28,10 @@ class FilterAndScopeBuilder extends AbstractBuilder
 
         // Get filters tasks
         foreach ((array)optional($request)[$config['filter_key']] as $field => $values) {
+            if (is_numeric($field)) {
+                continue;
+            }
+
             foreach ((array)$values as $operation => $value) {
                 $task = $this->getFilter($query, $field, $operation, $value);
 
@@ -39,6 +43,10 @@ class FilterAndScopeBuilder extends AbstractBuilder
 
         // Get scopes tasks
         foreach ((array)optional($request)[$config['scope_key']] as $scope => $value) {
+            if (is_numeric($scope)) {
+                continue;
+            }
+
             $task = $this->getScope($scope, $value);
 
             if ($task) {

@@ -21,6 +21,10 @@ class SortBuilder extends AbstractBuilder
         parent::build($query, $profile, $request, $config, $validator);
 
         foreach ((array)optional($request)[$config['sort_key']] as $field => $value) {
+            if (is_numeric($field)) {
+                continue;
+            }
+
             $this->applySort($query, $field, $value);
         }
     }
