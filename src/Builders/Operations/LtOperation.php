@@ -13,7 +13,7 @@ class LtOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::cast()
      */
-    public function cast() : bool
+    public function cast(): bool
     {
         return true;
     }
@@ -22,7 +22,7 @@ class LtOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::passes()
      */
-    public function passes($value) : bool
+    public function passes($value): bool
     {
         if (is_null($value) || (is_scalar($value) && !mb_strlen($value))) {
             return false;
@@ -35,7 +35,7 @@ class LtOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::validate()
      */
-    public function validate($value, \Closure $fail) : void
+    public function validate($value, \Closure $fail): void
     {
         if (is_scalar($value) && mb_strlen($value) <= static::MAX_LENGTH) {
             return;
@@ -48,7 +48,7 @@ class LtOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value) : void
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value): void
     {
         $value = $this->canonizeValue($value, '<');
 

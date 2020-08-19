@@ -18,7 +18,7 @@ class InOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::cast()
      */
-    public function cast() : bool
+    public function cast(): bool
     {
         return true;
     }
@@ -27,7 +27,7 @@ class InOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::passes()
      */
-    public function passes($value) : bool
+    public function passes($value): bool
     {
         return true;
     }
@@ -36,7 +36,7 @@ class InOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::validate()
      */
-    public function validate($value, \Closure $fail) : void
+    public function validate($value, \Closure $fail): void
     {
         if (! is_array($value)) {
             $fail('eloquent-request::validation.list');
@@ -61,7 +61,7 @@ class InOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value) : void
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value): void
     {
         $nullable = false;
         foreach ($value as $key => $item) {

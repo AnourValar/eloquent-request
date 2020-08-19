@@ -11,7 +11,7 @@ interface ValidatorInterface
      * @param string $message
      * @return \AnourValar\EloquentRequest\Validators\ValidatorInterface
      */
-    public function addError($key, string $message) : ValidatorInterface;
+    public function addError($key, string $message): ValidatorInterface;
 
     /**
      * Make validation
@@ -21,5 +21,5 @@ interface ValidatorInterface
      * @throws \Exception
      * @return void
      */
-    public function validate(array $profile, array $config) : void;
+    public function validate(array $profile, array $config): void;
 }

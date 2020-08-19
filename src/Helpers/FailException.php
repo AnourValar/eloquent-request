@@ -34,7 +34,7 @@ class FailException extends \Exception
      * @param array $presets
      * @return array
      */
-    public function getParams(array $presets = []) : array
+    public function getParams(array $presets = []): array
     {
         return array_replace($presets, $this->params);
     }
@@ -43,7 +43,7 @@ class FailException extends \Exception
      * @param string $default
      * @return string|NULL
      */
-    public function getSuffix(string $default = null) : ?string
+    public function getSuffix(string $default = null): ?string
     {
         return $this->suffix ?? $default;
     }

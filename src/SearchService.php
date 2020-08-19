@@ -11,7 +11,7 @@ class SearchService
      * @param string $typoLocale
      * @return string|NULL
      */
-    public function typo(?string $value, string $typoLocale) : ?string
+    public function typo(?string $value, string $typoLocale): ?string
     {
         if (is_null($value)) {
             return $value;
@@ -32,7 +32,7 @@ class SearchService
      * @param string $referenceLocale
      * @return string
      */
-    public function similar(string $value, string $referenceLocale) : string
+    public function similar(string $value, string $referenceLocale): string
     {
         $referenceRules = config("eloquent_request.similar.$referenceLocale");
 
@@ -53,7 +53,7 @@ class SearchService
      * @param array $values
      * @return string|null
      */
-    public function generate(array $values) : ?string
+    public function generate(array $values): ?string
     {
         $replacers = config('eloquent_request.replacers');
         $list = [];
@@ -87,7 +87,7 @@ class SearchService
      * @param string $value
      * @return string
      */
-    public function prepare(string $value) : string
+    public function prepare(string $value): string
     {
         $value = $this->generate([trim($value)]);
         $value = addCslashes($value, '_%\\');

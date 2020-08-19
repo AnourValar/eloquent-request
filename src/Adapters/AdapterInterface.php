@@ -12,5 +12,5 @@ interface AdapterInterface
      * @param array $config
      * @return array
      */
-    public function canonize(array $request, array $profile, array $config) : array;
+    public function canonize(array $request, array $profile, array $config): array;
 }

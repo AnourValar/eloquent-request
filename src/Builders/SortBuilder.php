@@ -16,7 +16,7 @@ class SortBuilder extends AbstractBuilder
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\BuilderInterface::build()
      */
-    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator) : void
+    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator): void
     {
         parent::build($query, $profile, $request, $config, $validator);
 
@@ -35,7 +35,7 @@ class SortBuilder extends AbstractBuilder
      * @param mixed $value
      * @return void
      */
-    private function applySort(Builder &$query, string $field, $value) : void
+    private function applySort(Builder &$query, string $field, $value): void
     {
         $key = $this->config['sort_key'];
 

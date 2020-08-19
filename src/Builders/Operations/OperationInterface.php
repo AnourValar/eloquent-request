@@ -9,7 +9,7 @@ interface OperationInterface
      *
      * @return boolean
      */
-    public function cast() : bool;
+    public function cast(): bool;
 
     /**
      * Pass filter (or ignore it)
@@ -17,7 +17,7 @@ interface OperationInterface
      * @param mixed $value
      * @return boolean
      */
-    public function passes($value) : bool;
+    public function passes($value): bool;
 
     /**
      * Validation
@@ -27,7 +27,7 @@ interface OperationInterface
      * @throws \AnourValar\EloquentRequest\Helpers\FailException
      * @return void
      */
-    public function validate($value, \Closure $fail) : void;
+    public function validate($value, \Closure $fail): void;
 
     /**
      * Apply filter
@@ -37,5 +37,5 @@ interface OperationInterface
      * @param mixed $value
      * @return void
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value) : void;
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value): void;
 }

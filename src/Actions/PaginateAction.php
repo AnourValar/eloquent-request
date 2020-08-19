@@ -40,7 +40,7 @@ class PaginateAction implements ActionInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Actions\ActionInterface::passes()
      */
-    public function passes(array $profile, array $request, array $config) : bool
+    public function passes(array $profile, array $request, array $config): bool
     {
         return true;
     }
@@ -49,7 +49,7 @@ class PaginateAction implements ActionInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Actions\ActionInterface::validate()
      */
-    public function validate(array $profile, array $request, array $config, \Closure $fail) : void
+    public function validate(array $profile, array $request, array $config, \Closure $fail): void
     {
         // per page
         $keyPerPage = $config['per_page_key'];

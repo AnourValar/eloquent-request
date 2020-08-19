@@ -20,7 +20,7 @@ class GeneratorAction implements ActionInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Actions\ActionInterface::passes()
      */
-    public function passes(array $profile, array $request, array $config) : bool
+    public function passes(array $profile, array $request, array $config): bool
     {
         return isset($profile['options'][self::OPTION_APPLY_SIZE]);
     }
@@ -29,7 +29,7 @@ class GeneratorAction implements ActionInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Actions\ActionInterface::validate()
      */
-    public function validate(array $profile, array $request, array $config, \Closure $fail) : void
+    public function validate(array $profile, array $request, array $config, \Closure $fail): void
     {
 
     }
@@ -55,7 +55,7 @@ class GeneratorAction implements ActionInterface
      * @throws \LogicException
      * @return \Closure
      */
-    public function createGenerator(int $chunkSize, Builder &$query, int $limit = null) : \Closure
+    public function createGenerator(int $chunkSize, Builder &$query, int $limit = null): \Closure
     {
         return function () use ($chunkSize, $query, $limit)
         {

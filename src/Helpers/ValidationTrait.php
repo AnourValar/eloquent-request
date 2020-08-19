@@ -14,7 +14,7 @@ trait ValidationTrait
      * @param array $profile
      * @return string
      */
-    protected function getDisplayAttribute(Builder $query, string $field, array $profile) : string
+    protected function getDisplayAttribute(Builder $query, string $field, array $profile): string
     {
         // From profile
         if ($profile['custom_attributes_path']) {
@@ -57,7 +57,7 @@ trait ValidationTrait
      *
      * @return \Closure
      */
-    protected function getFailClosure() : \Closure
+    protected function getFailClosure(): \Closure
     {
         return function (string $message, array $params = [], string $suffix = null)
         {

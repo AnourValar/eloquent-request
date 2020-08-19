@@ -191,7 +191,7 @@ class Service
      * @param array $request
      * @return \AnourValar\EloquentRequest\Helpers\Request
      */
-    public function getBuildRequest(array $profile, array $request) : \AnourValar\EloquentRequest\Helpers\Request
+    public function getBuildRequest(array $profile, array $request): \AnourValar\EloquentRequest\Helpers\Request
     {
         $profile = $this->prepareProfile($profile);
 
@@ -205,7 +205,7 @@ class Service
      * @param callable $action
      * @return \AnourValar\EloquentRequest\Service
      */
-    public function extendActions(string $name, ?callable $action) : self
+    public function extendActions(string $name, ?callable $action): self
     {
         $this->actions = [$name => $action] + $this->actions;
 
@@ -223,7 +223,7 @@ class Service
      * @param callable $builder
      * @return \AnourValar\EloquentRequest\Service
      */
-    public function extendBuilders(string $name, ?callable $builder) : self
+    public function extendBuilders(string $name, ?callable $builder): self
     {
         $this->builders = [$name => $builder] + $this->builders;
 
@@ -240,7 +240,7 @@ class Service
      * @param array $config
      * @return \AnourValar\EloquentRequest\Service
      */
-    public function replaceConfig(array $config) : self
+    public function replaceConfig(array $config): self
     {
         $this->config = array_replace_recursive($this->config, $config);
 
@@ -251,7 +251,7 @@ class Service
      * @param array $profile
      * @return array
      */
-    private function prepareProfile(array $profile) : array
+    private function prepareProfile(array $profile): array
     {
         return array_replace(
             [
@@ -275,7 +275,7 @@ class Service
      * @param array $request
      * @return \AnourValar\EloquentRequest\Helpers\Request
      */
-    private function prepareRequest(array $profile, array $request) : \AnourValar\EloquentRequest\Helpers\Request
+    private function prepareRequest(array $profile, array $request): \AnourValar\EloquentRequest\Helpers\Request
     {
         $adapter = $profile['adapter'];
         if (! $adapter instanceof \AnourValar\EloquentRequest\Adapters\AdapterInterface) {

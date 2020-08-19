@@ -26,7 +26,7 @@ trait ControllerTrait
      * @param array $request
      * @return \AnourValar\EloquentRequest\Helpers\Request
      */
-    protected function getBuildRequest(array $profile = null, array $request = null) : \AnourValar\EloquentRequest\Helpers\Request
+    protected function getBuildRequest(array $profile = null, array $request = null): \AnourValar\EloquentRequest\Helpers\Request
     {
         $this->buildingContext($profile, $request);
 
@@ -39,7 +39,7 @@ trait ControllerTrait
      * @throws \LogicException
      * @return void
      */
-    private function buildingContext(array &$profile = null, array &$request = null) : void
+    private function buildingContext(array &$profile = null, array &$request = null): void
     {
         // Profile
         if (is_null($profile) && isset($this->profile)) {

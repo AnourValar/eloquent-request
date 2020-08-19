@@ -14,7 +14,7 @@ interface ActionInterface
      * @param array $config
      * @return boolean
      */
-    public function passes(array $profile, array $request, array $config) : bool;
+    public function passes(array $profile, array $request, array $config): bool;
 
     /**
      * Validation
@@ -26,7 +26,7 @@ interface ActionInterface
      * @throws \AnourValar\EloquentRequest\Helpers\FailException
      * @return void
      */
-    public function validate(array $profile, array $request, array $config, \Closure $fail) : void;
+    public function validate(array $profile, array $request, array $config, \Closure $fail): void;
 
     /**
      * Get collection

@@ -8,7 +8,7 @@ class NotEqOperation extends EqOperation
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value) : void
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value): void
     {
         if ($value === '' || is_null($value)) {
             $query

@@ -21,7 +21,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\BuilderInterface::build()
      */
-    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator) : void
+    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator): void
     {
         parent::build($query, $profile, $request, $config, $validator);
         $tasks = [];
@@ -65,7 +65,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
      * @param mixed $value
      * @return array|NULL
      */
-    protected function getFilter(Builder $query, string $field, string $operation, $value) : ?array
+    protected function getFilter(Builder $query, string $field, string $operation, $value): ?array
     {
         $key = $this->config['filter_key'];
 
@@ -158,7 +158,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
      * @param mixed $value
      * @return array|NULL
      */
-    protected function getScope(string $scope, $value) : ?array
+    protected function getScope(string $scope, $value): ?array
     {
         $key = $this->config['scope_key'];
 
@@ -189,7 +189,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
      * @param array $tasks
      * @return void
      */
-    protected function applyTasks(Builder &$query, array $tasks) : void
+    protected function applyTasks(Builder &$query, array $tasks): void
     {
         foreach ($tasks as $relation => $actions) {
             if ($relation && in_array(self::OPTION_DO_NOT_GROUP, $this->profile['options'])) {
@@ -199,7 +199,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                         $this->applyTask($query, $action);
                     });
                 }
-            } else if ($relation) {
+            } elseif ($relation) {
                 $query->whereHas($relation, function ($query) use ($actions)
                 {
                     foreach ($actions as $action) {
@@ -219,7 +219,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
      * @param array $action
      * @return void
      */
-    protected function applyTask(Builder &$query, array $action) : void
+    protected function applyTask(Builder &$query, array $action): void
     {
         if (isset($action['scope'])) {
             try {
@@ -320,7 +320,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
      * @param string $operation
      * @return boolean
      */
-    protected function validateRanges(Builder $query, string $field, $value, string $operation) : bool
+    protected function validateRanges(Builder $query, string $field, $value, string $operation): bool
     {
         $key = $this->config['filter_key'];
 

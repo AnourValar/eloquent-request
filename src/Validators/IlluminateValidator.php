@@ -13,7 +13,7 @@ class IlluminateValidator implements ValidatorInterface
     * {@inheritDoc}
     * @see \AnourValar\EloquentRequest\Validators\ValidatorInterface::addError()
     */
-   public function addError($key, string $message) : ValidatorInterface
+   public function addError($key, string $message): ValidatorInterface
     {
         $this->errors[] = ['key' => $key, 'message' => $message];
 
@@ -24,7 +24,7 @@ class IlluminateValidator implements ValidatorInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Validators\ValidatorInterface::validate()
      */
-    public function validate(array $profile, array $config) : void
+    public function validate(array $profile, array $config): void
     {
         if (! $this->errors) {
             return;
@@ -46,7 +46,7 @@ class IlluminateValidator implements ValidatorInterface
      * @param array $config
      * @return string
      */
-    protected function prepareKey($key, array $config) : string
+    protected function prepareKey($key, array $config): string
     {
         return implode($config['validator_key_delimiter'], array_diff((array)$key, [null]));
     }
