@@ -38,17 +38,23 @@ class Request implements \ArrayAccess
     public function get(string $path = null, $default = null)
     {
         $path = explode('.', $path);
-
         $data = $this->data;
-        while ($item = array_shift($path)) {
+
+        $item = '';
+        while (count($path) && $item .= array_shift($path)) {
             if (! isset($data[$item])) {
-                return $default;
+                $item .= '.';
+                continue;
             }
 
             $data = $data[$item];
+            $item = '';
         }
 
-        return $data;
+        if ($item === '') {
+            return $data;
+        }
+        return $default;
     }
 
     /**
