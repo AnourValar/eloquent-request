@@ -14,7 +14,7 @@ trait ValidationTrait
      * @param array $profile
      * @return string
      */
-    protected function getDisplayAttribute(Builder $query, string $field, array $profile): string
+    protected function getDisplayAttribute(Builder $query, string $field, array $profile = []): string
     {
         // From profile
         if ($profile['custom_attributes_path']) {

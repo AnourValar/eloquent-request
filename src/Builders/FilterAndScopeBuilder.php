@@ -223,12 +223,16 @@ class FilterAndScopeBuilder extends AbstractBuilder
     {
         if (isset($action['scope'])) {
             try {
-                $query->{$action['scope']}($action['value'], $this->getFailClosure());
-            } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
-                $this->validator->addError(
-                    [$action['error_key'], $e->getSuffix()],
-                    trans($e->getMessage(), $e->getParams())
-                );
+                $query->{$action['scope']}($action['value']);
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                foreach ($e->validator->errors()->messages() as $key => $items) {
+                    foreach ((array)$items as $item) {
+                        $this->validator->addError(
+                            [$action['error_key'], $key],
+                            trans($item, ['attribute' => $this->getDisplayAttribute($query, $key, $this->profile)])
+                        );
+                    }
+                }
             }
         } else {
             $action['handler']->apply($query, $action['field'], $action['value']);
