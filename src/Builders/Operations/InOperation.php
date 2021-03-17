@@ -65,9 +65,12 @@ class InOperation implements OperationInterface
     {
         $nullable = false;
         foreach ($value as $key => $item) {
-            if ($item === '' || is_null($item)) {
+            if ($item === '' || is_null($item) || $item === 0) {
                 $nullable = true;
-                unset($value[$key]);
+
+                if (is_null($item)) {
+                    unset($value[$key]);
+                }
             }
         }
 
@@ -75,12 +78,7 @@ class InOperation implements OperationInterface
             $query->where(function ($query) use ($field, $value)
             {
                 $query
-                    ->where(function ($query) use ($field)
-                    {
-                        $query
-                            ->where($field, '=', '')
-                            ->orWhereNull($field);
-                    })
+                    ->whereNull($field)
                     ->orWhereIn($field, $value);
             });
         } else {

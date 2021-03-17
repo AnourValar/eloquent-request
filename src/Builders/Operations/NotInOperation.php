@@ -12,16 +12,18 @@ class NotInOperation extends InOperation
     {
         $nullable = false;
         foreach ($value as $key => $item) {
-            if ($item === '' || is_null($item)) {
+            if ($item === '' || is_null($item) || $item === 0) {
                 $nullable = true;
-                unset($value[$key]);
+
+                if (is_null($item)) {
+                    unset($value[$key]);
+                }
             }
         }
 
         if ($nullable) {
             $query
                 ->whereNotIn($field, $value)
-                ->where($field, '!=', '')
                 ->whereNotNull($field);
         } else {
             $query->whereNotIn($field, $value);
