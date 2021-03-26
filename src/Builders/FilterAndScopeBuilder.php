@@ -73,10 +73,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
         if (! isset($this->profile[$key][$field])) {
             $this->validator->addError(
                 [$key, $field, $operation],
-                trans(
-                    'eloquent-request::validation.filter_not_supported',
-                    ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
-                )
+                trans('eloquent-request::validation.filter_not_supported', ['attribute' => $field])
             );
 
             return null;
