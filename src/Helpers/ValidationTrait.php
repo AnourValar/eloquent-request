@@ -18,7 +18,7 @@ trait ValidationTrait
     {
         // From profile
         if ($profile['custom_attributes_path']) {
-            $customAttributes = (array)trans($profile['custom_attributes_path']);
+            $customAttributes = (array) trans($profile['custom_attributes_path']);
 
             if (isset($customAttributes[$field])) {
                 return $customAttributes[$field];

@@ -292,6 +292,7 @@ class Service
 
         return new \AnourValar\EloquentRequest\Helpers\Request(
             array_replace($profile['default_request'], $request),
+            $profile,
             $this->config
         );
     }

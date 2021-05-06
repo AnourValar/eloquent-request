@@ -14,17 +14,24 @@ class Request implements \ArrayAccess
     /**
      * @var array
      */
+    private $profile;
+
+    /**
+     * @var array
+     */
     private $config;
 
     /**
      * Setters
      *
      * @param array $data
+     * @param array $profile
      * @param array $config
      */
-    public function __construct(array $data, array $config)
+    public function __construct(array $data, array $profile, array $config)
     {
         $this->data = $data;
+        $this->profile = $profile;
         $this->config = $config;
     }
 
@@ -103,6 +110,16 @@ class Request implements \ArrayAccess
         }
 
         return $this->get($this->config['sort_key']."$path", $default);
+    }
+
+    /**
+     * Get profile
+     *
+     * @return array
+     */
+    public function profile(): array
+    {
+        return $this->profile;
     }
 
     /**
