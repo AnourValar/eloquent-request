@@ -81,7 +81,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
         $this->profile[$key][$field] = (array)$this->profile[$key][$field];
 
         // Operation described in profile?
-        if (! in_array($operation, $this->profile[$key][$field])) {
+        if (! in_array($operation, $this->profile[$key][$field], true)) {
             $this->validator->addError(
                 [$key, $field, $operation],
                 trans(
@@ -160,7 +160,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
         $key = $this->config['scope_key'];
 
         // Described in profile?
-        if (! in_array($scope, $this->profile[$key])) {
+        if (! in_array($scope, $this->profile[$key], true)) {
             $this->validator->addError(
                 [$key, $scope],
                 trans('eloquent-request::validation.scope_not_supported', ['scope' => $scope])

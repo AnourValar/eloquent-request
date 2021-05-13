@@ -5,7 +5,7 @@
     "homepage": "https://github.com/AnourValar/eloquent-request",
     "license": "MIT",
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.1.0",
         "laravel/framework": ">=5.5.0"
     },
     "autoload": {

@@ -40,7 +40,7 @@ class SortBuilder extends AbstractBuilder
         $key = $this->config['sort_key'];
 
         // Described in profile?
-        if (! in_array($field, $this->profile[$key])) {
+        if (! in_array($field, $this->profile[$key], true)) {
             $this->validator->addError(
                 [$key, $field],
                 trans(
@@ -57,7 +57,7 @@ class SortBuilder extends AbstractBuilder
             $value = mb_strtoupper($value);
         }
 
-        if (! in_array($value, $this->directions)) {
+        if (! in_array($value, $this->directions, true)) {
             $this->validator->addError(
                 [$key, $field],
                 trans(
