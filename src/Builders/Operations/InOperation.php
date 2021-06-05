@@ -65,7 +65,7 @@ class InOperation implements OperationInterface
     {
         $nullable = false;
         foreach ($value as $key => $item) {
-            if ($item === '' || is_null($item) || $item === 0) {
+            if ($item === '' || is_null($item) || $item === 0 || $item === '0') {
                 $nullable = true;
 
                 if (is_null($item)) {

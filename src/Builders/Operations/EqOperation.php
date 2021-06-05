@@ -46,7 +46,7 @@ class EqOperation implements OperationInterface
      */
     public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value): void
     {
-        if ($value === '' || is_null($value) || $value === 0) {
+        if ($value === '' || is_null($value) || $value === 0 || $value === '0') {
             $query->where(function ($query) use ($field, $value)
             {
                 $query
