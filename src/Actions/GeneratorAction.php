@@ -132,7 +132,7 @@ class GeneratorAction implements ActionInterface
                         $collection = (clone $query)->forPageBeforeId($chunkSize, $orderValue, $orderKey)->get();
                     }
 
-                    if ($collection) {
+                    if ($collection->count()) {
                         $orderValue = $collection->last()->$orderAttribute;
                     }
                 }
