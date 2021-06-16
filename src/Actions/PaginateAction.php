@@ -14,17 +14,12 @@ class PaginateAction implements ActionInterface
     /**
      * @var string
      */
-    const OPTION_PAGE_OVER_LAST = 'action.paginate.page_over_last';
+    const OPTION_PAGE_OVER_LAST_IS_FORBIDDEN = 'action.paginate.page_over_last_is_forbidden';
 
     /**
      * @var string
      */
     const OPTION_PAGE_MAX = 'action.paginate.page_max';
-
-    /**
-     * @var integer
-     */
-    protected const DEFAULT_PER_PAGE = 15;
 
     /**
      * @var integer
@@ -53,9 +48,9 @@ class PaginateAction implements ActionInterface
     {
         // per page
         $keyPerPage = $config['per_page_key'];
-        $perPage = $request[$keyPerPage] ?? static::DEFAULT_PER_PAGE;
+        $perPage = $request[$keyPerPage] ?? 1;
 
-        if (! filter_var($perPage, FILTER_VALIDATE_INT)) {
+        if (!filter_var($perPage, FILTER_VALIDATE_INT) || $perPage < 1) {
             $fail('eloquent-request::validation.per_page', [], $keyPerPage);
         }
 
@@ -68,7 +63,7 @@ class PaginateAction implements ActionInterface
         $keyPage = $config['page_key'];
         $page = $request[$keyPage] ?? static::DEFAULT_PAGE;
 
-        if (! filter_var($page, FILTER_VALIDATE_INT)) {
+        if (!filter_var($page, FILTER_VALIDATE_INT) || $page < 1) {
             $fail('eloquent-request::validation.page', [], $keyPage);
         }
 
@@ -84,7 +79,7 @@ class PaginateAction implements ActionInterface
      */
     public function action(Builder &$query, array $profile, array $request, array $config, \Closure $fail)
     {
-        $perPage = $request[$config['per_page_key']] ?? static::DEFAULT_PER_PAGE;
+        $perPage = $request[$config['per_page_key']] ?? null;
         $page = $request[$config['page_key']] ?? static::DEFAULT_PAGE;
 
         if (in_array(self::OPTION_SIMPLE_PAGINATE, $profile['options'])) {
@@ -93,8 +88,8 @@ class PaginateAction implements ActionInterface
             $collection = $query->paginate($perPage, ['*'], $config['page_key'], $page);
         }
 
-        if (in_array(self::OPTION_PAGE_OVER_LAST, $profile['options']) && $page > 1 && !$collection->count()) {
-            $fail('eloquent-request::validation.page_over_last', [], $config['page_key']);
+        if (in_array(self::OPTION_PAGE_OVER_LAST_IS_FORBIDDEN, $profile['options']) && $page > 1 && !$collection->count()) {
+            $fail('eloquent-request::validation.page_over_last_is_forbidden', [], $config['page_key']);
         }
 
         return $collection;

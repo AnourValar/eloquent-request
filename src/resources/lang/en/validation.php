@@ -15,8 +15,9 @@ return [
 
     'per_page' => 'The number of entries per page must be a natural number.',
     'per_page_over_max' => 'Maximum number of entries per page is :max.',
+    'cursor_paginate_incorrect' => 'Incorrect page cursor.',
     'page' => 'The page number must be a natural number.',
-    'page_over_last' => 'Page not exists.',
+    'page_over_last_is_forbidden' => 'Page not exists.',
     'page_over_max' => 'Maximum available page is :max.',
 
     'ranges' => [

@@ -42,6 +42,7 @@ class Service
         // actions
         'per_page_key' => 'per_page',
         'page_key' => 'page',
+        'cursor_key' => 'cursor',
 
         // builders
         'filter_key' => 'filter',
@@ -90,7 +91,8 @@ class Service
         'generator' => \AnourValar\EloquentRequest\Actions\GeneratorAction::class,
         'get' => \AnourValar\EloquentRequest\Actions\GetAction::class,
         'cursor' => \AnourValar\EloquentRequest\Actions\CursorAction::class,
-        'paginate' => \AnourValar\EloquentRequest\Actions\PaginateAction::class,
+        'cursor_paginate' => \AnourValar\EloquentRequest\Actions\CursorPaginateAction::class,
+        'paginate' => \AnourValar\EloquentRequest\Actions\PaginateAction::class, // default
     ];
 
     /**
