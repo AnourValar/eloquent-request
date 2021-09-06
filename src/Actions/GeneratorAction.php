@@ -73,8 +73,6 @@ class GeneratorAction implements ActionInterface
     {
         return function () use ($chunkSize, $query, $limit)
         {
-            static $results;
-
             if (empty($query->getQuery()->orders) && empty($query->getQuery()->unionOrders)) {
                 throw new \LogicException('You must specify an orderBy clause when using this function.');
             }
@@ -84,11 +82,8 @@ class GeneratorAction implements ActionInterface
             do {
                 $page++;
 
-                if (! isset($results[$page])) {
-                    $results = [$page => $query->forPage($page, $chunkSize)->get()];
-                }
-
-                foreach ($results[$page] as $result) {
+                $collection = $query->forPage($page, $chunkSize)->get();
+                foreach ($collection as $result) {
                     yield $result;
 
                     if ($limit) {
@@ -98,7 +93,7 @@ class GeneratorAction implements ActionInterface
                         }
                     }
                 }
-            } while ($results[$page]->count() == $chunkSize);
+            } while ($collection->count() == $chunkSize);
         };
     }
 
@@ -115,8 +110,7 @@ class GeneratorAction implements ActionInterface
     {
         return function () use ($chunkSize, $chunkOrder, $query, $limit)
         {
-            static $collection;
-            static $orderValue;
+            $orderValue = null;
 
             $orderKey = array_keys($chunkOrder)[0];
             $orderDestinition = mb_strtoupper(array_values($chunkOrder)[0]);
@@ -125,16 +119,14 @@ class GeneratorAction implements ActionInterface
             $orderAttribute = array_pop($orderAttribute);
 
             do {
-                if (! $collection) {
-                    if ($orderDestinition == 'ASC') {
-                        $collection = (clone $query)->forPageAfterId($chunkSize, $orderValue, $orderKey)->get();
-                    } else {
-                        $collection = (clone $query)->forPageBeforeId($chunkSize, $orderValue, $orderKey)->get();
-                    }
+                if ($orderDestinition == 'ASC') {
+                    $collection = (clone $query)->forPageAfterId($chunkSize, $orderValue, $orderKey)->get();
+                } else {
+                    $collection = (clone $query)->forPageBeforeId($chunkSize, $orderValue, $orderKey)->get();
+                }
 
-                    if ($collection->count()) {
-                        $orderValue = $collection->last()->$orderAttribute;
-                    }
+                if ($collection->count()) {
+                    $orderValue = $collection->last()->$orderAttribute;
                 }
 
                 foreach ($collection as $result) {
@@ -147,12 +139,7 @@ class GeneratorAction implements ActionInterface
                         }
                     }
                 }
-
-                if ($collection->count() != $chunkSize) {
-                    break;
-                }
-                $collection = null;
-            } while (true);
+            } while ($collection->count() == $chunkSize);
         };
     }
 }
