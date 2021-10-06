@@ -1,4 +1,6 @@
-# Dynamic filters for QueryBuilder
+# QueryBuilder from Request
+* Filling up the QueryBuilder from user data. Key feature is safety: all data is under a validation.
+* Profile-based approach limit access to the columns and operations.
 
 ## Installation
 
@@ -7,100 +9,80 @@ composer require anourvalar/eloquent-request
 ```
 
 
-## Usage: filters
+## Usage: basic
+
+**Request**
+
+```json
+{
+  "filter": {
+    "created_at": {">": "2021-01-01"}
+  }
+  "sort": {
+    "created_at": "DESC"
+  }
+}
+
+```
+
+**Code**
 
 ```php
 class UserController extends Controller
 {
-    use \AnourValar\EloquentRequest\ControllerTrait;
-
     /**
-     * Allows to filter by column 'created_at' using several operations
-     * With constraint: minimum date
-     *
-     * @var array
+     * Profile
      */
     protected $profile = [
         'filter' => [
             'created_at' => ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'],
         ],
 
-        'ranges' => [
-            'created_at' => ['min' => '2018-01-01'],
-        ],
-    ];
-
-    /**
-     * List of users
-     *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
-     */
-    public function indexAny()
-    {
-        /**
-         * Request example:
-         * ['filter' => ['created_at' => ['>' => '2020-01-01']]]
-         */
-
-        $list = $this->buildBy(
-            \App\User::orderBy('is_actual', 'DESC')
-        );
-
-        return view('admin.user.index', compact('users'));
-    }
-}
-
-```
-
-
-## Usage: sort
-
-```php
-class UserController extends Controller
-{
-    use \AnourValar\EloquentRequest\ControllerTrait;
-
-    /**
-     * Allows to sort using 'created_at' column
-     *
-     * @var array
-     */
-    protected $profile = [
         'sort' => ['created_at'],
     ];
 
     /**
-     * List of users
-     *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
+     * Users list
      */
-    public function indexAny()
+    public function index(Request $request)
     {
-       /**
-        * Request example:
-        * ['sort' => ['created_at' => ['ASC']]]
-        */
+        $users = \App::make(\AnourValar\EloquentRequest\Service::class)->buildBy(
+            \App\User::class,
+            $this->profile,
+            $request->input()
+        );
 
-        $list = $this->buildBy(\App\User::class);
-
-        return view('admin.user.index', compact('users'));
+        // Equals to:
+        // \App\User
+        //     ::where('created_at', '>', '2021-01-01')
+        //     ->orderBy('created_at', 'DESC')
+        //     ->paginate($request->input('page'));
     }
 }
 
 ```
 
 
-## Usage: filters through relation
+## Usage: relations & QueryBuilder preconfigure
+
+**Request**
+
+```json
+{
+  "filter": {
+    "userPhones.phone_number": {"like": "1234"}
+  }
+}
+
+```
+
+**Code**
 
 ```php
 class UserController extends Controller
 {
-    use \AnourValar\EloquentRequest\ControllerTrait;
-
     /**
-     * Allows to filter by column 'phone_number' through relation 'userPhones'
-     *
-     * @var array
+     * Profile
      */
     protected $profile = [
         'filter' => [
@@ -109,37 +91,36 @@ class UserController extends Controller
     ];
 
     /**
-     * List of users
-     *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
+     * Users list
      */
-    public function indexAny()
+    public function index(Request $request)
     {
-        /**
-         * Request example:
-         * ['filter' => ['userPhones.phone_number' => ['like' => '800']]]
-         */
+        $users = \App::make(\AnourValar\EloquentRequest\Service::class)->buildBy(
+            \App\User::where('status', '=', 'active'), $this->profile, $request->input()
+        );
 
-        $list = $this->buildBy(new \App\User);
-
-        return view('admin.user.index', compact('users'));
+        // Equals to:
+        // \App\User
+        //    ::where('status', '=', 'active')
+        //    ->whereHas('userPhones', function ($query)
+        //    {
+        //        $query->where('phone_number', 'like', '%1234%');
+        //    })
+        //    ->paginate($request->input('page'));
     }
 }
-
 ```
 
 
 ## Usage: simple pagination
 
+**Code**
+
 ```php
 class UserController extends Controller
 {
-    use \AnourValar\EloquentRequest\ControllerTrait;
-
     /**
-     * Simple pagination with limit of max available page (20)
-     *
-     * @var array
+     * Profile
      */
     protected $profile = [
         'options' => [
@@ -149,103 +130,64 @@ class UserController extends Controller
     ];
 
     /**
-     * List of users
-     *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
+     * Users list
      */
     public function indexAny()
     {
-        /**
-         * Request example:
-         * ['page' => 5]
-         */
-
         $list = $this->buildBy(
-            \App\User::whereNotNull('email_verified_at') // query builder presets
+            \App\User::whereNotNull('email_verified_at')
         );
 
-        return view('admin.user.index', compact('users'));
+        // Equals to: \App\User::whereNotNull('email_verified_at')->simplePaginate($request->input('page'));
     }
 }
 
 ```
 
 
-## Usage: get all without pagination
+## Usage: advanced
+
+**Code**
 
 ```php
 class UserController extends Controller
 {
-    use \AnourValar\EloquentRequest\ControllerTrait;
+    use \AnourValar\EloquentRequest\ControllerTrait; // helper for easy usage
 
     /**
-     * Get all items with limit (100)
-     *
-     * @var array
+     * Profile
      */
     protected $profile = [
-        'options' => [
-            \AnourValar\EloquentRequest\Actions\GetAction::OPTION_APPLY,
-            \AnourValar\EloquentRequest\Actions\GetAction::OPTION_LIMIT => 100,
+        'filter' => [
+            'created_at' => \AnourValar\EloquentRequest\Events\RequestBuiltEvent::PROFILE_FILTER_DATE, // preset
         ],
-    ];
 
-    /**
-     * List of users
-     *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
-     */
-    public function indexAny()
-    {
-        $list = $this->buildBy('App\User');
+        'ranges' => [
+            'created_at' => ['min' => '2018-01-01'], // filter's constrainment
+        ],
 
-        return view('admin.user.index', compact('users'));
-    }
-}
-
-```
-
-
-## Usage: model's scopes
-
-```php
-class UserController extends Controller
-{
-    use \AnourValar\EloquentRequest\ControllerTrait;
-
-    /**
-     * Allows to apply scope 'activeUsers' of model 'User'
-     *
-     * @var array
-     */
-    protected $profile = [
         'scope' => [
-            'activeUsers',
+            'customStuff', // Eloquent scope
         ],
+
+        'sort' => ['created_at'],
     ];
 
     /**
-     * List of users
-     *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
+     * Users list
      */
     public function indexAny()
     {
-        /**
-         * Request example:
-         * ['scope' => ['activeUsers' => 1]]
-         */
-
-        $list = $this->buildBy(\App\User::class);
-
-        return view('admin.user.index', compact('users'));
+        $users = $this->buildBy(\App\User::where('status', '=', 'active'));
     }
 }
 
 ```
 
 
-## Via facade
+## Usage: via facade
+
+**Code**
 
 ```php
 $profile = [

@@ -1,7 +1,7 @@
 {
     "name": "anourvalar/eloquent-request",
     "description": "Dynamic Query Builder based on request",
-    "keywords": ["laravel", "eloquent", "model", "querybuilder", "request", "dynamic", "filter", "anourvalar"],
+    "keywords": ["laravel", "eloquent", "model", "querybuilder", "query", "builder", "request", "dynamic", "filter", "anourvalar"],
     "homepage": "https://github.com/AnourValar/eloquent-request",
     "license": "MIT",
     "require": {

@@ -7,6 +7,19 @@ use Illuminate\Support\ServiceProvider;
 class EloquentRequestServiceProvider extends ServiceProvider
 {
     /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->singleton(\AnourValar\EloquentRequest\Service::class, function ($app)
+        {
+            return new \AnourValar\EloquentRequest\Service;
+        });
+    }
+
+    /**
      * Bootstrap any application services.
      *
      * @return void
@@ -27,18 +40,5 @@ class EloquentRequestServiceProvider extends ServiceProvider
                 \AnourValar\EloquentRequest\Console\Commands\ControllerMakeCommand::class,
             ]);
         }
-    }
-
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app->singleton(\AnourValar\EloquentRequest\Service::class, function ($app)
-        {
-            return new \AnourValar\EloquentRequest\Service;
-        });
     }
 }
