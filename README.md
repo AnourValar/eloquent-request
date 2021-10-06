@@ -17,7 +17,7 @@ composer require anourvalar/eloquent-request
 {
   "filter": {
     "created_at": {">": "2021-01-01"}
-  }
+  },
   "sort": {
     "created_at": "DESC"
   }
@@ -145,14 +145,14 @@ class UserController extends Controller
 ```
 
 
-## Usage: advanced
+## Usage: advanced features
 
 **Code**
 
 ```php
 class UserController extends Controller
 {
-    use \AnourValar\EloquentRequest\ControllerTrait; // helper for easy usage
+    use \AnourValar\EloquentRequest\ControllerTrait; // helper for quick usage
 
     /**
      * Profile
