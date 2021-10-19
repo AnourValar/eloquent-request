@@ -251,19 +251,20 @@ class FilterAndScopeBuilder extends AbstractBuilder
             }
         }
         $casts = $query->getModel()->getCasts();
+        $castField = explode('->', $field)[0];
 
-        if (! isset($casts[$field])) {
+        if (! isset($casts[$castField])) {
             if (! in_array(self::OPTION_CASTS_NOT_REQUIRED, $this->profile['options'])) {
                 $this->validator->addError(
-                    [$this->config['filter_key'], $field],
-                    "Cast is not set for attribute \"$field\"."
+                    [$this->config['filter_key'], $castField],
+                    "Cast is not set for attribute \"$castField\"."
                 );
             }
 
             return $value;
         }
 
-        return $this->castValue($value, mb_strtolower($casts[$field]));
+        return $this->castValue($value, mb_strtolower($casts[$castField]));
     }
 
     /**

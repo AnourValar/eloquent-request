@@ -20,7 +20,7 @@ class Service
     const PROFILE_FILTER_TEXT = ['=', '!=', 'like', 'not-like'];
     const PROFILE_FILTER_IS_NULL = ['is-null'];
     const PROFILE_FILTER_SEARCH = ['search'];
-    const PROFILE_FILTER_JSON  = ['json-in', 'json-not-in'];
+    const PROFILE_FILTER_JSON  = ['json-in', 'json-contains', 'json-not-in', 'json-not-contains'];
 
     /**
      * Presets of availables ranges
@@ -28,10 +28,16 @@ class Service
      * @var array
      */
     const PROFILE_RANGE_TINYINT = 127;
+    const PROFILE_RANGE_UNSIGNED_TINYINT = 255;
+
     const PROFILE_RANGE_SMALLINT = 32767;
+    const PROFILE_RANGE_UNSIGNED_SMALLINT = 65535;
+
     const PROFILE_RANGE_MEDIUMINT = 8388607;
+    const PROFILE_RANGE_UNSIGNED_MEDIUMINT = 16777215;
+
     const PROFILE_RANGE_INT = 2147483647;
-    const PROFILE_RANGE_BIGINT = 9223372036854775807; // just in case :)
+    const PROFILE_RANGE_UNSIGNED_INT = 4294967295;
 
     /**
      * Config
@@ -68,7 +74,9 @@ class Service
             'is-null' => \AnourValar\EloquentRequest\Builders\Operations\IsNullOperation::class,
 
             'json-in' => \AnourValar\EloquentRequest\Builders\Operations\JsonInOperation::class,
+            'json-contains' => \AnourValar\EloquentRequest\Builders\Operations\JsonContainsOperation::class,
             'json-not-in' => \AnourValar\EloquentRequest\Builders\Operations\JsonNotInOperation::class,
+            'json-not-contains' => \AnourValar\EloquentRequest\Builders\Operations\JsonNotContainsOperation::class,
         ],
 
         // validator

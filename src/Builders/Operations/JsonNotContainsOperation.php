@@ -1,0 +1,15 @@
+<?php
+
+namespace AnourValar\EloquentRequest\Builders\Operations;
+
+class JsonNotContainsOperation extends JsonInOperation
+{
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
+     */
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value): void
+    {
+        $query->whereJsonDoesntContain($field, $value);
+    }
+}
