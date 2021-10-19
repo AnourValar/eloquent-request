@@ -7,28 +7,54 @@ use Illuminate\Database\Eloquent\Builder;
 trait ValidationTrait
 {
     /**
-     * Get display name of attribute
+     * Get display name of the attribute
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $field
+     * @param mixed $fields
      * @param array $profile
      * @return string
      */
-    protected function getDisplayAttribute(Builder $query, string $field, array $profile = []): string
+    protected function getDisplayAttribute(Builder $query, $fields, array $profile = []): string
     {
+        $result = [];
+
+        foreach ($fields as $field) {
+            $result[] = $this->parseDisplayAttribute($query, $field, $profile);
+        }
+
+        usort(
+            $result,
+            function ($a, $b)
+            {
+                return $b['weight'] <=> $a['weight'];
+            }
+        );
+
+        return array_shift($result)['value'];
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $field
+     * @param array $profile
+     * @return array
+     */
+    private function parseDisplayAttribute(Builder $query, string $field, array $profile): array
+    {
+        $relations = explode('.', $field);
+        $attribute = str_replace('->', '.', array_pop($relations));
+        $field = str_replace('->', '.', $field);
+
         // From profile
         if ($profile['custom_attributes_path']) {
             $customAttributes = (array) trans($profile['custom_attributes_path']);
 
             if (isset($customAttributes[$field])) {
-                return $customAttributes[$field];
+                return ['weight' => 3, 'value' => $customAttributes[$field]];
             }
         }
 
         // From model
-        $relations = explode('.', $field);
-        $attribute = array_pop($relations);
-
         foreach ($relations as $relation) {
             $query = $query->getModel()->$relation();
         }
@@ -38,18 +64,18 @@ trait ValidationTrait
             $attributes = $query->getAttributeNames();
 
             if (isset($attributes[$attribute])) {
-                return $attributes[$attribute];
+                return ['weight' => 2, 'value' => $attributes[$attribute]];
             }
         }
 
         // Custom Validation Attributes
         $attributes = trans('validation.attributes');
         if (isset($attributes[$attribute])) {
-            return $attributes[$attribute];
+            return ['weight' => 1, 'value' => $attributes[$attribute]];
         }
 
         // As is
-        return $attribute;
+        return ['weight' => 0, 'value' => $attribute];
     }
 
     /**

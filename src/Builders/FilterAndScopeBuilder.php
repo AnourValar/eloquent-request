@@ -70,7 +70,8 @@ class FilterAndScopeBuilder extends AbstractBuilder
         $key = $this->config['filter_key'];
 
         // Field described in profile?
-        if (! isset($this->profile[$key][$field])) {
+        $parsedField = $this->parseField($this->profile[$key], $field);
+        if (! isset($parsedField)) {
             $this->validator->addError(
                 [$key, $field, $operation],
                 trans('eloquent-request::validation.filter_not_supported', ['attribute' => $field])
@@ -78,15 +79,14 @@ class FilterAndScopeBuilder extends AbstractBuilder
 
             return null;
         }
-        $this->profile[$key][$field] = (array)$this->profile[$key][$field];
 
         // Operation described in profile?
-        if (! in_array($operation, $this->profile[$key][$field], true)) {
+        if (! in_array($operation, $this->profile[$key][$parsedField], true)) {
             $this->validator->addError(
                 [$key, $field, $operation],
                 trans(
                     'eloquent-request::validation.operation_not_supported',
-                    ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
+                    ['attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile)]
                 )
             );
 
@@ -99,7 +99,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 [$key, $field, $operation],
                 trans(
                     'eloquent-request::validation.operation_not_exists',
-                    ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
+                    ['attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile)]
                 )
             );
 
@@ -136,7 +136,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 [$key, $field, $operation],
                 trans(
                     $e->getMessage(),
-                    $e->getParams(['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)])
+                    $e->getParams(['attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile)])
                 )
             );
 
@@ -251,20 +251,20 @@ class FilterAndScopeBuilder extends AbstractBuilder
             }
         }
         $casts = $query->getModel()->getCasts();
-        $castField = explode('->', $field)[0];
+        $parsedField = $this->parseField($casts, $field);
 
-        if (! isset($casts[$castField])) {
+        if (! isset($casts[$parsedField])) {
             if (! in_array(self::OPTION_CASTS_NOT_REQUIRED, $this->profile['options'])) {
                 $this->validator->addError(
-                    [$this->config['filter_key'], $castField],
-                    "Cast is not set for attribute \"$castField\"."
+                    [$this->config['filter_key'], $field],
+                    "Cast is not set for the attribute \"$field\"."
                 );
             }
 
             return $value;
         }
 
-        return $this->castValue($value, mb_strtolower($casts[$castField]));
+        return $this->castValue($value, mb_strtolower($casts[$parsedField]));
     }
 
     /**
@@ -369,5 +369,31 @@ class FilterAndScopeBuilder extends AbstractBuilder
         }
 
         return true;
+    }
+
+    /**
+     * @param string $field
+     * @return string|NULL
+     */
+    protected function parseField(array $data, string $key): ?string
+    {
+        // full match
+        if (isset($data[$key])) {
+            return $key;
+        }
+
+        // json path
+        $key = explode('->', $key);
+        while (count($key) > 1) {
+            array_pop($key);
+            $pattern = implode('->', $key) . '->*';
+
+            if (isset($data[$pattern])) {
+                return $pattern;
+            }
+        }
+
+        // nothing was found
+        return null;
     }
 }
