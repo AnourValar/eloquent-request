@@ -20,7 +20,7 @@ class Service
     const PROFILE_FILTER_TEXT = ['=', '!=', 'like', 'not-like'];
     const PROFILE_FILTER_IS_NULL = ['is-null'];
     const PROFILE_FILTER_SEARCH = ['search'];
-    const PROFILE_FILTER_JSON  = ['json-in', 'json-contains', 'json-not-in', 'json-not-contains'];
+    const PROFILE_FILTER_JSON = ['json-in', 'json-contains', 'json-not-in', 'json-not-contains'];
 
     /**
      * Presets of availables ranges

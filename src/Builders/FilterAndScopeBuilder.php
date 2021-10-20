@@ -232,7 +232,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 }
             }
         } else {
-            $action['handler']->apply($query, $action['field'], $action['value']);
+            $action['handler']->apply($query, $action['field'], $action['value'], $this->profile['options']);
         }
     }
 
@@ -320,6 +320,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
      * @param string $field
      * @param mixed $value
      * @param string $operation
+     * @throws \LogicException
      * @return boolean
      */
     protected function validateRanges(Builder $query, string $field, $value, string $operation): bool
@@ -327,6 +328,10 @@ class FilterAndScopeBuilder extends AbstractBuilder
         $key = $this->config['filter_key'];
 
         if (is_scalar($value)) {
+            if (isset($this->profile['ranges'][$field]) && !is_array($this->profile['ranges'][$field])) {
+                throw new \LogicException('Range must be an array.');
+            }
+
             if (isset($this->profile['ranges'][$field]['min']) && $this->profile['ranges'][$field]['min'] > $value) {
                 $this->validator->addError(
                     [$key, $field, $operation],

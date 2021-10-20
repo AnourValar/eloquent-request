@@ -44,7 +44,7 @@ class EqOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value): void
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
     {
         if ($value === '' || is_null($value) || $value === 0 || $value === '0') {
             $query->where(function ($query) use ($field, $value)

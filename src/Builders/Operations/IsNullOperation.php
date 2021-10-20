@@ -35,7 +35,7 @@ class IsNullOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value): void
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
     {
         $range = [];
 

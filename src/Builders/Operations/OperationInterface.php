@@ -35,7 +35,8 @@ interface OperationInterface
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param string $field
      * @param mixed $value
+     * @param array $options
      * @return void
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value): void;
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void;
 }

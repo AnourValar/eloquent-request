@@ -8,7 +8,7 @@ class NotInOperation extends InOperation
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value): void
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
     {
         $nullable = false;
         foreach ($value as $key => $item) {
