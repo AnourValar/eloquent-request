@@ -42,11 +42,14 @@ trait ControllerTrait
     private function buildingContext(array &$profile = null, array &$request = null): void
     {
         // Profile
+        if (is_null($profile) && method_exists($this, 'profile')) {
+            $profile = $this->profile();
+        }
         if (is_null($profile) && isset($this->profile)) {
             $profile = $this->profile;
         }
         if (is_null($profile)) {
-            throw new \LogicException('Profile cannot be null');
+            throw new \LogicException('Profile cannot be null.');
         }
 
         // Request

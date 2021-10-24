@@ -18,6 +18,7 @@
             ],
             "aliases": {
                 "EloquentRequest": "AnourValar\\EloquentRequest\\Facades\\EloquentRequestFacade",
+                "EloquentRequestFlat": "AnourValar\\EloquentRequest\\Facades\\EloquentRequestFlatFacade",
                 "EloquentRequestSearch": "AnourValar\\EloquentRequest\\Facades\\EloquentRequestSearchFacade"
             }
         }
