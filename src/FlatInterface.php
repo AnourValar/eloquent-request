@@ -16,7 +16,7 @@ interface FlatInterface
      *
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function model(): \Illuminate\Database\Eloquent\Model;
+    public function flatModel(): \Illuminate\Database\Eloquent\Model;
 
     /**
      * Any actions after flat table was created
@@ -24,4 +24,12 @@ interface FlatInterface
      * @return void
      */
     public function onTableCreated(): void;
+
+    /**
+     * Resolve if the model should present in a flat table
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @return boolean
+     */
+    public function shouldBeStored(\Illuminate\Database\Eloquent\Model $model): bool;
 }

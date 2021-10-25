@@ -36,7 +36,7 @@ class FlatService
     {
         $this->dropTable($flatInterface);
 
-        Schema::create($flatInterface->model()->getTable(), function (Blueprint $table) use ($flatInterface)
+        Schema::create($flatInterface->flatModel()->getTable(), function (Blueprint $table) use ($flatInterface)
         {
             foreach ($flatInterface->scheme() as $column) {
                 $column->migration($table);
@@ -57,7 +57,7 @@ class FlatService
      */
     public function dropTable(FlatInterface $flatInterface): void
     {
-        Schema::dropIfExists($flatInterface->model()->getTable());
+        Schema::dropIfExists($flatInterface->flatModel()->getTable());
     }
 
     /**
@@ -118,20 +118,18 @@ class FlatService
             }
         }
 
-        /*if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses($model)) && $model->trashed()) {
-            $exists = false;
-        }*/
-        if (! $model->exists) {
-            $exists = false;
-        }
         if (! $data1) {
             throw new \LogicException('Incorrect usage.');
         }
 
+        if (!$model->exists || !$flatInterface->shouldBeStored($model)) {
+            $exists = false;
+        }
+
         if ($exists) {
-            $flatInterface->model()->updateOrCreate($data1, $data2);
+            $flatInterface->flatModel()->updateOrCreate($data1, $data2);
         } else {
-            $flatInterface->model()->where($data1)->delete();
+            $flatInterface->flatModel()->where($data1)->delete();
         }
     }
 
@@ -191,11 +189,13 @@ class FlatService
     {
         $structure = [];
 
-        foreach (\DB::getSchemaBuilder()->getColumnListing($flatInterface->model()->getTable()) as $column) {
-            $type = \DB::getSchemaBuilder()->getColumnType($flatInterface->model()->getTable(), $column);
+        foreach (\DB::getSchemaBuilder()->getColumnListing($flatInterface->flatModel()->getTable()) as $column) {
+            $type = \DB::getSchemaBuilder()->getColumnType($flatInterface->flatModel()->getTable(), $column);
             $type = $this->typeMapping[$type] ?? $type;
 
-            $structure[] = ['column' => $column, 'type' => $type];
+            $length = \DB::connection()->getDoctrineColumn($flatInterface->flatModel()->getTable(), $column)->getLength();
+
+            $structure[] = ['column' => $column, 'type' => $type, 'length' => $length];
         }
 
         return $structure;
@@ -212,11 +212,12 @@ class FlatService
         foreach ($flatInterface->scheme() as $column) {
             $blueprint = new \Illuminate\Database\Schema\Blueprint('');
             $column->migration($blueprint);
+            $attribute = \Arr::last($blueprint->getColumns())->getAttributes();
 
-            $type = \Arr::last($blueprint->getColumns())->getAttributes()['type'];
-            $type = $this->typeMapping[$type] ?? $type;
+            $type = $this->typeMapping[$attribute['type']] ?? $attribute['type'];
+            $length = ($attribute['length'] ?? null);
 
-            $structure[] = ['column' => $column->target(), 'type' => $type];
+            $structure[] = ['column' => $column->target(), 'type' => $type, 'length' => $length];
         }
 
         return $structure;
