@@ -18,7 +18,7 @@ trait ValidationTrait
     {
         $result = [];
 
-        foreach ($fields as $field) {
+        foreach ((array) $fields as $field) {
             $result[] = $this->parseDisplayAttribute($query, $field, $profile);
         }
 
