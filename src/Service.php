@@ -273,6 +273,8 @@ class Service
 
                 'options' => [],
                 'default_request' => [],
+
+                'custom_casts' => [],
                 'custom_attributes_path' => null,
             ],
             $this->config['default_profile'],

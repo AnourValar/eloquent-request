@@ -250,8 +250,25 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 $query = $query->getModel()->$relation();
             }
         }
-        $casts = $query->getModel()->getCasts();
+
+        // casts from profile
+        $casts = [];
+        foreach ($this->profile['custom_casts'] as $key => $cast) {
+            if (! $relation) {
+                if (! strpos($key, '.')) {
+                    $casts[$key] = $cast;
+                }
+            } elseif (strpos($key, $relation . '.') === 0) {
+                $casts[mb_substr($key, (mb_strlen($relation) + 1))] = $cast;
+            }
+        }
         $parsedField = $this->parseField($casts, $field);
+
+        // casts from model
+        if (! isset($casts[$parsedField])) {
+            $casts = $query->getModel()->getCasts();
+            $parsedField = $this->parseField($casts, $field);
+        }
 
         if (! isset($casts[$parsedField])) {
             if (! in_array(self::OPTION_CASTS_NOT_REQUIRED, $this->profile['options'])) {
@@ -276,11 +293,15 @@ class FilterAndScopeBuilder extends AbstractBuilder
     {
         if (is_scalar($value)) {
             if (in_array($cast, ['int', 'integer'])) {
-                return (int)$value;
+                return (int) $value;
             }
 
             if (in_array($cast, ['real', 'float', 'double'])) {
-                return (float)$value;
+                return (float) $value;
+            }
+
+            if (in_array($cast, ['string'])) {
+                return (string) $value;
             }
 
             if ($value === '') {
@@ -377,7 +398,8 @@ class FilterAndScopeBuilder extends AbstractBuilder
     }
 
     /**
-     * @param string $field
+     * @param array $data
+     * @param string $key
      * @return string|NULL
      */
     protected function parseField(array $data, string $key): ?string

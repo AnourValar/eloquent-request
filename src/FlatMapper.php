@@ -53,9 +53,9 @@ class FlatMapper
     /**
      * Models's cast
      *
-     * @return string
+     * @return string|NULL
      */
-    public function cast()
+    public function cast(): ?string
     {
         return $this->data['cast'];
     }
