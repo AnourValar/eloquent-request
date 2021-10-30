@@ -48,6 +48,6 @@ class IlluminateValidator implements ValidatorInterface
      */
     protected function prepareKey($key, array $config): string
     {
-        return implode($config['validator_key_delimiter'], array_diff((array)$key, [null]));
+        return implode($config['validator_key_delimiter'], array_diff((array) $key, [null]));
     }
 }

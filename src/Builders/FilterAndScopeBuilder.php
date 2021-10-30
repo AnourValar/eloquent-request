@@ -27,12 +27,12 @@ class FilterAndScopeBuilder extends AbstractBuilder
         $tasks = [];
 
         // Get filters tasks
-        foreach ((array)optional($request)[$config['filter_key']] as $field => $values) {
+        foreach ((array) optional($request)[$config['filter_key']] as $field => $values) {
             if (is_numeric($field)) {
                 continue;
             }
 
-            foreach ((array)$values as $operation => $value) {
+            foreach ((array) $values as $operation => $value) {
                 $task = $this->getFilter($query, $field, $operation, $value);
 
                 if ($task) {
@@ -42,7 +42,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
         }
 
         // Get scopes tasks
-        foreach ((array)optional($request)[$config['scope_key']] as $scope => $value) {
+        foreach ((array) optional($request)[$config['scope_key']] as $scope => $value) {
             if (is_numeric($scope)) {
                 continue;
             }
@@ -223,7 +223,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 $query->{$action['scope']}($action['value']);
             } catch (\Illuminate\Validation\ValidationException $e) {
                 foreach ($e->validator->errors()->messages() as $key => $items) {
-                    foreach ((array)$items as $item) {
+                    foreach ((array) $items as $item) {
                         $this->validator->addError(
                             [$action['error_key'], $key],
                             trans($item, ['attribute' => $this->getDisplayAttribute($query, $key, $this->profile)])

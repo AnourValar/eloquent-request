@@ -39,7 +39,7 @@ class IsNullOperation implements OperationInterface
     {
         $range = [];
 
-        foreach ((array)$value as $item) {
+        foreach ((array) $value as $item) {
             if ($item) {
                 $range[1] = 1;
             } else {
