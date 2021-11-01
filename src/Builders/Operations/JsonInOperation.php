@@ -30,13 +30,42 @@ class JsonInOperation extends InOperation
         $query->where(function ($query) use ($field, $value, $options)
         {
             $originalField = $field;
-            foreach ($value as $item) {
+            foreach ($this->getNullableList($value) as $item) {
                 $field = $originalField;
                 $this->convertOperands($field, $item, $options);
 
                 $query->orWhereJsonContains($field, $item);
             }
         });
+    }
+
+    /**
+     * @param array $value
+     * @return array
+     */
+    protected function getNullableList(array $value): array
+    {
+        $nullable = false;
+        $hasNull = false;
+
+        foreach ($value as &$item) {
+            if ($item === '' || $item === 0 || $item === '0') {
+                $nullable = true;
+            }
+
+            if (is_null($item)) {
+                $hasNull = true;
+            }
+
+            $item = (array) $item;
+        }
+        unset($item);
+
+        if ($nullable && !$hasNull) {
+            $value[] = null;
+        }
+
+        return $value;
     }
 
     /**
@@ -56,7 +85,6 @@ class JsonInOperation extends InOperation
         }
 
         $field = array_shift($elements);
-        $item = (array) $item;
         foreach (array_reverse($elements) as $element) {
             $item = [$element => $item];
         }

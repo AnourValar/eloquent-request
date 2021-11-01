@@ -308,11 +308,11 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 return $value;
             }
 
-            if (in_array($cast, ['date'])) {
+            if (in_array($cast, ['date', 'immutable_date'])) {
                 return date('Y-m-d', strtotime($value));
             }
 
-            if (in_array($cast, ['datetime', 'timestamp'])) {
+            if (in_array($cast, ['datetime', 'immutable_datetime'])) {
                 preg_match('|^\d{2,4}([\/\.\-])\d{2,4}\1\d{2,4}(.*)$|', $value, $check);
 
                 if ($check && stripos($check[2], ':')) {
