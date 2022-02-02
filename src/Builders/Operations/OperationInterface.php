@@ -7,7 +7,7 @@ interface OperationInterface
     /**
      * Casts filter value
      *
-     * @return boolean
+     * @return bool
      */
     public function cast(): bool;
 
@@ -15,7 +15,7 @@ interface OperationInterface
      * Pass filter (or ignore it)
      *
      * @param mixed $value
-     * @return boolean
+     * @return bool
      */
     public function passes($value): bool;
 

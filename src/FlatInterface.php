@@ -29,7 +29,7 @@ interface FlatInterface
      * Resolve if the model should present in a flat table
      *
      * @param \Illuminate\Database\Eloquent\Model $model
-     * @return boolean
+     * @return bool
      */
     public function shouldBeStored(\Illuminate\Database\Eloquent\Model $model): bool;
 }

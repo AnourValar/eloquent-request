@@ -9,7 +9,7 @@ class SearchService
      *
      * @param string $value
      * @param string $typoLocale
-     * @return string|NULL
+     * @return string|null
      */
     public function typo(?string $value, string $typoLocale): ?string
     {

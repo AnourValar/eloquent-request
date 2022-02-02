@@ -53,7 +53,7 @@ class FlatMapper
     /**
      * Models's cast
      *
-     * @return string|NULL
+     * @return string|null
      */
     public function cast(): ?string
     {

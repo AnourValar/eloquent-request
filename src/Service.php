@@ -25,7 +25,7 @@ class Service
     /**
      * Presets of availables ranges
      *
-     * @var array
+     * @var integer
      */
     const PROFILE_RANGE_TINYINT = 127;
     const PROFILE_RANGE_UNSIGNED_TINYINT = 255; // MySQL

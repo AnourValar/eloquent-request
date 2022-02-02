@@ -12,7 +12,7 @@ interface ActionInterface
      * @param array $profile
      * @param array $request
      * @param array $config
-     * @return boolean
+     * @return bool
      */
     public function passes(array $profile, array $request, array $config): bool;
 

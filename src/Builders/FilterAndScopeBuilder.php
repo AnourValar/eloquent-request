@@ -63,7 +63,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
      * @param string $field
      * @param string $operation
      * @param mixed $value
-     * @return array|NULL
+     * @return array|null
      */
     protected function getFilter(Builder $query, string $field, string $operation, $value): ?array
     {
@@ -153,7 +153,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
     /**
      * @param string $scope
      * @param mixed $value
-     * @return array|NULL
+     * @return array|null
      */
     protected function getScope(string $scope, $value): ?array
     {
@@ -342,7 +342,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
      * @param mixed $value
      * @param string $operation
      * @throws \LogicException
-     * @return boolean
+     * @return bool
      */
     protected function validateRanges(Builder $query, string $field, $value, string $operation): bool
     {
@@ -400,7 +400,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
     /**
      * @param array $data
      * @param string $key
-     * @return string|NULL
+     * @return string|null
      */
     protected function parseField(array $data, string $key): ?string
     {

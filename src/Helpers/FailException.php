@@ -10,7 +10,7 @@ class FailException extends \Exception
     private $params;
 
     /**
-     * @var string|NULL
+     * @var string|null
      */
     private $suffix;
 
@@ -41,7 +41,7 @@ class FailException extends \Exception
 
     /**
      * @param string $default
-     * @return string|NULL
+     * @return string|null
      */
     public function getSuffix(string $default = null): ?string
     {

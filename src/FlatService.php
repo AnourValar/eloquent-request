@@ -18,7 +18,7 @@ class FlatService
      * Check if current structure of the flat table is actual
      *
      * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
-     * @return boolean
+     * @return bool
      */
     public function isActualTable(FlatInterface $flatInterface): bool
     {
