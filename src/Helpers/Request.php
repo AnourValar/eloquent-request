@@ -44,7 +44,7 @@ class Request implements \ArrayAccess
      */
     public function get(string $path = null, $default = null)
     {
-        $path = explode('.', $path);
+        $path = explode('.', (string) $path);
         $data = $this->data;
 
         $item = '';
@@ -105,7 +105,7 @@ class Request implements \ArrayAccess
      */
     public function sort(string $path = null, $default = null)
     {
-        if (mb_strlen($path)) {
+        if (mb_strlen((string) $path)) {
             $path = ".$path";
         }
 

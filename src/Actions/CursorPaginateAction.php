@@ -14,7 +14,7 @@ class CursorPaginateAction implements ActionInterface
     /**
      * @var integer
      */
-    protected const MAX_PER_PAGE = 500;
+    protected const MAX_PER_PAGE = 2000;
 
     /**
      * {@inheritDoc}
