@@ -12,12 +12,12 @@ class JsonInOperation extends InOperation
     const OPTION_JSON_PATH_TO_STRUCTURE = 'builder.operation.json.path_to_structure';
 
     /**
-     * @var integer
+     * @var int
      */
     protected const MAX_LENGTH = 100;
 
     /**
-     * @var integer
+     * @var int
      */
     protected const MAX_COUNT = 100;
 

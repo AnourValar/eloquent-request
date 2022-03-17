@@ -5,12 +5,12 @@ namespace AnourValar\EloquentRequest\Builders\Operations;
 class InOperation implements OperationInterface
 {
     /**
-     * @var integer
+     * @var int
      */
     protected const MAX_LENGTH = 100;
 
     /**
-     * @var integer
+     * @var int
      */
     protected const MAX_COUNT = 1000;
 

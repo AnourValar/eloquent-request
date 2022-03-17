@@ -66,7 +66,7 @@ class FlatService
      * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
      * @param string $model
      * @param callable $method
-     * @return integer
+     * @return int
      */
     public function resync(FlatInterface $flatInterface, string $model, callable $method = null): int
     {

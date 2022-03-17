@@ -5,7 +5,7 @@ namespace AnourValar\EloquentRequest\Builders\Operations;
 class LtOperation implements OperationInterface
 {
     /**
-     * @var integer
+     * @var int
      */
     protected const MAX_LENGTH = 30;
 

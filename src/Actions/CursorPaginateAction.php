@@ -12,7 +12,7 @@ class CursorPaginateAction implements ActionInterface
     const OPTION_APPLY = 'action.cursor_paginate.apply';
 
     /**
-     * @var integer
+     * @var int
      */
     protected const MAX_PER_PAGE = 2000;
 

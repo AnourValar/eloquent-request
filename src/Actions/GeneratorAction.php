@@ -64,7 +64,7 @@ class GeneratorAction implements ActionInterface
     /**
      * Create iterable generator (similar to chunk)
      *
-     * @param integer $chunkSize
+     * @param int $chunkSize
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @throws \LogicException
      * @return \Closure
@@ -100,7 +100,7 @@ class GeneratorAction implements ActionInterface
     /**
      * Create iterable generator (similar to chunkById)
      *
-     * @param integer $chunkSize
+     * @param int $chunkSize
      * @param array $chunkOrder
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @throws \LogicException

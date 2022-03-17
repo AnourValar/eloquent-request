@@ -5,8 +5,8 @@
     "homepage": "https://github.com/AnourValar/eloquent-request",
     "license": "MIT",
     "require": {
-        "php": ">=8.0.0",
-        "laravel/framework": ">=5.5.0"
+        "php": ">=8.0",
+        "laravel/framework": ">=8.0"
     },
     "require-dev": {
         "nunomaduro/larastan": "^1.0"

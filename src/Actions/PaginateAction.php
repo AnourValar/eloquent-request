@@ -22,12 +22,12 @@ class PaginateAction implements ActionInterface
     const OPTION_PAGE_MAX = 'action.paginate.page_max';
 
     /**
-     * @var integer
+     * @var int
      */
     protected const MAX_PER_PAGE = 2000;
 
     /**
-     * @var integer
+     * @var int
      */
     protected const DEFAULT_PAGE = 1;
 

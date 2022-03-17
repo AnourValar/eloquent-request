@@ -5,12 +5,12 @@ namespace AnourValar\EloquentRequest\Builders\Operations;
 class LikeOperation implements OperationInterface
 {
     /**
-     * @var integer
+     * @var int
      */
     protected const MIN_LENGTH = 3;
 
     /**
-     * @var integer
+     * @var int
      */
     protected const MAX_LENGTH = 1000;
 
