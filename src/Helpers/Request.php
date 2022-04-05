@@ -81,6 +81,22 @@ class Request implements \ArrayAccess
     }
 
     /**
+     * Get relation by path
+     *
+     * @param string $path
+     * @param mixed $default
+     * @return mixed
+     */
+    public function relation(string $path = null, $default = null)
+    {
+        if (mb_strlen($path)) {
+            $path = ".$path";
+        }
+
+        return $this->get($this->config['relation_key']."$path", $default);
+    }
+
+    /**
      * Get scope by path
      *
      * @param string $path

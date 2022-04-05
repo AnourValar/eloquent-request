@@ -9,7 +9,7 @@ class NullAction implements ActionInterface
     /**
      * @var string
      */
-    const OPTION_APPLY = 'action.null.apply';
+    public const OPTION_APPLY = 'action.null.apply';
 
     /**
      * {@inheritDoc}

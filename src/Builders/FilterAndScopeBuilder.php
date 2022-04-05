@@ -10,12 +10,17 @@ class FilterAndScopeBuilder extends AbstractBuilder
     /**
      * @var string
      */
-    const OPTION_DO_NOT_GROUP = 'builder.filter_and_scope.do_not_group'; // prevents grouping for relations
+    public const OPTION_DO_NOT_GROUP = 'builder.filter_and_scope.do_not_group'; // prevents grouping for relations
 
     /**
      * @var string
      */
-    const OPTION_CASTS_NOT_REQUIRED = 'builder.filter_and_scope.casts_not_required';
+    public const OPTION_CASTS_NOT_REQUIRED = 'builder.filter_and_scope.casts_not_required';
+
+    /**
+     * @var integer
+     */
+    protected const RELATION_LIMIT = 10000;
 
     /**
      * {@inheritDoc}
@@ -34,6 +39,21 @@ class FilterAndScopeBuilder extends AbstractBuilder
 
             foreach ((array) $values as $operation => $value) {
                 $task = $this->getFilter($query, $field, $operation, $value);
+
+                if ($task) {
+                    $tasks[$task['key']][] = $task['value'];
+                }
+            }
+        }
+
+        // Get relations tasks
+        foreach ((array) optional($request)[$config['relation_key']] as $relation => $values) {
+            if (is_numeric($relation)) {
+                continue;
+            }
+
+            foreach ((array) $values as $operation => $value) {
+                $task = $this->getRelation($query, $relation, $operation, $value);
 
                 if ($task) {
                     $tasks[$task['key']][] = $task['value'];
@@ -151,6 +171,61 @@ class FilterAndScopeBuilder extends AbstractBuilder
     }
 
     /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $relation
+     * @param string $operation
+     * @param mixed $value
+     * @return array|null
+     */
+    protected function getRelation(Builder $query, string $relation, string $operation, $value): ?array
+    {
+        if (is_null($value)) {
+            return null;
+        }
+
+        $key = $this->config['relation_key'];
+
+        // Relation described in profile?
+        if (! in_array($relation, $this->profile[$key], true)) {
+            $this->validator->addError(
+                [$key, $relation, $operation],
+                trans('eloquent-request::validation.relation_not_supported', ['relation' => $relation])
+            );
+
+            return null;
+        }
+
+        // Operation exists?
+        if (! in_array($operation, ['min', 'max'], true)) {
+            $this->validator->addError(
+                [$key, $relation, $operation],
+                trans('eloquent-request::validation.relation_operation_not_supported', ['relation' => $relation])
+            );
+
+            return null;
+        }
+
+        // Value in range?
+        if (!is_numeric($value) || $value != (int) $value || $value < 0 || $value > static::RELATION_LIMIT) {
+            $this->validator->addError(
+                [$key, $relation, $operation],
+                trans(
+                    'eloquent-request::validation.relation_out_of_range',
+                    ['relation' => $this->getDisplayAttribute($query, $relation, $this->profile), 'max' => static::RELATION_LIMIT]
+                )
+            );
+
+            return null;
+        }
+
+        // Add task
+        return [
+            'key' => '',
+            'value' => ['relation' => $relation, $operation => $value],
+        ];
+    }
+
+    /**
      * @param string $scope
      * @param mixed $value
      * @return array|null
@@ -218,7 +293,17 @@ class FilterAndScopeBuilder extends AbstractBuilder
      */
     protected function applyTask(Builder &$query, array $action): void
     {
-        if (isset($action['scope'])) {
+        if (isset($action['relation'])) {
+            if (isset($action['min']) && $action['min'] == 1) {
+                $query->has($action['relation']);
+            } elseif (isset($action['min'])) {
+                $query->has($action['relation'], '>=', $action['min']);
+            } elseif (isset($action['max']) && $action['max'] == 0) {
+                $query->doesntHave($action['relation']);
+            } elseif (isset($action['max'])) {
+                $query->has($action['relation'], '<=', $action['max']);
+            }
+        } elseif (isset($action['scope'])) {
             try {
                 $query->{$action['scope']}($action['value']);
             } catch (\Illuminate\Validation\ValidationException $e) {

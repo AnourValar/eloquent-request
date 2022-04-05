@@ -9,17 +9,17 @@ class GeneratorAction implements ActionInterface
     /**
      * @var string
      */
-    const OPTION_APPLY_CHUNK = 'action.generator.apply_chunk';
+    public const OPTION_APPLY_CHUNK = 'action.generator.apply_chunk';
 
     /**
      * @var string
      */
-    const OPTION_APPLY_CHUNK_ORDER_BY = 'action.generator.apply_chunk_order_by';
+    public const OPTION_APPLY_CHUNK_ORDER_BY = 'action.generator.apply_chunk_order_by';
 
     /**
      * @var string
      */
-    const OPTION_LIMIT = 'action.generator.limit';
+    public const OPTION_LIMIT = 'action.generator.limit';
 
     /**
      * {@inheritDoc}

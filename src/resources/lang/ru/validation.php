@@ -8,6 +8,9 @@ return [
     'filter_not_supported' => 'Фильтр по полю :attribute недоступен.',
     'operation_not_exists' => 'Фильтр по полю :attribute содержит несуществующую операцию.',
     'operation_not_supported' => 'Фильтр по полю :attribute не поддерживает указанную операцию.',
+    'relation_not_supported' => 'Фильтр по связи с :relation недоступен.',
+    'relation_operation_not_supported' => 'Фильтр по связи с :relation содержит несуществующую операцию.',
+    'relation_out_of_range' => 'Фильтр по связи с :relation должен быть в диапазоне от 0 до :max.',
     'scope_not_supported' => 'Фильтр по скоупу :scope недоступен.',
 
     'sort_not_supported' => 'Сортировка по полю :attribute недоступна.',

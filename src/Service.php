@@ -13,31 +13,31 @@ class Service
      *
      * @var array
      */
-    const PROFILE_FILTER_ID = ['=', '!=', 'in', 'not-in'];
-    const PROFILE_FILTER_BOOLEAN = ['=', '!=', 'in', 'not-in'];
-    const PROFILE_FILTER_NUMBER = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
-    const PROFILE_FILTER_DATE = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
-    const PROFILE_FILTER_TEXT = ['=', '!=', 'like', 'not-like'];
-    const PROFILE_FILTER_IS_NULL = ['is-null'];
-    const PROFILE_FILTER_SEARCH = ['search'];
-    const PROFILE_FILTER_JSON = ['json-in', 'json-contains', 'json-not-in', 'json-not-contains'];
+    public const PROFILE_FILTER_ID = ['=', '!=', 'in', 'not-in'];
+    public const PROFILE_FILTER_BOOLEAN = ['=', '!=', 'in', 'not-in'];
+    public const PROFILE_FILTER_NUMBER = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
+    public const PROFILE_FILTER_DATE = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
+    public const PROFILE_FILTER_TEXT = ['=', '!=', 'like', 'not-like'];
+    public const PROFILE_FILTER_IS_NULL = ['is-null'];
+    public const PROFILE_FILTER_SEARCH = ['search'];
+    public const PROFILE_FILTER_JSON = ['json-in', 'json-contains', 'json-not-in', 'json-not-contains'];
 
     /**
      * Presets of availables ranges
      *
      * @var int
      */
-    const PROFILE_RANGE_TINYINT = 127;
-    const PROFILE_RANGE_UNSIGNED_TINYINT = 255; // MySQL
+    public const PROFILE_RANGE_TINYINT = 127;
+    public const PROFILE_RANGE_UNSIGNED_TINYINT = 255; // MySQL
 
-    const PROFILE_RANGE_SMALLINT = 32767;
-    const PROFILE_RANGE_UNSIGNED_SMALLINT = 65535; // MySQL
+    public const PROFILE_RANGE_SMALLINT = 32767;
+    public const PROFILE_RANGE_UNSIGNED_SMALLINT = 65535; // MySQL
 
-    const PROFILE_RANGE_MEDIUMINT = 8388607;
-    const PROFILE_RANGE_UNSIGNED_MEDIUMINT = 16777215; // MySQL
+    public const PROFILE_RANGE_MEDIUMINT = 8388607;
+    public const PROFILE_RANGE_UNSIGNED_MEDIUMINT = 16777215; // MySQL
 
-    const PROFILE_RANGE_INT = 2147483647;
-    const PROFILE_RANGE_UNSIGNED_INT = 4294967295; // MySQL
+    public const PROFILE_RANGE_INT = 2147483647;
+    public const PROFILE_RANGE_UNSIGNED_INT = 4294967295; // MySQL
 
     /**
      * Config
@@ -52,6 +52,7 @@ class Service
 
         // builders
         'filter_key' => 'filter',
+        'relation_key' => 'relation',
         'scope_key' => 'scope',
         'sort_key' => 'sort',
 
@@ -266,6 +267,7 @@ class Service
         return array_replace(
             [
                 $this->config['filter_key'] => [],
+                $this->config['relation_key'] => [],
                 $this->config['scope_key'] => [],
                 $this->config['sort_key'] => [],
 

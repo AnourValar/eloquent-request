@@ -9,7 +9,7 @@ class JsonInOperation extends InOperation
      *
      * @var string
      */
-    const OPTION_JSON_PATH_TO_STRUCTURE = 'builder.operation.json.path_to_structure';
+    public const OPTION_JSON_PATH_TO_STRUCTURE = 'builder.operation.json.path_to_structure';
 
     /**
      * @var int

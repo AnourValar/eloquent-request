@@ -5,9 +5,12 @@ return [
     'like' => 'Filter for :attribute contains invalid length.',
     'list' => 'Filter for :attribute must be a list.',
 
-    'filter_not_supported' => 'Filter for :attribute not available.',
-    'operation_not_exists' => 'Filter for :attribute contains not exist operation.',
+    'filter_not_supported' => 'Filter for :attribute is not available.',
+    'operation_not_exists' => 'Filter for :attribute contains a non-existent operation.',
     'operation_not_supported' => 'Filter for :attribute does not support the specified operation.',
+    'relation_not_supported' => 'Filter for relation :relation is not available.',
+    'relation_operation_not_supported' => 'Filter for relation :relation contains a non-existent operation.',
+    'relation_out_of_range' => 'Filter for relation :relation must be between 0 and :max.',
     'scope_not_supported' => 'Filter for scope :scope not available.',
 
     'sort_not_supported' => 'Sorting for :attribute is not available.',

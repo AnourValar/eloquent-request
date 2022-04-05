@@ -9,12 +9,12 @@ class GetAction implements ActionInterface
     /**
      * @var string
      */
-    const OPTION_APPLY = 'action.get.apply';
+    public const OPTION_APPLY = 'action.get.apply';
 
     /**
      * @var string
      */
-    const OPTION_LIMIT = 'action.get.limit';
+    public const OPTION_LIMIT = 'action.get.limit';
 
     /**
      * {@inheritDoc}

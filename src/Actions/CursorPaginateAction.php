@@ -9,7 +9,7 @@ class CursorPaginateAction implements ActionInterface
     /**
      * @var string
      */
-    const OPTION_APPLY = 'action.cursor_paginate.apply';
+    public const OPTION_APPLY = 'action.cursor_paginate.apply';
 
     /**
      * @var int

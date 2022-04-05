@@ -9,12 +9,12 @@ class CursorAction implements ActionInterface
     /**
      * @var string
      */
-    const OPTION_APPLY = 'action.cursor.apply';
+    public const OPTION_APPLY = 'action.cursor.apply';
 
     /**
      * @var string
      */
-    const OPTION_LIMIT = 'action.cursor.limit';
+    public const OPTION_LIMIT = 'action.cursor.limit';
 
     /**
      * {@inheritDoc}

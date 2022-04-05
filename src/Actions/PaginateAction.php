@@ -9,17 +9,17 @@ class PaginateAction implements ActionInterface
     /**
      * @var string
      */
-    const OPTION_SIMPLE_PAGINATE = 'action.paginate.simple';
+    public const OPTION_SIMPLE_PAGINATE = 'action.paginate.simple';
 
     /**
      * @var string
      */
-    const OPTION_PAGE_OVER_LAST_IS_FORBIDDEN = 'action.paginate.page_over_last_is_forbidden';
+    public const OPTION_PAGE_OVER_LAST_IS_FORBIDDEN = 'action.paginate.page_over_last_is_forbidden';
 
     /**
      * @var string
      */
-    const OPTION_PAGE_MAX = 'action.paginate.page_max';
+    public const OPTION_PAGE_MAX = 'action.paginate.page_max';
 
     /**
      * @var int
