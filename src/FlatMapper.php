@@ -53,9 +53,9 @@ class FlatMapper
     /**
      * Models's cast
      *
-     * @return string|null
+     * @return string|array|null
      */
-    public function cast(): ?string
+    public function cast(): string|array|null
     {
         return $this->data['cast'];
     }
@@ -73,11 +73,11 @@ class FlatMapper
     /**
      * Profile's sort
      *
-     * @return string
+     * @return array
      */
     public function sort(): array
     {
-        return $this->data['sort'];
+        return (array) $this->data['sort'];
     }
 
     /**

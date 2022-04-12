@@ -433,11 +433,18 @@ class FilterAndScopeBuilder extends AbstractBuilder
     {
         $key = $this->config['filter_key'];
 
-        if (is_scalar($value)) {
-            if (isset($this->profile['ranges'][$field]) && !is_array($this->profile['ranges'][$field])) {
-                throw new \LogicException('Range must be an array.');
-            }
+        if (! isset($this->profile['ranges'][$field])) {
+            $field = $this->parseField($this->profile['ranges'], $field);
+        }
+        if (! isset($this->profile['ranges'][$field])) {
+            return true;
+        }
 
+        if (! is_array($this->profile['ranges'][$field])) {
+            throw new \LogicException('Range must be an array.');
+        }
+
+        if (is_scalar($value)) {
             if (isset($this->profile['ranges'][$field]['min']) && $this->profile['ranges'][$field]['min'] > $value) {
                 $this->validator->addError(
                     [$key, $field, $operation],

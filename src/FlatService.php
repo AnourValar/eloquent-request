@@ -12,6 +12,7 @@ class FlatService
      */
     protected $typeMapping = [
         'bigint' => 'bigInteger',
+        'jsonb' => 'json',
     ];
 
     /**
@@ -80,10 +81,13 @@ class FlatService
         }
 
         $affected = 0;
-        foreach ($model->cursor() as $item) {
-            $method($flatInterface, $item);
-            $affected++;
-        }
+        $model->chunkById(5000, function ($items) use ($affected, $method, $flatInterface)
+        {
+            foreach ($items as $item) {
+                $method($flatInterface, $item);
+                $affected++;
+            }
+        });
 
         return $affected;
     }
@@ -127,7 +131,7 @@ class FlatService
         }
 
         if ($exists) {
-            $flatInterface->flatModel()->updateOrCreate($data1, $data2);
+            $flatInterface->flatModel()->withCasts($this->getCasts($flatInterface))->updateOrCreate($data1, $data2);
         } else {
             $flatInterface->flatModel()->where($data1)->delete();
         }
@@ -166,7 +170,12 @@ class FlatService
      */
     public function getSorts(FlatInterface $flatInterface, string $prefix = ''): array
     {
-        return $this->getProfile($flatInterface, $prefix, 'sort');
+        $result = [];
+        foreach ($flatInterface->scheme() as $column) {
+            $result = array_merge($result, $column->sort());
+        }
+
+        return array_filter($result);
     }
 
     /**
@@ -234,7 +243,14 @@ class FlatService
         $result = [];
 
         foreach ($flatInterface->scheme() as $column) {
-            $result[$prefix . $column->target()] = $column->$method();
+            $curr = $column->$method();
+            if (! is_array($curr)) {
+                $result[$prefix . $column->target()] = $curr;
+            } else {
+                foreach ($curr as $key => $item) {
+                    $result[$prefix . $key] = $item;
+                }
+            }
         }
 
         return array_filter($result);
