@@ -431,29 +431,25 @@ class FilterAndScopeBuilder extends AbstractBuilder
      */
     protected function validateRanges(Builder $query, string $field, $value, string $operation): bool
     {
-        $key = $this->config['filter_key'];
-
-        if (! isset($this->profile['ranges'][$field])) {
-            $field = $this->parseField($this->profile['ranges'], $field);
-        }
-        if (! isset($this->profile['ranges'][$field])) {
+        $parsedField = $this->parseField($this->profile['ranges'], $field);
+        if (! $parsedField) {
             return true;
         }
 
-        if (! is_array($this->profile['ranges'][$field])) {
+        if (! is_array($this->profile['ranges'][$parsedField])) {
             throw new \LogicException('Range must be an array.');
         }
 
         if (is_scalar($value)) {
-            if (isset($this->profile['ranges'][$field]['min']) && $this->profile['ranges'][$field]['min'] > $value) {
+            if (isset($this->profile['ranges'][$parsedField]['min']) && $this->profile['ranges'][$parsedField]['min'] > $value) {
                 $this->validator->addError(
-                    [$key, $field, $operation],
+                    [$this->config['filter_key'], $field, $operation],
                     trans(
                         'eloquent-request::validation.ranges.min',
                         [
-                            'attribute' => $this->getDisplayAttribute($query, $field, $this->profile),
-                            'min' => ( $this->profile['ranges'][$field]['min'] ?? null ),
-                            'max' => ( $this->profile['ranges'][$field]['max'] ?? null ),
+                            'attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile),
+                            'min' => ( $this->profile['ranges'][$parsedField]['min'] ?? null ),
+                            'max' => ( $this->profile['ranges'][$parsedField]['max'] ?? null ),
                         ]
                     )
                 );
@@ -461,15 +457,15 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 return false;
             }
 
-            if (isset($this->profile['ranges'][$field]['max']) && $this->profile['ranges'][$field]['max'] < $value) {
+            if (isset($this->profile['ranges'][$parsedField]['max']) && $this->profile['ranges'][$parsedField]['max'] < $value) {
                 $this->validator->addError(
-                    [$key, $field, $operation],
+                    [$this->config['filter_key'], $field, $operation],
                     trans(
                         'eloquent-request::validation.ranges.max',
                         [
-                            'attribute' => $this->getDisplayAttribute($query, $field, $this->profile),
-                            'min' => ( $this->profile['ranges'][$field]['min'] ?? null ),
-                            'max' => ( $this->profile['ranges'][$field]['max'] ?? null ),
+                            'attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile),
+                            'min' => ( $this->profile['ranges'][$parsedField]['min'] ?? null ),
+                            'max' => ( $this->profile['ranges'][$parsedField]['max'] ?? null ),
                         ]
                     )
                 );
@@ -487,32 +483,5 @@ class FilterAndScopeBuilder extends AbstractBuilder
         }
 
         return true;
-    }
-
-    /**
-     * @param array $data
-     * @param string $key
-     * @return string|null
-     */
-    protected function parseField(array $data, string $key): ?string
-    {
-        // full match
-        if (isset($data[$key])) {
-            return $key;
-        }
-
-        // json path
-        $key = explode('->', $key);
-        while (count($key) > 1) {
-            array_pop($key);
-            $pattern = implode('->', $key) . '->*';
-
-            if (isset($data[$pattern])) {
-                return $pattern;
-            }
-        }
-
-        // nothing was found
-        return null;
     }
 }

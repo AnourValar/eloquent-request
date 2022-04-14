@@ -40,13 +40,11 @@ class SortBuilder extends AbstractBuilder
         $key = $this->config['sort_key'];
 
         // Described in profile?
-        if (! in_array($field, $this->profile[$key], true)) {
+        $parsedField = $this->parseField(array_flip($this->profile[$key]), $field);
+        if (! $parsedField) {
             $this->validator->addError(
                 [$key, $field],
-                trans(
-                    'eloquent-request::validation.sort_not_supported',
-                    ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
-                )
+                trans('eloquent-request::validation.sort_not_supported', ['attribute' => $field])
             );
 
             return;
@@ -62,7 +60,7 @@ class SortBuilder extends AbstractBuilder
                 [$key, $field],
                 trans(
                     'eloquent-request::validation.sort_not_exists',
-                    ['attribute' => $this->getDisplayAttribute($query, $field, $this->profile)]
+                    ['attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile)]
                 )
             );
 

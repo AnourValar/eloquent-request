@@ -63,7 +63,7 @@ class FlatMapper
     /**
      * Profile's filter
      *
-     * @return string
+     * @return array
      */
     public function filter(): array
     {
@@ -83,11 +83,21 @@ class FlatMapper
     /**
      * Profile's ranges
      *
-     * @return string
+     * @return array
      */
     public function ranges(): array
     {
         return $this->data['ranges'];
+    }
+
+    /**
+     * Profile's (model's) attribute names
+     *
+     * @return string|array|null
+     */
+    public function attributeNames(): string|array|null
+    {
+        return $this->data['attribute_names'];
     }
 
     /**

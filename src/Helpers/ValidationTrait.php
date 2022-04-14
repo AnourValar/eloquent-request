@@ -46,6 +46,12 @@ trait ValidationTrait
         $field = str_replace('->', '.', $field);
 
         // From profile
+        if ($profile['custom_attributes']) {
+            if (isset($profile['custom_attributes'][$field])) {
+                return ['weight' => 4, 'value' => $profile['custom_attributes'][$field]];
+            }
+        }
+
         if ($profile['custom_attributes_path']) {
             $customAttributes = (array) trans($profile['custom_attributes_path']);
 

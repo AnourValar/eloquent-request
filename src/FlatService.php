@@ -191,6 +191,24 @@ class FlatService
     }
 
     /**
+     * Gets attribute names for a profile or model
+     *
+     * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
+     * @param string $prefix
+     * @return array
+     */
+    public function getAttributeNames(FlatInterface $flatInterface, string $prefix = ''): array
+    {
+        $result = $this->getProfile($flatInterface, $prefix, 'attributeNames');
+        foreach ($result as &$value) {
+            $value = trans($value);
+        }
+        unset($value);
+
+        return $result;
+    }
+
+    /**
      * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
      * @return array
      */
