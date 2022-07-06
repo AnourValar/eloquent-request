@@ -13,6 +13,9 @@ class EloquentRequestServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        // config
+        $this->mergeConfigFrom(__DIR__.'/../resources/config/eloquent_request.php', 'eloquent_request');
+
         $this->app->singleton(\AnourValar\EloquentRequest\Service::class, function ($app)
         {
             return new \AnourValar\EloquentRequest\Service;
@@ -27,7 +30,6 @@ class EloquentRequestServiceProvider extends ServiceProvider
     public function boot()
     {
         // config
-        $this->mergeConfigFrom(__DIR__.'/../resources/config/eloquent_request.php', 'eloquent_request');
         $this->publishes([ __DIR__.'/../resources/config/eloquent_request.php' => config_path('eloquent_request.php')], 'config');
 
         // langs
