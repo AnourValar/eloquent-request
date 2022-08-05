@@ -10,8 +10,7 @@ class JsonNotInOperation extends JsonInOperation
      */
     public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
     {
-        $query->where(function ($query) use ($field, $value, $options)
-        {
+        $query->where(function ($query) use ($field, $value, $options) {
             $originalField = $field;
             foreach ($this->getNullableList($value) as $item) {
                 $field = $originalField;

@@ -29,7 +29,7 @@ class LikeOperation implements OperationInterface
      */
     public function passes($value): bool
     {
-        if (is_null($value) || (is_scalar($value) && !mb_strlen($value))) {
+        if (is_null($value) || (is_scalar($value) && ! mb_strlen($value))) {
             return false;
         }
 
@@ -66,6 +66,6 @@ class LikeOperation implements OperationInterface
      */
     protected function canonizeValue($value): string
     {
-        return '%'.addCslashes($value, '_%\\').'%';
+        return '%'.addcslashes($value, '_%\\').'%';
     }
 }

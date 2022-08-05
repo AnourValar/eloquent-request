@@ -12,7 +12,7 @@ class JsonNotContainsOperation extends JsonInOperation
     {
         if (is_array($value)) {
             parent::validate($value, $fail);
-        } elseif (!(is_scalar($value) || is_null($value)) || mb_strlen($value) > static::MAX_LENGTH) {
+        } elseif (! (is_scalar($value) || is_null($value)) || mb_strlen($value) > static::MAX_LENGTH) {
             $fail('eloquent-request::validation.list');
         }
     }

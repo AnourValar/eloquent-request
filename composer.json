@@ -9,7 +9,9 @@
         "laravel/framework": ">=8.0"
     },
     "require-dev": {
-        "nunomaduro/larastan": "^1.0"
+        "nunomaduro/larastan": "^1.0",
+        "laravel/pint": "^1.0",
+        "orchestra/testbench": "^7.6"
     },
     "autoload": {
         "psr-4": {"AnourValar\\EloquentRequest\\": "src/"}

@@ -2,8 +2,8 @@
 
 namespace AnourValar\EloquentRequest\Builders;
 
-use Illuminate\Database\Eloquent\Builder;
 use AnourValar\EloquentRequest\Validators\ValidatorInterface;
+use Illuminate\Database\Eloquent\Builder;
 
 interface BuilderInterface
 {

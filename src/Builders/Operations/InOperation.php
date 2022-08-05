@@ -47,7 +47,7 @@ class InOperation implements OperationInterface
         }
 
         foreach ($value as $item) {
-            if (!is_scalar($item) && !is_null($item)) {
+            if (! is_scalar($item) && ! is_null($item)) {
                 $fail('eloquent-request::validation.list');
             }
 
@@ -75,8 +75,7 @@ class InOperation implements OperationInterface
         }
 
         if ($nullable) {
-            $query->where(function ($query) use ($field, $value)
-            {
+            $query->where(function ($query) use ($field, $value) {
                 $query
                     ->whereNull($field)
                     ->orWhereIn($field, $value);

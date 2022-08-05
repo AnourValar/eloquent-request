@@ -36,7 +36,7 @@ class SearchService
     {
         $referenceRules = config("eloquent_request.similar.$referenceLocale");
 
-        foreach (config("eloquent_request.similar") as $locale => $rules) {
+        foreach (config('eloquent_request.similar') as $locale => $rules) {
             if ($locale == $referenceLocale) {
                 continue;
             }
@@ -90,7 +90,7 @@ class SearchService
     public function prepare(string $value): string
     {
         $value = $this->generate([trim($value)]);
-        $value = addCslashes($value, '_%\\');
+        $value = addcslashes($value, '_%\\');
 
         return '%'.str_replace(' ', '%', $value).'%';
     }

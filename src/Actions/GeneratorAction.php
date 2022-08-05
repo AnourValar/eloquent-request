@@ -71,8 +71,7 @@ class GeneratorAction implements ActionInterface
      */
     protected function createGenerator(int $chunkSize, Builder &$query, int $limit = null): \Closure
     {
-        return function () use ($chunkSize, $query, $limit)
-        {
+        return function () use ($chunkSize, $query, $limit) {
             if (empty($query->getQuery()->orders) && empty($query->getQuery()->unionOrders)) {
                 throw new \LogicException('You must specify an orderBy clause when using this function.');
             }
@@ -108,8 +107,7 @@ class GeneratorAction implements ActionInterface
      */
     protected function createGeneratorById(int $chunkSize, array $chunkOrder, Builder &$query, int $limit = null): \Closure
     {
-        return function () use ($chunkSize, $chunkOrder, $query, $limit)
-        {
+        return function () use ($chunkSize, $chunkOrder, $query, $limit) {
             $orderValue = null;
 
             $orderKey = array_keys($chunkOrder)[0];

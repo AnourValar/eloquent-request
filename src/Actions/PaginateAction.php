@@ -50,7 +50,7 @@ class PaginateAction implements ActionInterface
         $keyPerPage = $config['per_page_key'];
         $perPage = $request[$keyPerPage] ?? 1;
 
-        if (!filter_var($perPage, FILTER_VALIDATE_INT) || $perPage < 1) {
+        if (! filter_var($perPage, FILTER_VALIDATE_INT) || $perPage < 1) {
             $fail('eloquent-request::validation.per_page', [], $keyPerPage);
         }
 
@@ -63,7 +63,7 @@ class PaginateAction implements ActionInterface
         $keyPage = $config['page_key'];
         $page = $request[$keyPage] ?? static::DEFAULT_PAGE;
 
-        if (!filter_var($page, FILTER_VALIDATE_INT) || $page < 1) {
+        if (! filter_var($page, FILTER_VALIDATE_INT) || $page < 1) {
             $fail('eloquent-request::validation.page', [], $keyPage);
         }
 
@@ -88,7 +88,7 @@ class PaginateAction implements ActionInterface
             $collection = $query->paginate($perPage, ['*'], $config['page_key'], $page);
         }
 
-        if (in_array(self::OPTION_PAGE_OVER_LAST_IS_FORBIDDEN, $profile['options']) && $page > 1 && !$collection->count()) {
+        if (in_array(self::OPTION_PAGE_OVER_LAST_IS_FORBIDDEN, $profile['options']) && $page > 1 && ! $collection->count()) {
             $fail('eloquent-request::validation.page_over_last_is_forbidden', [], $config['page_key']);
         }
 

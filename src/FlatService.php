@@ -37,8 +37,7 @@ class FlatService
     {
         $this->dropTable($flatInterface);
 
-        Schema::create($flatInterface->flatModel()->getTable(), function (Blueprint $table) use ($flatInterface)
-        {
+        Schema::create($flatInterface->flatModel()->getTable(), function (Blueprint $table) use ($flatInterface) {
             foreach ($flatInterface->scheme() as $column) {
                 $column->migration($table);
             }
@@ -81,8 +80,7 @@ class FlatService
         }
 
         $affected = 0;
-        $model->chunkById(5000, function ($items) use ($affected, $method, $flatInterface)
-        {
+        $model->chunkById(5000, function ($items) use ($affected, $method, $flatInterface) {
             foreach ($items as $item) {
                 $method($flatInterface, $item);
                 $affected++;
@@ -126,7 +124,7 @@ class FlatService
             throw new \LogicException('Incorrect usage.');
         }
 
-        if (!$model->exists || !$flatInterface->shouldBeStored($model)) {
+        if (! $model->exists || ! $flatInterface->shouldBeStored($model)) {
             $exists = false;
         }
 

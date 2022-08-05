@@ -12,8 +12,7 @@ class NotEqOperation extends EqOperation
     {
         if ($value === '' || is_null($value) || $value === 0 || $value === '0') {
             $query
-                ->when(! is_null($value), function ($query) use ($field, $value)
-                {
+                ->when(! is_null($value), function ($query) use ($field, $value) {
                     $query->where($field, '!=', $value);
                 })
                 ->whereNotNull($field);

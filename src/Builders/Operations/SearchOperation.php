@@ -23,13 +23,11 @@ class SearchOperation extends LikeOperation
      */
     public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
     {
-        $query->where(function ($query) use ($field, $value)
-        {
+        $query->where(function ($query) use ($field, $value) {
             $fullValue = str_replace(' ', '', $value);
 
             $query
-                ->when(mb_strlen($fullValue) >= static::MIN_LENGTH, function ($query) use ($field, $fullValue)
-                {
+                ->when(mb_strlen($fullValue) >= static::MIN_LENGTH, function ($query) use ($field, $fullValue) {
                     $query->where($field, 'LIKE', $this->canonizeValue($fullValue));
                 })
                 ->orWhere($field, 'LIKE', $this->canonizeValue($value));

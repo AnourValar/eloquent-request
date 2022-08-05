@@ -43,7 +43,7 @@ class FlatMapper
     /**
      * Is identifier (service)
      *
-     * @return string
+     * @return bool
      */
     public function isIdentifier(): bool
     {

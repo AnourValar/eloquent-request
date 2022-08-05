@@ -2,8 +2,8 @@
 
 namespace AnourValar\EloquentRequest\Builders;
 
-use Illuminate\Database\Eloquent\Builder;
 use AnourValar\EloquentRequest\Validators\ValidatorInterface;
+use Illuminate\Database\Eloquent\Builder;
 
 class FilterAndScopeBuilder extends AbstractBuilder
 {
@@ -18,7 +18,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
     public const OPTION_CASTS_NOT_REQUIRED = 'builder.filter_and_scope.casts_not_required';
 
     /**
-     * @var integer
+     * @var int
      */
     protected const RELATION_LIMIT = 10000;
 
@@ -206,7 +206,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
         }
 
         // Value in range?
-        if (!is_numeric($value) || $value != (int) $value || $value < 0 || $value > static::RELATION_LIMIT) {
+        if (! is_numeric($value) || $value != (int) $value || $value < 0 || $value > static::RELATION_LIMIT) {
             $this->validator->addError(
                 [$key, $relation, $operation],
                 trans(
@@ -266,14 +266,12 @@ class FilterAndScopeBuilder extends AbstractBuilder
         foreach ($tasks as $relation => $actions) {
             if ($relation && in_array(self::OPTION_DO_NOT_GROUP, $this->profile['options'])) {
                 foreach ($actions as $action) {
-                    $query->whereHas($relation, function ($query) use ($action)
-                    {
+                    $query->whereHas($relation, function ($query) use ($action) {
                         $this->applyTask($query, $action);
                     });
                 }
             } elseif ($relation) {
-                $query->whereHas($relation, function ($query) use ($actions)
-                {
+                $query->whereHas($relation, function ($query) use ($actions) {
                     foreach ($actions as $action) {
                         $this->applyTask($query, $action);
                     }
@@ -296,7 +294,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
         if (isset($action['relation'])) {
             if (isset($action['min']) && $action['min'] == 1) {
                 $query->has($action['relation']);
-            } elseif (isset($action['min'])) {
+            } elseif (isset($action['min']) && $action['min'] > 0) {
                 $query->has($action['relation'], '>=', $action['min']);
             } elseif (isset($action['max']) && $action['max'] == 0) {
                 $query->doesntHave($action['relation']);
