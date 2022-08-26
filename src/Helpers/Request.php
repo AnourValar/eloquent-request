@@ -73,7 +73,7 @@ class Request implements \ArrayAccess
      */
     public function filter(string $path = null, $default = null)
     {
-        if (mb_strlen($path)) {
+        if (mb_strlen((string) $path)) {
             $path = ".$path";
         }
 
