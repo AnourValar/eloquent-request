@@ -393,7 +393,7 @@ class FlatService
             throw new \LogicException('Incorrect usage.');
         }
 
-        if (! $model->exists || ! $flatInterface->shouldBeStored($model)) {
+        if ($exists && (! $model->exists || ! $flatInterface->shouldBeStored($model))) {
             $exists = false;
         }
 

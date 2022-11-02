@@ -10,7 +10,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
     /**
      * @var string
      */
-    public const OPTION_GROUP_RELATION = 'builder.filter_and_scope.group_relation'; // filters for the same relation
+    public const OPTION_GROUP_RELATION = 'builder.filter_and_scope.group_relation'; // combine filters of the same relation
 
     /**
      * @var string
