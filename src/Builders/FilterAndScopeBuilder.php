@@ -10,7 +10,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
     /**
      * @var string
      */
-    public const OPTION_DO_NOT_GROUP = 'builder.filter_and_scope.do_not_group'; // prevents grouping for relations
+    public const OPTION_GROUP_RELATION = 'builder.filter_and_scope.group_relation'; // filters for the same relation
 
     /**
      * @var string
@@ -264,7 +264,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
     protected function applyTasks(Builder &$query, array $tasks): void
     {
         foreach ($tasks as $relation => $actions) {
-            if ($relation && in_array(self::OPTION_DO_NOT_GROUP, $this->profile['options'])) {
+            if ($relation && ! in_array(self::OPTION_GROUP_RELATION, $this->profile['options'])) {
                 foreach ($actions as $action) {
                     $query->whereHas($relation, function ($query) use ($action) {
                         $this->applyTask($query, $action);

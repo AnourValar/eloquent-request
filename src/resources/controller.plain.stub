@@ -37,7 +37,7 @@ class DummyClass extends Controller
         ],
 
         'options' => [
-            //\AnourValar\EloquentRequest\Builders\FilterAndScopeBuilder::OPTION_DO_NOT_GROUP,
+            \AnourValar\EloquentRequest\Builders\FilterAndScopeBuilder::OPTION_GROUP_RELATION,
             \AnourValar\EloquentRequest\Builders\Operations\JsonInOperation::OPTION_JSON_PATH_TO_STRUCTURE,
 
             \AnourValar\EloquentRequest\Actions\PaginateAction::OPTION_SIMPLE_PAGINATE,
