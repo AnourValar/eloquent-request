@@ -8,14 +8,6 @@ use Illuminate\Support\Facades\Schema;
 class FlatService
 {
     /**
-     * @var array
-     */
-    protected $typeMapping = [
-        'bigint' => 'bigInteger',
-        'jsonb' => 'json',
-    ];
-
-    /**
      * Check if current structure of the flat table is actual
      *
      * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
@@ -27,7 +19,7 @@ class FlatService
     }
 
     /**
-     * (Re)create flat table
+     * (Re)create the flat table
      *
      * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
      * @throws \LogicException
@@ -37,7 +29,9 @@ class FlatService
     {
         $this->dropTable($flatInterface);
 
-        Schema::create($flatInterface->flatModel()->getTable(), function (Blueprint $table) use ($flatInterface) {
+        $flatModel = $this->getFlatModelForWrite($flatInterface, true);
+
+        Schema::connection($flatModel->getConnectionName())->create($flatModel->getTable(), function (Blueprint $table) use ($flatInterface) {
             foreach ($flatInterface->scheme() as $column) {
                 $column->migration($table);
             }
@@ -50,28 +44,91 @@ class FlatService
     }
 
     /**
-     * Drop flat table
+     * Drop the flat table
      *
      * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
      * @return void
      */
     public function dropTable(FlatInterface $flatInterface): void
     {
-        Schema::dropIfExists($flatInterface->flatModel()->getTable());
+        $flatModel = $this->getFlatModelForWrite($flatInterface, true);
+
+        Schema::connection($flatModel->getConnectionName())->dropIfExists($flatModel->getTable());
+    }
+
+    /**
+     * Rename temporary table to the original
+     * Must be called after deploy
+     *
+     * @param FlatInterface $flatInterface
+     * @param bool $cleanUp
+     * @throws \LogicException
+     * @return void
+     */
+    public function switchTemporary(FlatInterface $flatInterface, bool $cleanUp = true): void
+    {
+        $flatModel = $flatInterface->flatModel();
+        $table = $flatModel->getTable();
+
+        $tableTemp = $this->temporary($flatInterface);
+        if (! $tableTemp) {
+            throw new \LogicException('Incorrect usage.');
+        }
+
+        if (\Schema::hasTable($table)) {
+            \Schema::connection($flatModel->getConnectionName())->rename($table, "{$table}_delete"); // flat -> flat_delete
+        }
+        \Schema::connection($flatModel->getConnectionName())->rename($tableTemp, $table); // flat_<temp> -> flat
+
+        if ($cleanUp) {
+            \Atom::onCommit(function () use ($flatModel, $table) {
+                \Schema::connection($flatModel->getConnectionName())->dropIfExists("{$table}_delete");
+            }, $flatModel->getConnectionName());
+        }
+    }
+
+    /**
+     * Get the name of a temporary table (if exists)
+     *
+     * @param FlatInterface $flatInterface
+     * @param bool $force
+     * @return string|null
+     */
+    public function temporary(FlatInterface $flatInterface, bool $force = false): ?string
+    {
+        if (! config('eloquent_request.flat.temporary')) {
+            return null;
+        }
+
+        static $sha1;
+        if (! $sha1 ) {
+            $sha1 = sha1(json_encode($this->getActualStructure($flatInterface)));
+        }
+        $tempTable = $flatInterface->flatModel()->getTable() . '_' . $sha1;
+
+        if (! $force && ! \Schema::hasTable($tempTable)) {
+            return null;
+        }
+
+        return $tempTable;
     }
 
     /**
      * Fill up flat table with all current data
+     * Must be called after deploy in "temporary" scenario
      *
      * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
      * @param string $model
-     * @param callable $method
+     * @param callable $closure
+     * @param int $chunkSize
      * @return int
      */
-    public function resync(FlatInterface $flatInterface, string $model, callable $method = null): int
+    public function resync(FlatInterface $flatInterface, string $model, callable $closure = null, int $chunkSize = 5000): int
     {
-        if (! $method) {
-            $method = [$this, 'sync'];
+        if ($closure) {
+            $closure = \Closure::bind($closure, $this); // wrap for the atomic lock
+        } else {
+            $closure = [$this, 'sync'];
         }
 
         $model = new $model;
@@ -80,9 +137,9 @@ class FlatService
         }
 
         $affected = 0;
-        $model->chunkById(5000, function ($items) use ($affected, $method, $flatInterface) {
+        $model->chunkById($chunkSize, function ($items) use ($affected, $closure, $flatInterface) {
             foreach ($items as $item) {
-                $method($flatInterface, $item);
+                $closure($flatInterface, $item);
                 $affected++;
             }
         });
@@ -99,39 +156,50 @@ class FlatService
      */
     public function sync(FlatInterface $flatInterface, \Illuminate\Database\Eloquent\Model $model): void
     {
-        $data1 = [];
-        $data2 = [];
-        $exists = false;
+        list($identifiers, $dataSets, $exists) = $this->syncState($flatInterface, $model);
 
-        foreach ($flatInterface->scheme() as $column) {
-            $value = $model;
-            foreach (explode('.', $column->source()) as $item) {
-                $value = ( $value[$item] ?? null );
-            }
+        $this->getFlatModelForWrite($flatInterface)->where($identifiers)->delete();
 
-            if ($column->isIdentifier()) {
-                $data1[$column->target()] = $value;
-            } else {
-                $data2[$column->target()] = $value;
-
-                if (isset($value)) {
-                    $exists = true;
-                }
-            }
+        if (! $exists) {
+            return;
         }
 
-        if (! $data1) {
-            throw new \LogicException('Incorrect usage.');
+        foreach ($dataSets as $dataSet) {
+            $this
+                ->getFlatModelForWrite($flatInterface)
+                ->withCasts($this->getCasts($flatInterface))
+                ->create(array_merge($identifiers, $dataSet));
+        }
+    }
+
+    /**
+     * Fill up flat table for a specific model (soft)
+     *
+     * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
+     * @param \Illuminate\Database\Eloquent\Model|null $model
+     * @return void
+     */
+    public function syncSoft(FlatInterface $flatInterface, ?\Illuminate\Database\Eloquent\Model $model): void
+    {
+        if (! $model) {
+            return;
         }
 
-        if (! $model->exists || ! $flatInterface->shouldBeStored($model)) {
-            $exists = false;
+        list($identifiers, $dataSets, $exists) = $this->syncState($flatInterface, $model);
+
+        if (! $exists) {
+            return;
         }
 
-        if ($exists) {
-            $flatInterface->flatModel()->withCasts($this->getCasts($flatInterface))->updateOrCreate($data1, $data2);
-        } else {
-            $flatInterface->flatModel()->where($data1)->delete();
+        if ($this->getFlatModelForWrite($flatInterface, true)->where($identifiers)->first()) {
+            return;
+        }
+
+        foreach ($dataSets as $dataSet) {
+            $this
+                ->getFlatModelForWrite($flatInterface, true)
+                ->withCasts($this->getCasts($flatInterface))
+                ->create(array_merge($identifiers, $dataSet));
         }
     }
 
@@ -212,15 +280,16 @@ class FlatService
      */
     protected function getFactStructure(\AnourValar\EloquentRequest\FlatInterface $flatInterface): array
     {
+        $table = $this->getFlatModelForWrite($flatInterface)->getTable();
         $structure = [];
 
-        foreach (\DB::getSchemaBuilder()->getColumnListing($flatInterface->flatModel()->getTable()) as $column) {
-            $type = \DB::getSchemaBuilder()->getColumnType($flatInterface->flatModel()->getTable(), $column);
-            $type = $this->typeMapping[$type] ?? $type;
-
-            $length = \DB::connection()->getDoctrineColumn($flatInterface->flatModel()->getTable(), $column)->getLength();
-
-            $structure[] = ['column' => $column, 'type' => $type, 'length' => $length];
+        foreach (\DB::getSchemaBuilder()->getColumnListing($table) as $column) {
+            $structure[] = [
+                'column' => $column,
+                'type' => $this->normalizeType(\DB::getSchemaBuilder()->getColumnType($table, $column)),
+                'length' => \DB::connection()->getDoctrineColumn($table, $column)->getLength(),
+                'nullable' => ! \DB::connection()->getDoctrineColumn($table, $column)->getNotnull(),
+            ];
         }
 
         return $structure;
@@ -234,15 +303,26 @@ class FlatService
     {
         $structure = [];
 
+        $blueprint = new \Illuminate\Database\Schema\Blueprint('');
         foreach ($flatInterface->scheme() as $column) {
-            $blueprint = new \Illuminate\Database\Schema\Blueprint('');
             $column->migration($blueprint);
-            $attribute = \Arr::last($blueprint->getColumns())->getAttributes();
+        }
 
-            $type = $this->typeMapping[$attribute['type']] ?? $attribute['type'];
+        foreach ($blueprint->getColumns() as $column) {
+            $attribute = $column->getAttributes();
+
+            $type = $this->normalizeType($attribute['type']);
             $length = ($attribute['length'] ?? null);
+            if (! isset($length) && $type == 'string') {
+                $length = \lluminate\Database\Schema\Builder::$defaultStringLength;
+            }
 
-            $structure[] = ['column' => $column->target(), 'type' => $type, 'length' => $length];
+            $structure[] = [
+                'column' => $attribute['name'],
+                'type' => $type,
+                'length' => $length,
+                'nullable' => ($attribute['nullable'] ?? false),
+            ];
         }
 
         return $structure;
@@ -270,5 +350,98 @@ class FlatService
         }
 
         return array_filter($result);
+    }
+
+    /**
+     * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @throws \LogicException
+     * @return array
+     */
+    protected function syncState(FlatInterface $flatInterface, \Illuminate\Database\Eloquent\Model $model): array
+    {
+        $identifiers = [];
+        $data = [];
+        $exists = false;
+
+        foreach ($flatInterface->scheme() as $column) {
+            if (is_null($column->source())) {
+                continue;
+            }
+
+            $value = $model;
+            if (is_callable($column->source())) {
+                $value = $column->source()($value);
+            } else {
+                foreach (explode('.', $column->source()) as $item) {
+                    $value = ( $value[$item] ?? null );
+                }
+            }
+
+            if ($column->isIdentifier()) {
+                $identifiers[$column->target()] = $value;
+            } else {
+                $data[$column->target()] = $value;
+
+                if (isset($value)) {
+                    $exists = true;
+                }
+            }
+        }
+
+        if (! $identifiers) {
+            throw new \LogicException('Incorrect usage.');
+        }
+
+        if (! $model->exists || ! $flatInterface->shouldBeStored($model)) {
+            $exists = false;
+        }
+
+        $dataSets = [];
+        foreach ($flatInterface->multiple($model) ?? [[]] as $item) {
+            $dataSets[] = array_merge($data, $item);
+        }
+
+        return [$identifiers, $dataSets, $exists];
+    }
+
+    /**
+     * @param FlatInterface $flatInterface
+     * @param bool $force
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    protected function getFlatModelForWrite(FlatInterface $flatInterface, bool $force = false): \Illuminate\Database\Eloquent\Model
+    {
+        $flatModel = $flatInterface->flatModel();
+
+        if (! $tempTable = $this->temporary($flatInterface, $force)) {
+            return $flatModel;
+        }
+
+        return $flatModel->setTable($tempTable);
+    }
+
+    /**
+     * @param string $type
+     * @return string
+     */
+    protected function normalizeType(string $type): string
+    {
+        $type = mb_strtolower($type);
+
+        $type = str_replace('integer', 'int', $type);
+        $type = str_replace('jsonb', 'json', $type);
+        $type = str_replace('timestamp', 'datetime', $type);
+        $type = str_replace('double', 'float', $type);
+        $type = str_replace('guid', 'uuid', $type);
+
+        $type = str_replace('longtext', 'text', $type);
+        $type = str_replace('mediumtext', 'text', $type);
+        $type = str_replace('tinytext', 'string', $type);
+
+        $type = str_replace('tinyint', 'smallint', $type);
+        $type = str_replace('mediumint', 'int', $type);
+
+        return $type;
     }
 }

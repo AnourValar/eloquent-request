@@ -19,11 +19,19 @@ interface FlatInterface
     public function flatModel(): \Illuminate\Database\Eloquent\Model;
 
     /**
-     * Any actions after flat table was created
+     * Any actions after the flat table was created
      *
      * @return void
      */
     public function onTableCreated(): void;
+
+    /**
+     * Multiple rows (flat) for a model
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @return array[]|null
+     */
+    public function multiple(\Illuminate\Database\Eloquent\Model $model): ?array;
 
     /**
      * Resolve if the model should present in a flat table

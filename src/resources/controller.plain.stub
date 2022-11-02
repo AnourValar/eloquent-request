@@ -20,6 +20,10 @@ class DummyClass extends Controller
 
         ],
 
+        'relation' => [
+
+        ],
+
         'scope' => [
 
         ],
@@ -33,7 +37,11 @@ class DummyClass extends Controller
         ],
 
         'options' => [
+            //\AnourValar\EloquentRequest\Builders\FilterAndScopeBuilder::OPTION_DO_NOT_GROUP,
+            \AnourValar\EloquentRequest\Builders\Operations\JsonInOperation::OPTION_JSON_PATH_TO_STRUCTURE,
 
+            \AnourValar\EloquentRequest\Actions\PaginateAction::OPTION_SIMPLE_PAGINATE,
+            \AnourValar\EloquentRequest\Actions\PaginateAction::OPTION_PAGE_MAX => 20,
         ],
 
         'default_request' => [

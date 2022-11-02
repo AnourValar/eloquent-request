@@ -203,3 +203,84 @@ $request = [
 $collection = \EloquentRequest::buildBy(\App\User::class, $profile, $request);
 
 ```
+
+
+## Usage: Flat table
+
+### Setup
+
+Model Observer (saved, deleted):
+
+```php
+\EloquentRequestFlat::sync(\App::make(\App\Drivers\ModelFlat::class), $model);
+```
+
+Migration (up):
+
+```php
+\EloquentRequestFlat::createTable(\App::make(\App\Drivers\ModelFlat::class));
+```
+
+Migration (down):
+
+```php
+\EloquentRequestFlat::dropTable(\App::make(\App\Drivers\ModelFlat::class));
+```
+
+### "Simple" workflow
+
+Config:
+
+```php
+'flat' => [
+    'temporary' => false,
+],
+```
+
+Seeder:
+
+```php
+if (! \EloquentRequestFlat::isActualTable($flatInterface)) {
+    \EloquentRequestFlat::createTable($flatInterface);
+    \EloquentRequestFlat::resync($flatInterface, \App\Model::class);
+}
+```
+
+### "Temporary" workflow
+
+Config:
+
+```php
+'flat' => [
+    'temporary' => true, // it's recommended to false when the structure is permanent
+],
+```
+
+Seeder:
+
+```php
+if (! \EloquentRequestFlat::isActualTable($flatInterface)) {
+    \EloquentRequestFlat::createTable($flatInterface);
+}
+```
+
+After deploy:
+
+```php
+if (\EloquentRequestFlat::temporary($flatInterface)) {
+    $closure = function ($flatInterface, $model) {
+        \DB::transaction(function () use ($flatInterface, $model) {
+            // Atomic lock (for sync):
+            // <...>
+            $this->syncSoft($flatInterface, $model->fresh());
+        });
+    };
+    \EloquentRequestFlat::resync($flatInterface, \App\Model::class, $closure);
+
+    \DB::transaction(function () use ($flatInterface) {
+        // Atomic lock (for sync):
+        // <...>
+        \EloquentRequestFlat::switchTemporary($flatInterface);
+    });
+}
+```

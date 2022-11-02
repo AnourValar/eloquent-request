@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'flat' => [
+        'temporary' => false,
+    ],
+
     'typo' => [
         'ru' => [
             'correct' => [

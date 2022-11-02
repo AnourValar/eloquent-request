@@ -23,9 +23,9 @@ class FlatMapper
     /**
      * Model (original): column name (path)
      *
-     * @return string
+     * @return string|callable|null
      */
-    public function source(): string
+    public function source(): string|callable|null
     {
         return $this->data['source'];
     }
