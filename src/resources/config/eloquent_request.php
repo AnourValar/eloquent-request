@@ -2,7 +2,7 @@
 
 return [
     'flat' => [
-        'temporary' => false,
+        'shadow' => false,
     ],
 
     'typo' => [

@@ -57,7 +57,7 @@ class FlatService
     }
 
     /**
-     * Rename temporary table to the original
+     * Rename shadow table to the original
      * Must be called after deploy
      *
      * @param FlatInterface $flatInterface
@@ -65,20 +65,20 @@ class FlatService
      * @throws \LogicException
      * @return void
      */
-    public function switchTemporary(FlatInterface $flatInterface, bool $cleanUp = true): void
+    public function switchShadow(FlatInterface $flatInterface, bool $cleanUp = true): void
     {
         $flatModel = $flatInterface->flatModel();
         $table = $flatModel->getTable();
 
-        $tableTemp = $this->temporary($flatInterface);
-        if (! $tableTemp) {
+        $shadowTable = $this->shadow($flatInterface);
+        if (! $shadowTable) {
             throw new \LogicException('Incorrect usage.');
         }
 
         if (\Schema::hasTable($table)) {
             \Schema::connection($flatModel->getConnectionName())->rename($table, "{$table}_delete"); // flat -> flat_delete
         }
-        \Schema::connection($flatModel->getConnectionName())->rename($tableTemp, $table); // flat_<temp> -> flat
+        \Schema::connection($flatModel->getConnectionName())->rename($shadowTable, $table); // flat_<shadow> -> flat
 
         if ($cleanUp) {
             \Atom::onCommit(function () use ($flatModel, $table) {
@@ -88,15 +88,15 @@ class FlatService
     }
 
     /**
-     * Get the name of a temporary table (if exists)
+     * Get the name of a shadow table (if exists)
      *
      * @param FlatInterface $flatInterface
      * @param bool $force
      * @return string|null
      */
-    public function temporary(FlatInterface $flatInterface, bool $force = false): ?string
+    public function shadow(FlatInterface $flatInterface, bool $force = false): ?string
     {
-        if (! config('eloquent_request.flat.temporary')) {
+        if (! config('eloquent_request.flat.shadow')) {
             return null;
         }
 
@@ -104,18 +104,18 @@ class FlatService
         if (! $sha1 ) {
             $sha1 = sha1(json_encode($this->getActualStructure($flatInterface)));
         }
-        $tempTable = $flatInterface->flatModel()->getTable() . '_' . $sha1;
+        $shadowTable = $flatInterface->flatModel()->getTable() . '_' . $sha1;
 
-        if (! $force && ! \Schema::hasTable($tempTable)) {
+        if (! $force && ! \Schema::hasTable($shadowTable)) {
             return null;
         }
 
-        return $tempTable;
+        return $shadowTable;
     }
 
     /**
      * Fill up flat table with all current data
-     * Must be called after deploy in "temporary" scenario
+     * Must be called after deploy in "shadow" scenario
      *
      * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
      * @param string $model
@@ -414,11 +414,11 @@ class FlatService
     {
         $flatModel = $flatInterface->flatModel();
 
-        if (! $tempTable = $this->temporary($flatInterface, $force)) {
+        if (! $shadowTable = $this->shadow($flatInterface, $force)) {
             return $flatModel;
         }
 
-        return $flatModel->setTable($tempTable);
+        return $flatModel->setTable($shadowTable);
     }
 
     /**

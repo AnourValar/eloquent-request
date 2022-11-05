@@ -233,7 +233,7 @@ Config:
 
 ```php
 'flat' => [
-    'temporary' => false,
+    'shadow' => false,
 ],
 ```
 
@@ -246,13 +246,13 @@ if (! \EloquentRequestFlat::isActualTable($flatInterface)) {
 }
 ```
 
-### "Temporary" workflow
+### "Shadow" workflow
 
 Config:
 
 ```php
 'flat' => [
-    'temporary' => true, // it's recommended to false when the structure is permanent
+    'shadow' => true, // it's recommended to false when the structure is permanent
 ],
 ```
 
@@ -267,7 +267,7 @@ if (! \EloquentRequestFlat::isActualTable($flatInterface)) {
 After deploy:
 
 ```php
-if (\EloquentRequestFlat::temporary($flatInterface)) {
+if (\EloquentRequestFlat::shadow($flatInterface)) {
     $closure = function ($flatInterface, $model) {
         \DB::transaction(function () use ($flatInterface, $model) {
             // Atomic lock (for sync):
@@ -280,7 +280,7 @@ if (\EloquentRequestFlat::temporary($flatInterface)) {
     \DB::transaction(function () use ($flatInterface) {
         // Atomic lock (for sync):
         // <...>
-        \EloquentRequestFlat::switchTemporary($flatInterface);
+        \EloquentRequestFlat::switchShadow($flatInterface);
     });
 }
 ```
