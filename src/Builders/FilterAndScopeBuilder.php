@@ -235,7 +235,12 @@ class FilterAndScopeBuilder extends AbstractBuilder
         $key = $this->config['scope_key'];
 
         // Described in profile?
-        if (! in_array($scope, $this->profile[$key], true)) {
+        $closure = ($this->profile[$key][$scope] ?? null);
+        if (! $closure instanceof \Closure) {
+            $closure = null;
+        }
+
+        if (! in_array($scope, $this->profile[$key], true) && ! $closure) {
             $this->validator->addError(
                 [$key, $scope],
                 trans('eloquent-request::validation.scope_not_supported', ['scope' => $scope])
@@ -250,7 +255,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
 
         return [
             'key' => $relation,
-            'value' => ['scope' => $scopeFact, 'value' => $value, 'error_key' => $key . '.' . $scope],
+            'value' => ['scope' => $scopeFact, 'closure' => $closure, 'value' => $value, 'error_key' => $key . '.' . $scope],
         ];
     }
 
@@ -303,7 +308,11 @@ class FilterAndScopeBuilder extends AbstractBuilder
             }
         } elseif (isset($action['scope'])) {
             try {
-                $query->{$action['scope']}($action['value']);
+                if ($action['closure']) {
+                    $action['closure']($query, $action['value']);
+                } else {
+                    $query->{$action['scope']}($action['value']);
+                }
             } catch (\Illuminate\Validation\ValidationException $e) {
                 foreach ($e->validator->errors()->messages() as $key => $items) {
                     foreach ((array) $items as $item) {
