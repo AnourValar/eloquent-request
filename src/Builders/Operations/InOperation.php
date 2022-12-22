@@ -29,7 +29,7 @@ class InOperation implements OperationInterface
      */
     public function passes($value): bool
     {
-        return isset($value);
+        return isset($value) && $value !== [];
     }
 
     /**
