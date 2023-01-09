@@ -5,15 +5,22 @@ namespace AnourValar\EloquentRequest\Builders\Operations;
 class JsonContainsOperation extends JsonInOperation
 {
     /**
+     * @var int
+     */
+    protected const MAX_JSON_LENGTH = 3000;
+
+    /**
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::validate()
      */
     public function validate($value, \Closure $fail): void
     {
-        if (is_array($value)) {
-            parent::validate($value, $fail);
-        } elseif (! (is_scalar($value) || is_null($value)) || mb_strlen($value) > static::MAX_LENGTH) {
-            $fail('eloquent-request::validation.list');
+        if (mb_strlen(json_encode($value, JSON_UNESCAPED_UNICODE)) > static::MAX_JSON_LENGTH) {
+            $fail('eloquent-request::validation.length');
+        }
+
+        if (is_scalar($value) && mb_strlen((string) $value) > static::MAX_LENGTH) {
+            $fail('eloquent-request::validation.length');
         }
     }
 

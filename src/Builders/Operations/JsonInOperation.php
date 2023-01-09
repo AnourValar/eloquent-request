@@ -85,7 +85,11 @@ class JsonInOperation extends InOperation
 
         $field = array_shift($elements);
         foreach (array_reverse($elements) as $element) {
-            $item = [$element => $item];
+            if ($element == '*') {
+                $item = [$item];
+            } else {
+                $item = [$element => $item];
+            }
         }
     }
 }
