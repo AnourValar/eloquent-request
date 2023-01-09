@@ -5,11 +5,6 @@ namespace AnourValar\EloquentRequest\Builders\Operations;
 class JsonContainsOperation extends JsonInOperation
 {
     /**
-     * @var int
-     */
-    protected const MAX_JSON_LENGTH = 3000;
-
-    /**
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::validate()
      */

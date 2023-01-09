@@ -18,7 +18,7 @@ class Service
     public const PROFILE_FILTER_NUMBER = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
     public const PROFILE_FILTER_DATE = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
     public const PROFILE_FILTER_TEXT = ['=', '!=', 'like', 'not-like'];
-    public const PROFILE_FILTER_IS_NULL = ['is-null'];
+    public const PROFILE_FILTER_IS_NULL = ['is-null' => 'is-null'];
     public const PROFILE_FILTER_SEARCH = ['search'];
     public const PROFILE_FILTER_JSON = ['json-in', 'json-contains', 'json-not-in', 'json-not-contains'];
 

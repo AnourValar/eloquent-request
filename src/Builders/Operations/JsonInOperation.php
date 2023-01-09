@@ -14,12 +14,31 @@ class JsonInOperation extends InOperation
     /**
      * @var int
      */
-    protected const MAX_LENGTH = 100;
+    protected const MAX_COUNT = 100;
 
     /**
      * @var int
      */
-    protected const MAX_COUNT = 100;
+    protected const MAX_JSON_LENGTH = 3000;
+
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::validate()
+     */
+    public function validate($value, \Closure $fail): void
+    {
+        if (! is_array($value)) {
+            $fail('eloquent-request::validation.list');
+        }
+
+        if (count($value) > static::MAX_COUNT) {
+            $fail('eloquent-request::validation.list');
+        }
+
+        if (mb_strlen(json_encode($value, JSON_UNESCAPED_UNICODE)) > static::MAX_JSON_LENGTH) {
+            $fail('eloquent-request::validation.length');
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -55,8 +74,6 @@ class JsonInOperation extends InOperation
             if (is_null($item)) {
                 $hasNull = true;
             }
-
-            $item = (array) $item;
         }
         unset($item);
 
