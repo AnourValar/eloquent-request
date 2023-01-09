@@ -14,7 +14,7 @@ class JsonInOperation extends InOperation
     /**
      * @var int
      */
-    protected const MAX_COUNT = 100;
+    protected const MAX_JSON_COUNT = 100;
 
     /**
      * @var int
@@ -31,7 +31,7 @@ class JsonInOperation extends InOperation
             $fail('eloquent-request::validation.list');
         }
 
-        if (count($value) > static::MAX_COUNT) {
+        if (count($value) > static::MAX_JSON_COUNT) {
             $fail('eloquent-request::validation.list');
         }
 
