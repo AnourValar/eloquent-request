@@ -50,15 +50,15 @@ class SearchService
     /**
      * Generates search string for storing
      *
-     * @param array $values
+     * @param array|null $values
      * @return string|null
      */
-    public function generate(array $values): ?string
+    public function generate(?array $values): ?string
     {
         $replacers = config('eloquent_request.replacers');
         $list = [];
 
-        foreach ($values as $value) {
+        foreach ((array) $values as $value) {
             if (is_null($value)) {
                 continue;
             }
@@ -78,7 +78,7 @@ class SearchService
         $list = array_unique($list);
         sort($list);
 
-        return trim(implode(' ', $list));
+        return ' ' . trim(implode(' ', $list)) . ' ';
     }
 
     /**
@@ -89,7 +89,7 @@ class SearchService
      */
     public function prepare(string $value): string
     {
-        $value = $this->generate([trim($value)]);
+        $value = trim($this->generate([$value]));
         $value = addcslashes($value, '_%\\');
 
         return '%'.str_replace(' ', '%', $value).'%';
