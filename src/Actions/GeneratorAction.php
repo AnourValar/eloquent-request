@@ -62,7 +62,7 @@ class GeneratorAction implements ActionInterface
     }
 
     /**
-     * Create iterable generator (similar to chunk)
+     * Create iterable generator (lazy())
      *
      * @param int $chunkSize
      * @param \Illuminate\Database\Eloquent\Builder $query
@@ -72,32 +72,21 @@ class GeneratorAction implements ActionInterface
     protected function createGenerator(int $chunkSize, Builder &$query, int $limit = null): \Closure
     {
         return function () use ($chunkSize, $query, $limit) {
-            if (empty($query->getQuery()->orders) && empty($query->getQuery()->unionOrders)) {
-                throw new \LogicException('You must specify an orderBy clause when using this function.');
-            }
+            foreach ($query->lazy($chunkSize) as $item) {
+                yield $item;
 
-            $page = 0;
-
-            do {
-                $page++;
-
-                $collection = $query->forPage($page, $chunkSize)->get();
-                foreach ($collection as $result) {
-                    yield $result;
-
-                    if ($limit) {
-                        $limit--;
-                        if (! $limit) {
-                            break 2;
-                        }
+                if ($limit) {
+                    $limit--;
+                    if (! $limit) {
+                        break;
                     }
                 }
-            } while ($collection->count() == $chunkSize);
+            }
         };
     }
 
     /**
-     * Create iterable generator (similar to chunkById)
+     * Create iterable generator (lazyById())
      *
      * @param int $chunkSize
      * @param array $chunkOrder
@@ -108,36 +97,28 @@ class GeneratorAction implements ActionInterface
     protected function createGeneratorById(int $chunkSize, array $chunkOrder, Builder &$query, int $limit = null): \Closure
     {
         return function () use ($chunkSize, $chunkOrder, $query, $limit) {
-            $orderValue = null;
+            $column = array_keys($chunkOrder)[0];
+            $direction = mb_strtoupper($chunkOrder[$column]);
 
-            $orderKey = array_keys($chunkOrder)[0];
-            $orderDestinition = mb_strtoupper(array_values($chunkOrder)[0]);
+            $alias = explode('.', $column);
+            $alias = array_pop($alias);
 
-            $orderAttribute = explode('.', $orderKey);
-            $orderAttribute = array_pop($orderAttribute);
+            if ($direction == 'ASC') {
+                $method = 'lazyById';
+            } else {
+                $method = 'lazyByIdDesc';
+            }
 
-            do {
-                if ($orderDestinition == 'ASC') {
-                    $collection = (clone $query)->forPageAfterId($chunkSize, $orderValue, $orderKey)->get();
-                } else {
-                    $collection = (clone $query)->forPageBeforeId($chunkSize, $orderValue, $orderKey)->get();
-                }
+            foreach ($query->$method($chunkSize, $column, $alias) as $item) {
+                yield $item;
 
-                if ($collection->count()) {
-                    $orderValue = $collection->last()->$orderAttribute;
-                }
-
-                foreach ($collection as $result) {
-                    yield $result;
-
-                    if ($limit) {
-                        $limit--;
-                        if (! $limit) {
-                            break 2;
-                        }
+                if ($limit) {
+                    $limit--;
+                    if (! $limit) {
+                        break;
                     }
                 }
-            } while ($collection->count() == $chunkSize);
+            }
         };
     }
 }
