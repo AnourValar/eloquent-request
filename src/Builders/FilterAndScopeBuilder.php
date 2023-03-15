@@ -26,10 +26,11 @@ class FilterAndScopeBuilder extends AbstractBuilder
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\BuilderInterface::build()
      */
-    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator): void
+    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator): array
     {
         parent::build($query, $profile, $request, $config, $validator);
         $tasks = [];
+        $buildRequest = [];
 
         // Get filters tasks
         foreach ((array) optional($request)[$config['filter_key']] as $field => $values) {
@@ -41,6 +42,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 $task = $this->getFilter($query, $field, $operation, $value);
 
                 if ($task) {
+                    $buildRequest[$config['filter_key']][$field][$operation] = $value;
                     $tasks[$task['key']][] = $task['value'];
                 }
             }
@@ -56,6 +58,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 $task = $this->getRelation($query, $relation, $operation, $value);
 
                 if ($task) {
+                    $buildRequest[$config['relation_key']][$relation][$operation] = $value;
                     $tasks[$task['key']][] = $task['value'];
                 }
             }
@@ -70,12 +73,15 @@ class FilterAndScopeBuilder extends AbstractBuilder
             $task = $this->getScope($scope, $value);
 
             if ($task) {
+                $buildRequest[$config['scope_key']][$scope] = $value;
                 $tasks[$task['key']][] = $task['value'];
             }
         }
 
         // Apply tasks
         $this->applyTasks($query, $tasks);
+
+        return $buildRequest;
     }
 
     /**

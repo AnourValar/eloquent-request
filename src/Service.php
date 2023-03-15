@@ -120,11 +120,12 @@ class Service
      * @param mixed $query
      * @param array $profile
      * @param array $request
+     * @param mixed $buildRequest
      * @throws \LogicException
      * @throws \Illuminate\Validation\ValidationException
      * @return mixed
      */
-    public function buildBy($query, array $profile, array $request)
+    public function buildBy($query, array $profile, array $request, &$buildRequest = null)
     {
         // Prepare query builder
         if (is_string($query)) {
@@ -147,7 +148,8 @@ class Service
         }
 
         $profile = $this->prepareProfile($profile);
-        $request = $this->prepareRequest($profile, $request)->get();
+        $request = $this->prepareRequest($profile, $request);
+        $buildRequest = [];
 
 
         // Builders
@@ -156,8 +158,10 @@ class Service
                 $builder = \App::make($builder);
             }
 
-            $builder->build($query, $profile, $request, $this->config, $validator);
+            $buildRequest = array_replace($buildRequest, $builder->build($query, $profile, $request, $this->config, $validator));
         }
+
+        $buildRequest = new \AnourValar\EloquentRequest\Helpers\Request($buildRequest, $profile, $this->config, $query);
 
 
         // Actions
@@ -193,20 +197,6 @@ class Service
         }
 
         return collect();
-    }
-
-    /**
-     * Get request data
-     *
-     * @param array $profile
-     * @param array $request
-     * @return \AnourValar\EloquentRequest\Helpers\Request
-     */
-    public function getBuildRequest(array $profile, array $request): \AnourValar\EloquentRequest\Helpers\Request
-    {
-        $profile = $this->prepareProfile($profile);
-
-        return $this->prepareRequest($profile, $request);
     }
 
     /**
@@ -279,6 +269,7 @@ class Service
                 'custom_casts' => [],
                 'custom_attributes' => [],
                 'custom_attributes_path' => null,
+                'custom_attributes_handler' => null,
             ],
             $this->config['default_profile'],
             $profile
@@ -288,9 +279,9 @@ class Service
     /**
      * @param array $profile
      * @param array $request
-     * @return \AnourValar\EloquentRequest\Helpers\Request
+     * @return array
      */
-    private function prepareRequest(array $profile, array $request): \AnourValar\EloquentRequest\Helpers\Request
+    private function prepareRequest(array $profile, array $request): array
     {
         $adapter = $profile['adapter'];
         if (! $adapter instanceof \AnourValar\EloquentRequest\Adapters\AdapterInterface) {
@@ -305,10 +296,6 @@ class Service
 
         $request = $adapter->canonize($request, $profile, $this->config);
 
-        return new \AnourValar\EloquentRequest\Helpers\Request(
-            array_replace($profile['default_request'], $request),
-            $profile,
-            $this->config
-        );
+        return array_replace($profile['default_request'], $request);
     }
 }

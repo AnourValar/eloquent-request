@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Request implements \ArrayAccess
 {
+    use ValidationTrait { getDisplayAttribute as getDisplayAttributeTrait; }
+
     /**
      * @var array
      */
@@ -22,17 +24,36 @@ class Request implements \ArrayAccess
     private $config;
 
     /**
+     * @var \Illuminate\Database\Eloquent\Builder
+     */
+    private \Illuminate\Database\Eloquent\Builder $query;
+
+    /**
      * Setters
      *
      * @param array $data
      * @param array $profile
      * @param array $config
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return void
      */
-    public function __construct(array $data, array $profile, array $config)
+    public function __construct(array $data, array $profile, array $config, \Illuminate\Database\Eloquent\Builder $query)
     {
         $this->data = $data;
         $this->profile = $profile;
         $this->config = $config;
+        $this->query = $query;
+    }
+
+    /**
+     * Get display name of the attribute
+     *
+     * @param mixed $fields
+     * @return string
+     */
+    public function getDisplayAttribute($fields): string
+    {
+        return $this->getDisplayAttributeTrait($this->query, $fields, $this->profile);
     }
 
     /**

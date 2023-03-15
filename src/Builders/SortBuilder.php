@@ -16,17 +16,21 @@ class SortBuilder extends AbstractBuilder
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\BuilderInterface::build()
      */
-    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator): void
+    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator): array
     {
         parent::build($query, $profile, $request, $config, $validator);
+        $buildRequest = [];
 
         foreach ((array) optional($request)[$config['sort_key']] as $field => $value) {
             if (is_numeric($field)) {
                 continue;
             }
 
+            $buildRequest[$config['sort_key']][$field] = $value;
             $this->applySort($query, $field, $value);
         }
+
+        return $buildRequest;
     }
 
     /**

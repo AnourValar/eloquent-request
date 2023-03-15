@@ -47,7 +47,7 @@ trait ValidationTrait
         // From profile
         if ($profile['custom_attributes']) {
             if (isset($profile['custom_attributes'][$field])) {
-                return ['weight' => 4, 'value' => $profile['custom_attributes'][$field]];
+                return ['weight' => 5, 'value' => $profile['custom_attributes'][$field]];
             }
         }
 
@@ -55,7 +55,15 @@ trait ValidationTrait
             $customAttributes = (array) trans($profile['custom_attributes_path']);
 
             if (isset($customAttributes[$field])) {
-                return ['weight' => 3, 'value' => $customAttributes[$field]];
+                return ['weight' => 4, 'value' => $customAttributes[$field]];
+            }
+        }
+
+        if ($profile['custom_attributes_handler']) {
+            $value = $profile['custom_attributes_handler']($field);
+
+            if (isset($value)) {
+                return ['weight' => 3, 'value' => $value];
             }
         }
 

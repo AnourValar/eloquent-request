@@ -5,32 +5,41 @@ namespace AnourValar\EloquentRequest;
 trait ControllerTrait
 {
     /**
+     * @var \AnourValar\EloquentRequest\Helpers\Request|null
+     */
+    private ?\AnourValar\EloquentRequest\Helpers\Request $lastBuildRequest = null;
+
+    /**
      * @see \AnourValar\EloquentRequest\Service::buildBy()
      *
      * @param mixed $query
      * @param array $profile
      * @param array $request
+     * @param mixed $buildRequest
      * @return mixed
      */
-    protected function buildBy($query, array $profile = null, array $request = null)
+    protected function buildBy($query, array $profile = null, array $request = null, &$buildRequest = null)
     {
         $this->buildingContext($profile, $request);
 
-        return \App::make(\AnourValar\EloquentRequest\Service::class)->buildBy($query, $profile, $request);
+        $result = \App::make(\AnourValar\EloquentRequest\Service::class)->buildBy($query, $profile, $request, $buildRequest);
+        $this->lastBuildRequest = $buildRequest;
+        return $result;
     }
 
     /**
-     * @see \AnourValar\EloquentRequest\Service::getBuildRequest()
+     * Get fact request data
      *
-     * @param array $profile
-     * @param array $request
+     * @throws \RuntimeException
      * @return \AnourValar\EloquentRequest\Helpers\Request
      */
-    protected function getBuildRequest(array $profile = null, array $request = null): \AnourValar\EloquentRequest\Helpers\Request
+    protected function getBuildRequest(): \AnourValar\EloquentRequest\Helpers\Request
     {
-        $this->buildingContext($profile, $request);
+        if (! $this->lastBuildRequest) {
+            throw new \RuntimeException('Incorrect usage.');
+        }
 
-        return \App::make(\AnourValar\EloquentRequest\Service::class)->getBuildRequest($profile, $request);
+        return $this->lastBuildRequest;
     }
 
     /**

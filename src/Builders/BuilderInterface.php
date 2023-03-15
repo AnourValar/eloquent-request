@@ -15,7 +15,7 @@ interface BuilderInterface
      * @param array $request
      * @param array $config
      * @param \AnourValar\EloquentRequest\Validators\ValidatorInterface $validator
-     * @return void
+     * @return array
      */
-    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator): void;
+    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator): array;
 }

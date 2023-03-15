@@ -33,12 +33,14 @@ abstract class AbstractBuilder implements BuilderInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\BuilderInterface::build()
      */
-    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator): void
+    public function build(Builder &$query, array $profile, array $request, array $config, ValidatorInterface &$validator): array
     {
         $this->profile = $profile;
         $this->request = $request;
         $this->config = $config;
         $this->validator = &$validator;
+
+        return [];
     }
 
     /**
