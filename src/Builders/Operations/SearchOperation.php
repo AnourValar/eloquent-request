@@ -5,6 +5,13 @@ namespace AnourValar\EloquentRequest\Builders\Operations;
 class SearchOperation extends LikeOperation
 {
     /**
+     * Apply typo()
+     *
+     * @var string
+     */
+    public const OPTION_TYPO = 'builder.operation.search.typo';
+
+    /**
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\LikeOperation::validate()
      */
@@ -23,23 +30,31 @@ class SearchOperation extends LikeOperation
      */
     public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
     {
-        $query->where(function ($query) use ($field, $value) {
+        $query->where(function ($query) use ($field, $value, $options) {
             $fullValue = str_replace(' ', '', $value);
 
             $query
-                ->when(mb_strlen($fullValue) >= static::MIN_LENGTH && $fullValue != $value, function ($query) use ($field, $fullValue) {
-                    $query->where($field, 'LIKE', $this->canonizeValue($fullValue));
+                ->when(mb_strlen($fullValue) >= static::MIN_LENGTH && $fullValue != $value, function ($query)
+                use ($field, $fullValue, $options) {
+                    $query->where($field, 'LIKE', $this->canonizeValueWithOptions($fullValue, $options));
                 })
-                ->orWhere($field, 'LIKE', $this->canonizeValue($value));
+                ->orWhere($field, 'LIKE', $this->canonizeValueWithOptions($value, $options));
         });
     }
 
     /**
-     * {@inheritDoc}
-     * @see \AnourValar\EloquentRequest\Builders\Operations\LikeOperation::canonizeValue()
+     * @param mixed $value
+     * @param array $options
+     * @return string
      */
-    protected function canonizeValue($value): string
+    protected function canonizeValueWithOptions($value, array $options): string
     {
+        if (isset($options[self::OPTION_TYPO])) {
+            $key = array_key_first($options[self::OPTION_TYPO]);
+
+            $value = \EloquentRequestSearch::typo($value, $key, $options[self::OPTION_TYPO][$key]);
+        }
+
         return \EloquentRequestSearch::prepare($value);
     }
 }

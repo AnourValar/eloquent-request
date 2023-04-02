@@ -7,44 +7,35 @@ class SearchService
     /**
      * Keyboard layout (typo)
      *
-     * @param string $value
-     * @param string $typoLocale
+     * @param string|null $value
+     * @param string $inputLocale
+     * @param string $outputLocale
      * @return string|null
      */
-    public function typo(?string $value, string $typoLocale): ?string
+    public function typo(?string $value, string $inputLocale, string $outputLocale): ?string
     {
-        if (is_null($value)) {
-            return $value;
-        }
-
-        $typoLocale = config("eloquent_request.typo.$typoLocale");
-        if (! $typoLocale) {
-            return null;
-        }
-
-        return str_replace($typoLocale['correct'], $typoLocale['incorrect'], mb_strtolower($value));
+        return $this->replace(
+            $value,
+            config("eloquent_request.typo.$inputLocale"),
+            config("eloquent_request.typo.$outputLocale")
+        );
     }
 
     /**
      * Convert similar letters
      *
-     * @param string $value
-     * @param string $referenceLocale
+     * @param string|null $value
+     * @param string $inputLocale
+     * @param string $outputLocale
      * @return string
      */
-    public function similar(string $value, string $referenceLocale): string
+    public function similar(?string $value, string $inputLocale, string $outputLocale): ?string
     {
-        $referenceRules = config("eloquent_request.similar.$referenceLocale");
-
-        foreach (config('eloquent_request.similar') as $locale => $rules) {
-            if ($locale == $referenceLocale) {
-                continue;
-            }
-
-            $value = str_replace($rules, $referenceRules, $value);
-        }
-
-        return $value;
+        return $this->replace(
+            $value,
+            config("eloquent_request.similar.$inputLocale"),
+            config("eloquent_request.similar.$outputLocale")
+        );
     }
 
     /**
@@ -93,5 +84,27 @@ class SearchService
         $value = addcslashes($value, '_%\\');
 
         return '%'.str_replace(' ', '%', $value).'%';
+    }
+
+    /**
+     * @param string $value
+     * @param array $inputRules
+     * @param array $outputRules
+     * @return string|null
+     */
+    private function replace(?string $value, array $inputRules, array $outputRules): ?string
+    {
+        if (is_null($value)) {
+            return $value;
+        }
+
+        $value = strtr($value, config('eloquent_request.replacers'));
+
+        $trans = str_replace($inputRules['first'], $outputRules['first'], $value, $count);
+        if ($count) {
+            $value = str_replace($inputRules['second'], $outputRules['second'], $trans);
+        }
+
+        return $value;
     }
 }
