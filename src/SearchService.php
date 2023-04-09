@@ -76,18 +76,23 @@ class SearchService
      * Prepares string for searching
      *
      * @param string $value
+     * @param bool $leftWildcard = true
      * @return string
      */
-    public function prepare(string $value): string
+    public function prepare(string $value, bool $leftWildcard = true): string
     {
         $value = trim($this->generate([$value]));
         $value = addcslashes($value, '_%\\');
 
-        return '%'.str_replace(' ', '%', $value).'%';
+        if ($leftWildcard) {
+            return '%'.str_replace(' ', '%', $value).'%';
+        }
+
+        return '% '.str_replace(' ', '% ', $value).'%';
     }
 
     /**
-     * @param string $value
+     * @param string|null $value
      * @param array $inputRules
      * @param array $outputRules
      * @return string|null
