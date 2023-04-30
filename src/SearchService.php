@@ -42,10 +42,16 @@ class SearchService
      * Generates search string for storing
      *
      * @param array|null $values
+     * @param int $maxLength
      * @return string|null
+     * @throws \RuntimeException
      */
-    public function generate(?array $values): ?string
+    public function generate(?array $values, int $maxLength = null): ?string
     {
+        if ($maxLength && $maxLength < 5) {
+            throw new \RuntimeException('Incorrect usage.');
+        }
+
         $replacers = config('eloquent_request.replacers');
         $list = [];
 
@@ -57,26 +63,33 @@ class SearchService
             $value = mb_strtolower($value);
             $value = strtr($value, $replacers);
             $value = explode(' ', $value);
-            $value = array_map('trim', $value);
 
-            $list = array_merge($list, $value);
+            foreach ($value as $item) {
+                $item = trim($item);
+                if ($item !== null && $item !== '') {
+                    $list[] = $item;
+                }
+            }
+        }
+        $list = array_unique($list);
+
+        while ($maxLength && mb_strlen(' ' . implode(' ', $list) . ' ') > $maxLength) {
+            array_pop($list);
         }
 
         if (! $list) {
             return null;
         }
-
-        $list = array_unique($list);
         sort($list);
 
-        return ' ' . trim(implode(' ', $list)) . ' ';
+        return ' ' . implode(' ', $list) . ' ';
     }
 
     /**
      * Prepares string for searching
      *
      * @param string $value
-     * @param bool $leftWildcard = true
+     * @param bool $leftWildcard
      * @return string
      */
     public function prepare(string $value, bool $leftWildcard = true): string
