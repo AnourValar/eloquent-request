@@ -101,7 +101,7 @@ class FlatService
         }
 
         static $sha1;
-        if (! $sha1 ) {
+        if (! $sha1) {
             $sha1 = sha1(json_encode($this->getActualStructure($flatInterface)));
         }
         $shadowTable = $flatInterface->flatModel()->getTable() . '_' . $sha1;
@@ -131,7 +131,7 @@ class FlatService
             $closure = [$this, 'sync'];
         }
 
-        $model = new $model;
+        $model = new $model();
         if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses($model))) {
             $model = $model->withTrashed();
         }
@@ -374,7 +374,7 @@ class FlatService
                 $value = $column->source()($value);
             } else {
                 foreach (explode('.', $column->source()) as $item) {
-                    $value = ( $value[$item] ?? null );
+                    $value = ($value[$item] ?? null);
                 }
             }
 

@@ -129,7 +129,7 @@ class Service
     {
         // Prepare query builder
         if (is_string($query)) {
-            $query = new $query;
+            $query = new $query();
         }
 
         if ($query instanceof \Illuminate\Database\Eloquent\Model) {

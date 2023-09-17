@@ -1,0 +1,28 @@
+parameters:
+
+    paths:
+        - src
+
+    # The level 9 is the highest level
+    level: 5
+
+    ignoreErrors:
+        - '#Call to static method#'
+        - '#Call to an undefined method#'
+        - '#Variable \$collection might not be defined#'
+        - '#Access to static property \$defaultStringLength on an unknown class#'
+        - '#Left side of \&\& is always true\.#'
+        - '#Variable \$result might not be defined\.#'
+
+    excludePaths:
+
+    checkFunctionNameCase: true
+    checkInternalClassCaseSensitivity: true
+    checkAlwaysTrueInstanceof: true
+    reportMaybesInMethodSignatures: true
+    reportStaticMethodSignatures: true
+    checkUninitializedProperties: true
+    checkDynamicProperties: true
+    reportAlwaysTrueInLastCondition: true
+    reportWrongPhpDocTypeInVarTag: true
+    checkMissingCallableSignature: true

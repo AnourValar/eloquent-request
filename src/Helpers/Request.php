@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Request implements \ArrayAccess
 {
-    use ValidationTrait { getDisplayAttribute as getDisplayAttributeTrait; }
+    use ValidationTrait {
+        getDisplayAttribute as getDisplayAttributeTrait;
+    }
 
     /**
      * @var array

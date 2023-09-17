@@ -461,8 +461,8 @@ class FilterAndScopeBuilder extends AbstractBuilder
                         'eloquent-request::validation.ranges.min',
                         [
                             'attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile),
-                            'min' => ( $this->profile['ranges'][$parsedField]['min'] ?? null ),
-                            'max' => ( $this->profile['ranges'][$parsedField]['max'] ?? null ),
+                            'min' => $this->profile['ranges'][$parsedField]['min'],
+                            'max' => ($this->profile['ranges'][$parsedField]['max'] ?? null),
                         ]
                     )
                 );
@@ -477,8 +477,8 @@ class FilterAndScopeBuilder extends AbstractBuilder
                         'eloquent-request::validation.ranges.max',
                         [
                             'attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile),
-                            'min' => ( $this->profile['ranges'][$parsedField]['min'] ?? null ),
-                            'max' => ( $this->profile['ranges'][$parsedField]['max'] ?? null ),
+                            'min' => ($this->profile['ranges'][$parsedField]['min'] ?? null),
+                            'max' => $this->profile['ranges'][$parsedField]['max'],
                         ]
                     )
                 );

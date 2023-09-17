@@ -9,12 +9,12 @@ class IlluminateValidator implements ValidatorInterface
      */
     protected $errors;
 
-   /**
-    * {@inheritDoc}
-    * @see \AnourValar\EloquentRequest\Validators\ValidatorInterface::addError()
-    */
-   public function addError($key, string $message): ValidatorInterface
-   {
+    /**
+     * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Validators\ValidatorInterface::addError()
+     */
+    public function addError($key, string $message): ValidatorInterface
+    {
         $this->errors[] = ['key' => $key, 'message' => $message];
 
         return $this;
@@ -30,8 +30,7 @@ class IlluminateValidator implements ValidatorInterface
             return;
         }
 
-        \Validator
-            ::make([], [])
+        \Validator::make([], [])
             ->after(function ($validator) use ($config) {
                 foreach ($this->errors as $error) {
                     $validator->errors()->add($this->prepareKey($error['key'], $config), $error['message']);
