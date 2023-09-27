@@ -162,6 +162,18 @@ class Request implements \ArrayAccess
     }
 
     /**
+     * Has any filters (applied)
+     *
+     * @return bool
+     */
+    public function hasFilters(): bool
+    {
+        $filters = ($this->data[$this->config['filter_key']] ?? null);
+        $default = ($this->profile['default_request'][$this->config['filter_key']] ?? null);
+        return $filters != $default;
+    }
+
+    /**
      * {@inheritDoc}
      * @see ArrayAccess::offsetSet()
      */
