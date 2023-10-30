@@ -34,10 +34,12 @@ class SearchOperation extends LikeOperation
             $fullValue = str_replace(' ', '', $value);
 
             $query
-                ->when(mb_strlen($fullValue) >= static::MIN_LENGTH && $fullValue != $value, function ($query)
-                use ($field, $fullValue, $options) {
-                    $query->where($field, 'LIKE', $this->canonizeValueWithOptions($fullValue, $options));
-                })
+                ->when(
+                    mb_strlen($fullValue) >= static::MIN_LENGTH && $fullValue != $value,
+                    function ($query) use ($field, $fullValue, $options) {
+                        $query->where($field, 'LIKE', $this->canonizeValueWithOptions($fullValue, $options));
+                    }
+                )
                 ->orWhere($field, 'LIKE', $this->canonizeValueWithOptions($value, $options));
         });
     }

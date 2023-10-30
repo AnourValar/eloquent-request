@@ -170,7 +170,7 @@ class Request implements \ArrayAccess
     {
         $filters = ($this->data[$this->config['filter_key']] ?? null);
         $default = ($this->profile['default_request'][$this->config['filter_key']] ?? null);
-        return $filters != $default;
+        return $filters != $default || old($this->config['filter_key']);
     }
 
     /**

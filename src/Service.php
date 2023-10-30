@@ -9,37 +9,6 @@ class Service
     use \AnourValar\EloquentRequest\Helpers\ValidationTrait;
 
     /**
-     * Presets of availables operations
-     *
-     * @var array
-     */
-    public const PROFILE_FILTER_ID = ['=', '!=', 'in', 'not-in'];
-    public const PROFILE_FILTER_BOOLEAN = ['=', '!=', 'in', 'not-in'];
-    public const PROFILE_FILTER_NUMBER = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
-    public const PROFILE_FILTER_DATE = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
-    public const PROFILE_FILTER_TEXT = ['=', '!=', 'like', 'not-like'];
-    public const PROFILE_FILTER_IS_NULL = ['is-null' => 'is-null'];
-    public const PROFILE_FILTER_SEARCH = ['search'];
-    public const PROFILE_FILTER_JSON = ['json-in', 'json-contains', 'json-not-in', 'json-not-contains'];
-
-    /**
-     * Presets of availables ranges
-     *
-     * @var int
-     */
-    public const PROFILE_RANGE_TINYINT = 127;
-    public const PROFILE_RANGE_UNSIGNED_TINYINT = 255; // MySQL
-
-    public const PROFILE_RANGE_SMALLINT = 32767;
-    public const PROFILE_RANGE_UNSIGNED_SMALLINT = 65535; // MySQL
-
-    public const PROFILE_RANGE_MEDIUMINT = 8388607;
-    public const PROFILE_RANGE_UNSIGNED_MEDIUMINT = 16777215; // MySQL
-
-    public const PROFILE_RANGE_INT = 2147483647;
-    public const PROFILE_RANGE_UNSIGNED_INT = 4294967295; // MySQL
-
-    /**
      * Config
      *
      * @var array

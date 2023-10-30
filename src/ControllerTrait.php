@@ -5,6 +5,37 @@ namespace AnourValar\EloquentRequest;
 trait ControllerTrait
 {
     /**
+     * Presets of availables operations
+     *
+     * @var array
+     */
+    protected const PROFILE_FILTER_ID = ['=', '!=', 'in', 'not-in'];
+    protected const PROFILE_FILTER_BOOLEAN = ['=', '!=', 'in', 'not-in'];
+    protected const PROFILE_FILTER_NUMBER = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
+    protected const PROFILE_FILTER_DATE = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
+    protected const PROFILE_FILTER_TEXT = ['=', '!=', 'like', 'not-like'];
+    protected const PROFILE_FILTER_IS_NULL = ['is-null' => 'is-null'];
+    protected const PROFILE_FILTER_SEARCH = ['search'];
+    protected const PROFILE_FILTER_JSON = ['json-in', 'json-contains', 'json-not-in', 'json-not-contains'];
+
+    /**
+     * Presets of availables ranges
+     *
+     * @var int
+     */
+    protected const PROFILE_RANGE_TINYINT = 127;
+    protected const PROFILE_RANGE_UNSIGNED_TINYINT = 255; // MySQL
+
+    protected const PROFILE_RANGE_SMALLINT = 32767;
+    protected const PROFILE_RANGE_UNSIGNED_SMALLINT = 65535; // MySQL
+
+    protected const PROFILE_RANGE_MEDIUMINT = 8388607;
+    protected const PROFILE_RANGE_UNSIGNED_MEDIUMINT = 16777215; // MySQL
+
+    protected const PROFILE_RANGE_INT = 2147483647;
+    protected const PROFILE_RANGE_UNSIGNED_INT = 4294967295; // MySQL
+
+    /**
      * @var \AnourValar\EloquentRequest\Helpers\Request|null
      */
     private ?\AnourValar\EloquentRequest\Helpers\Request $lastBuildRequest;
