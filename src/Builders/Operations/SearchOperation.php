@@ -48,6 +48,7 @@ class SearchOperation extends LikeOperation
      * @param mixed $value
      * @param array $options
      * @return string
+     * @psalm-suppress UnusedVariable
      */
     protected function canonizeValueWithOptions($value, array $options): string
     {

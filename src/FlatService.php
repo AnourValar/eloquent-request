@@ -137,7 +137,7 @@ class FlatService
         }
 
         $affected = 0;
-        $model->chunkById($chunkSize, function ($items) use ($affected, $closure, $flatInterface) {
+        $model->chunkById($chunkSize, function ($items) use (&$affected, $closure, $flatInterface) {
             foreach ($items as $item) {
                 $closure($flatInterface, $item);
                 $affected++;
