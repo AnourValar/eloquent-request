@@ -10,7 +10,6 @@ parameters:
         - '#Call to static method#'
         - '#Call to an undefined method#'
         - '#Variable \$collection might not be defined#'
-        - '#Access to static property \$defaultStringLength on an unknown class#'
         - '#Left side of \&\& is always true\.#'
         - '#Variable \$result might not be defined\.#'
 

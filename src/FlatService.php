@@ -283,12 +283,23 @@ class FlatService
         $table = $this->getFlatModelForWrite($flatInterface)->getTable();
         $structure = [];
 
+        $inspect = [];
+        foreach (\DB::getSchemaBuilder()->getColumns($table) as $item) {
+            $item['length'] = null;
+            preg_match('#\((\d+)\)#', $item['type'], $length);
+            if (! empty($length[1])) {
+                $item['length'] = (int) $length[1];
+            }
+
+            $inspect[$item['name']] = $item;
+        }
+
         foreach (\DB::getSchemaBuilder()->getColumnListing($table) as $column) {
             $structure[] = [
                 'column' => $column,
-                'type' => $this->normalizeType(\DB::getSchemaBuilder()->getColumnType($table, $column)),
-                'length' => \DB::connection()->getDoctrineColumn($table, $column)->getLength(),
-                'nullable' => ! \DB::connection()->getDoctrineColumn($table, $column)->getNotnull(),
+                'type' => $this->normalizeType($inspect[$column]['type_name']),
+                'length' => $inspect[$column]['length'],
+                'nullable' => $inspect[$column]['nullable'],
             ];
         }
 
@@ -313,8 +324,8 @@ class FlatService
 
             $type = $this->normalizeType($attribute['type']);
             $length = ($attribute['length'] ?? null);
-            if (! isset($length) && $type == 'string') {
-                $length = \lluminate\Database\Schema\Builder::$defaultStringLength;
+            if (! isset($length) && in_array($type, ['string', 'tinytext'])) {
+                $length = \Illuminate\Database\Schema\Builder::$defaultStringLength;
             }
 
             $structure[] = [
@@ -427,21 +438,58 @@ class FlatService
      */
     protected function normalizeType(string $type): string
     {
+        /*
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->bigInteger('a1')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->smallInteger('a2')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->mediumINteger('a3')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->tinyInteger('a4')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->unsignedBigInteger('a5')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->integer('a6')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->string('a7')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->string('a8', 123)]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->boolean('a9')->nullable()]),
+
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->unsignedMediumInteger('a10')->nullable()]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->text('a11')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->tinyText('a12')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->mediumText('a13')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->float('a14')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->double('a15')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->decimal('a16', 10, 2)]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->bigInteger('a17')]),
+
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->json('a18')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->jsonb('a19')]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->json('a20')->nullable()]),
+
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->uuid('a21')->nullable()]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->timestamp('a22')->nullable()]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->datetime('a23')->nullable()]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->date('a24')->nullable()]),
+            new FlatMapper(['migration' => fn (Blueprint $blueprint) => $blueprint->time('a25')->nullable()]),
+         */
+
         $type = mb_strtolower($type);
 
-        $type = str_replace('integer', 'int', $type);
-        $type = str_replace('jsonb', 'json', $type);
-        $type = str_replace('timestamp', 'datetime', $type);
-        $type = str_replace('double', 'float', $type);
-        $type = str_replace('guid', 'uuid', $type);
+        return match ($type) {
+            'int2' => 'smallinteger',
+            'int4' => 'integer',
+            'int8' => 'biginteger',
+            'mediuminteger' => 'integer',
+            'tinyinteger' => 'smallinteger',
 
-        $type = str_replace('longtext', 'text', $type);
-        $type = str_replace('mediumtext', 'text', $type);
-        $type = str_replace('tinytext', 'string', $type);
+            'float8' => 'float',
+            'double' => 'float',
+            'numeric' => 'decimal',
 
-        $type = str_replace('tinyint', 'smallint', $type);
-        $type = str_replace('mediumint', 'int', $type);
+            'varchar' => 'string',
+            'tinytext' => 'string',
+            'mediumtext' => 'text',
 
-        return $type;
+            'bool' => 'boolean',
+
+            'timestamp' => 'datetime',
+            default => $type,
+        };
     }
 }

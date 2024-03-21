@@ -209,12 +209,6 @@ $collection = \EloquentRequest::buildBy(\App\User::class, $profile, $request);
 
 ### Setup
 
-Dependencies:
-
-```bash
-composer require doctrine/dbal "^3.3"
-```
-
 Model Observer (saved, deleted):
 
 ```php
