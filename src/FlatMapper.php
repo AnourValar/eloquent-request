@@ -5,6 +5,13 @@ namespace AnourValar\EloquentRequest;
 class FlatMapper
 {
     /**
+     * @var string
+     */
+    public const PURPOSE_IDENTIFIER = '1';
+    public const PURPOSE_PAYLOAD = '2';
+    public const PURPOSE_META = '3';
+
+    /**
      * @var array
      */
     private $data;
@@ -41,13 +48,13 @@ class FlatMapper
     }
 
     /**
-     * Is identifier (service)
+     * Column purpose
      *
-     * @return bool
+     * @return string
      */
-    public function isIdentifier(): bool
+    public function purpose(): string
     {
-        return $this->data['is_identifier'];
+        return $this->data['purpose'];
     }
 
     /**

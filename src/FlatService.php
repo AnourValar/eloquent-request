@@ -156,19 +156,15 @@ class FlatService
      */
     public function sync(FlatInterface $flatInterface, \Illuminate\Database\Eloquent\Model $model): void
     {
-        list($identifiers, $dataSets, $exists) = $this->syncState($flatInterface, $model);
+        list($identifiers, $dataSets) = $this->syncState($flatInterface, $model);
 
         $this->getFlatModelForWrite($flatInterface)->where($identifiers)->delete();
-
-        if (! $exists) {
-            return;
-        }
 
         foreach ($dataSets as $dataSet) {
             $this
                 ->getFlatModelForWrite($flatInterface)
                 ->withCasts($this->getCasts($flatInterface))
-                ->create(array_merge($identifiers, $dataSet));
+                ->create(array_merge($dataSet, $identifiers));
         }
     }
 
@@ -185,9 +181,9 @@ class FlatService
             return;
         }
 
-        list($identifiers, $dataSets, $exists) = $this->syncState($flatInterface, $model);
+        list($identifiers, $dataSets) = $this->syncState($flatInterface, $model);
 
-        if (! $exists) {
+        if (! $dataSets) {
             return;
         }
 
@@ -199,7 +195,7 @@ class FlatService
             $this
                 ->getFlatModelForWrite($flatInterface, true)
                 ->withCasts($this->getCasts($flatInterface))
-                ->create(array_merge($identifiers, $dataSet));
+                ->create(array_merge($dataSet, $identifiers));
         }
     }
 
@@ -373,39 +369,32 @@ class FlatService
     {
         $identifiers = [];
         $data = [];
-        $exists = false;
+        $columns = [];
 
         foreach ($flatInterface->scheme() as $column) {
-            if (is_null($column->source())) {
-                continue;
-            }
-
-            $value = $model;
-            if (is_callable($column->source())) {
-                $value = $column->source()($value);
-            } else {
-                foreach (explode('.', $column->source()) as $item) {
-                    $value = ($value[$item] ?? null);
+            $value = null;
+            if (! is_null($column->source())) {
+                $value = $model;
+                if (is_callable($column->source())) {
+                    $value = $column->source()($value);
+                } else {
+                    foreach (explode('.', $column->source()) as $item) {
+                        $value = ($value[$item] ?? null);
+                    }
                 }
             }
 
-            if ($column->isIdentifier()) {
+            if ($column->purpose() == FlatMapper::PURPOSE_IDENTIFIER) {
+                if (! isset($value)) {
+                    throw new \LogicException('Incorrect usage.');
+                }
                 $identifiers[$column->target()] = $value;
             } else {
-                $data[$column->target()] = $value;
-
-                if (isset($value)) {
-                    $exists = true;
+                if ($column->purpose() == FlatMapper::PURPOSE_PAYLOAD) {
+                    $columns[] = $column->target();
                 }
+                $data[$column->target()] = $value;
             }
-        }
-
-        if (! $identifiers) {
-            throw new \LogicException('Incorrect usage.');
-        }
-
-        if ($exists && (! $model->exists || ! $flatInterface->shouldBeStored($model))) {
-            $exists = false;
         }
 
         $dataSets = [];
@@ -413,7 +402,25 @@ class FlatService
             $dataSets[] = array_merge($data, $item);
         }
 
-        return [$identifiers, $dataSets, $exists];
+        $dataSets = array_filter($dataSets, function ($item) use ($columns, $identifiers) {
+            if (array_intersect_key($item, $identifiers)) {
+                throw new \LogicException('Incorrect usage.');
+            }
+
+            foreach ($columns as $column) {
+                if (isset($item[$column])) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        if (! $model->exists || ! $flatInterface->shouldBeStored($model)) {
+            $dataSets = [];
+        }
+
+        return [$identifiers, $dataSets];
     }
 
     /**
