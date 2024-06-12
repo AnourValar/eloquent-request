@@ -128,6 +128,7 @@ class Request implements \ArrayAccess
      */
     public function scope(string $path = null, $default = null)
     {
+        $path = (string) $path;
         if (mb_strlen($path)) {
             $path = ".$path";
         }
