@@ -100,10 +100,9 @@ class FlatService
             return null;
         }
 
-        static $sha1;
-        if (! $sha1) {
-            $sha1 = sha1(json_encode($this->getActualStructure($flatInterface)));
-        }
+        $sha1 = \Cache::driver('array')->rememberForever(implode(' / ', [__METHOD__, get_class($flatInterface)]), function () use ($flatInterface) {
+            return sha1(json_encode($this->getActualStructure($flatInterface)));
+        });
         $shadowTable = $flatInterface->flatModel()->getTable() . '_' . $sha1;
 
         if (! $force && ! \Schema::hasTable($shadowTable)) {
