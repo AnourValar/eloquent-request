@@ -96,7 +96,8 @@ class Request implements \ArrayAccess
      */
     public function filter(string $path = null, $default = null)
     {
-        if (mb_strlen((string) $path)) {
+        $path = (string) $path;
+        if (mb_strlen($path)) {
             $path = ".$path";
         }
 
@@ -112,6 +113,7 @@ class Request implements \ArrayAccess
      */
     public function relation(string $path = null, $default = null)
     {
+        $path = (string) $path;
         if (mb_strlen($path)) {
             $path = ".$path";
         }
@@ -145,7 +147,8 @@ class Request implements \ArrayAccess
      */
     public function sort(string $path = null, $default = null)
     {
-        if (mb_strlen((string) $path)) {
+        $path = (string) $path;
+        if (mb_strlen($path)) {
             $path = ".$path";
         }
 
