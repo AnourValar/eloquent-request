@@ -168,13 +168,21 @@ class Request implements \ArrayAccess
     /**
      * Has any filters (applied)
      *
+     * @param array $keys
      * @return bool
      */
-    public function hasFilters(): bool
+    public function hasFilters(array $keys = ['filter_key', 'scope_key']): bool
     {
-        $filters = ($this->data[$this->config['filter_key']] ?? null);
-        $default = ($this->profile['default_request'][$this->config['filter_key']] ?? null);
-        return $filters != $default || old($this->config['filter_key']);
+        foreach ($keys as $key) {
+            $value = ($this->data[$this->config[$key]] ?? null);
+            $default = ($this->profile['default_request'][$this->config[$key]] ?? null);
+
+            if ($value != $default || old($this->config[$key])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
