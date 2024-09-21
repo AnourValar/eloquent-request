@@ -9,14 +9,14 @@ trait ControllerTrait
      *
      * @var array
      */
-    protected const PROFILE_FILTER_ID = ['=', '!=', 'in', 'not-in'];
-    protected const PROFILE_FILTER_BOOLEAN = ['=', '!=', 'in', 'not-in'];
-    protected const PROFILE_FILTER_NUMBER = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
-    protected const PROFILE_FILTER_DATE = ['=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'];
-    protected const PROFILE_FILTER_TEXT = ['=', '!=', 'like', 'not-like'];
-    protected const PROFILE_FILTER_IS_NULL = ['is-null' => 'is-null'];
-    protected const PROFILE_FILTER_SEARCH = ['search'];
-    protected const PROFILE_FILTER_JSON = ['json-in', 'json-contains', 'json-not-in', 'json-not-contains'];
+    protected const PROFILE_FILTER_ID = ['=', 'in']; // '=', '!=', 'in', 'not-in'
+    protected const PROFILE_FILTER_BOOLEAN = ['=', 'in']; // '=', '!=', 'in', 'not-in'
+    protected const PROFILE_FILTER_NUMBER = ['=', '<', '<=', '>', '>=', 'in']; // '=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'
+    protected const PROFILE_FILTER_DATE = ['=', '<', '<=', '>', '>=', 'in']; // '=', '!=', '<', '<=', '>', '>=', 'in', 'not-in'
+    protected const PROFILE_FILTER_TEXT = ['=', 'like']; // '=', '!=', 'like', 'not-like'
+    protected const PROFILE_FILTER_IS_NULL = ['is-null' => 'is-null']; // 'is-null' => 'is-null'
+    protected const PROFILE_FILTER_SEARCH = ['search']; // 'search'
+    protected const PROFILE_FILTER_JSON = ['json-in', 'json-contains']; // 'json-in', 'json-contains', 'json-not-in', 'json-not-contains'
 
     /**
      * Presets of availables ranges
