@@ -20,6 +20,7 @@ class NotInOperation extends InOperation
                 }
             }
         }
+        $value = array_unique($value);
 
         if ($nullable) {
             $query

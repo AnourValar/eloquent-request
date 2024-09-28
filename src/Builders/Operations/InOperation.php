@@ -73,6 +73,7 @@ class InOperation implements OperationInterface
                 }
             }
         }
+        $value = array_unique($value);
 
         if ($nullable) {
             $query->where(function ($query) use ($field, $value) {

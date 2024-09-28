@@ -52,7 +52,7 @@ class JsonInOperation extends InOperation
                 $field = $originalField;
                 $this->convertOperands($field, $item, $options);
 
-                $query->orWhereJsonContains($field, $item);
+                $query->orWhereJsonContains($field, $item); // @TODO: @?? 'lax $[*] $ <...>' ?
             }
         });
     }
@@ -80,6 +80,7 @@ class JsonInOperation extends InOperation
         if ($nullable && ! $hasNull) {
             $value[] = null;
         }
+        $value = array_unique($value);
 
         return $value;
     }
