@@ -39,7 +39,7 @@ class SearchService
     }
 
     /**
-     * Generates search string for storing
+     * Generates search string for storing (LIKE)
      *
      * @param array|null $values
      * @param int $maxLength
@@ -83,6 +83,58 @@ class SearchService
         sort($list);
 
         return ' ' . implode(' ', $list) . ' ';
+    }
+
+    /**
+     * Generates search string for storing (FULLTEXT)
+     *
+     * @param string|null $phrase
+     * @param array $typo
+     * @param array $alias
+     * @return string|null
+     */
+    public function generateFulltext(?string $phrase, array $typo, array $alias = []): ?string
+    {
+        if (is_null($phrase)) {
+            return null;
+        }
+
+        // typo
+        $phrase = $this->typo($phrase, $typo['from'], $typo['to']);
+
+        // case
+        $phrase = mb_strtolower($phrase);
+
+        // alias
+        $phrase = preg_replace_callback('#([а-я]+)#Su', function ($patterns) use ($alias) {
+            foreach ($alias as $from => $to) {
+                if ($patterns[1] == $from) {
+                    return $to;
+                }
+            }
+
+            return $patterns[1];
+        }, $phrase);
+
+        // clean up
+        $phrase = preg_replace('#[^а-я\d\-]#Su', ' ', $phrase);
+
+        // space: letter + digit
+        $phrase = preg_replace_callback('#([а-я\-]+)([\d]+)#Su', function (array $patterns) {
+            return str_replace('-', '', $patterns[1] . ' ' . $patterns[2]);
+        }, $phrase);
+
+        // space: digit + letter
+        $phrase = preg_replace_callback('#([\d]+)([а-я\-]+)#Su', function (array $patterns) {
+            return str_replace('-', '', $patterns[1] . ' ' . $patterns[2]);
+        }, $phrase);
+
+        // spaces
+        $phrase = str_replace('- ', ' ', $phrase);
+        $phrase = str_replace(' -', ' ', $phrase);
+        $phrase = preg_replace('#\s+#', ' ', trim($phrase));
+
+        return $phrase;
     }
 
     /**
