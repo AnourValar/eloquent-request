@@ -98,7 +98,7 @@ trait ValidationTrait
      */
     protected function getFailClosure(): \Closure
     {
-        return function (string $message, array $params = [], string $suffix = null) {
+        return function (string $message, array $params = [], ?string $suffix = null) {
             throw new \AnourValar\EloquentRequest\Helpers\FailException($message, $params, $suffix);
         };
     }

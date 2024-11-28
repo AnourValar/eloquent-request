@@ -118,11 +118,11 @@ class FlatService
      *
      * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
      * @param string $model
-     * @param callable $closure
+     * @param callable|null $closure
      * @param int $chunkSize
      * @return int
      */
-    public function resync(FlatInterface $flatInterface, string $model, callable $closure = null, int $chunkSize = 5000): int
+    public function resync(FlatInterface $flatInterface, string $model, ?callable $closure = null, int $chunkSize = 5000): int
     {
         if ($closure) {
             $closure = \Closure::bind($closure, $this); // wrap for the atomic lock

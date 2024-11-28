@@ -61,11 +61,11 @@ class Request implements \ArrayAccess
     /**
      * Get element by path
      *
-     * @param string $path
+     * @param string|null $path
      * @param mixed $default
      * @return mixed
      */
-    public function get(string $path = null, $default = null)
+    public function get(?string $path = null, $default = null)
     {
         $path = explode('.', (string) $path);
         $data = $this->data;
@@ -90,11 +90,11 @@ class Request implements \ArrayAccess
     /**
      * Get filter by path
      *
-     * @param string $path
+     * @param string|null $path
      * @param mixed $default
      * @return mixed
      */
-    public function filter(string $path = null, $default = null)
+    public function filter(?string $path = null, $default = null)
     {
         $path = (string) $path;
         if (mb_strlen($path)) {
@@ -107,11 +107,11 @@ class Request implements \ArrayAccess
     /**
      * Get relation by path
      *
-     * @param string $path
+     * @param string|null $path
      * @param mixed $default
      * @return mixed
      */
-    public function relation(string $path = null, $default = null)
+    public function relation(?string $path = null, $default = null)
     {
         $path = (string) $path;
         if (mb_strlen($path)) {
@@ -124,11 +124,11 @@ class Request implements \ArrayAccess
     /**
      * Get scope by path
      *
-     * @param string $path
+     * @param string|null $path
      * @param mixed $default
      * @return mixed
      */
-    public function scope(string $path = null, $default = null)
+    public function scope(?string $path = null, $default = null)
     {
         $path = (string) $path;
         if (mb_strlen($path)) {
@@ -141,11 +141,11 @@ class Request implements \ArrayAccess
     /**
      * Get sort by path
      *
-     * @param string $path
+     * @param string|null $path
      * @param mixed $default
      * @return mixed
      */
-    public function sort(string $path = null, $default = null)
+    public function sort(?string $path = null, $default = null)
     {
         $path = (string) $path;
         if (mb_strlen($path)) {

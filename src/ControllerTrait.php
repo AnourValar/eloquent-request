@@ -44,12 +44,12 @@ trait ControllerTrait
      * @see \AnourValar\EloquentRequest\Service::buildBy()
      *
      * @param mixed $query
-     * @param array $profile
-     * @param array $request
+     * @param array|null $profile
+     * @param array|null $request
      * @param mixed $buildRequest
      * @return mixed
      */
-    protected function buildBy($query, array $profile = null, array $request = null, &$buildRequest = null)
+    protected function buildBy($query, ?array $profile = null, ?array $request = null, &$buildRequest = null)
     {
         $this->buildingContext($profile, $request);
 
@@ -74,12 +74,12 @@ trait ControllerTrait
     }
 
     /**
-     * @param array $profile
-     * @param array $request
+     * @param array|null $profile
+     * @param array|null $request
      * @throws \LogicException
      * @return void
      */
-    private function buildingContext(array &$profile = null, array &$request = null): void
+    private function buildingContext(?array &$profile = null, ?array &$request = null): void
     {
         // Profile
         if (is_null($profile) && method_exists($this, 'profile')) {

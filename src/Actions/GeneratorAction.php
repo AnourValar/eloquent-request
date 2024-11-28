@@ -66,10 +66,11 @@ class GeneratorAction implements ActionInterface
      *
      * @param int $chunkSize
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int|null $limit
      * @throws \LogicException
      * @return \Closure
      */
-    protected function createGenerator(int $chunkSize, Builder &$query, int $limit = null): \Closure
+    protected function createGenerator(int $chunkSize, Builder &$query, ?int $limit = null): \Closure
     {
         return function () use ($chunkSize, $query, $limit) {
             foreach ($query->lazy($chunkSize) as $item) {
@@ -91,10 +92,11 @@ class GeneratorAction implements ActionInterface
      * @param int $chunkSize
      * @param array $chunkOrder
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int|null $limit
      * @throws \LogicException
      * @return \Closure
      */
-    protected function createGeneratorById(int $chunkSize, array $chunkOrder, Builder &$query, int $limit = null): \Closure
+    protected function createGeneratorById(int $chunkSize, array $chunkOrder, Builder &$query, ?int $limit = null): \Closure
     {
         return function () use ($chunkSize, $chunkOrder, $query, $limit) {
             $column = array_keys($chunkOrder)[0];

@@ -42,11 +42,11 @@ class SearchService
      * Generates search string for storing (LIKE)
      *
      * @param array|null $values
-     * @param int $maxLength
+     * @param int|null $maxLength
      * @return string|null
      * @throws \RuntimeException
      */
-    public function generate(?array $values, int $maxLength = null): ?string
+    public function generate(?array $values, ?int $maxLength = null): ?string
     {
         if ($maxLength && $maxLength < 5) {
             throw new \RuntimeException('Incorrect usage.');
