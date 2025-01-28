@@ -67,7 +67,6 @@ class GeneratorAction implements ActionInterface
      * @param int $chunkSize
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param int|null $limit
-     * @throws \LogicException
      * @return \Closure
      */
     protected function createGenerator(int $chunkSize, Builder &$query, ?int $limit = null): \Closure
@@ -93,7 +92,6 @@ class GeneratorAction implements ActionInterface
      * @param array $chunkOrder
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param int|null $limit
-     * @throws \LogicException
      * @return \Closure
      */
     protected function createGeneratorById(int $chunkSize, array $chunkOrder, Builder &$query, ?int $limit = null): \Closure

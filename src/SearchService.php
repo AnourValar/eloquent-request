@@ -66,7 +66,7 @@ class SearchService
 
             foreach ($value as $item) {
                 $item = trim($item);
-                if ($item !== null && $item !== '') {
+                if ($item !== '') {
                     $list[] = $item;
                 }
             }
