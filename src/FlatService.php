@@ -304,12 +304,19 @@ class FlatService
     /**
      * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
      * @return array
+     * @psalm-suppress TooFewArguments
      */
     protected function getActualStructure(\AnourValar\EloquentRequest\FlatInterface $flatInterface): array
     {
         $structure = [];
 
-        $blueprint = new \Illuminate\Database\Schema\Blueprint('');
+        if (((int) explode('.', app()->version())[0]) >= 12) {
+            $blueprint = new \Illuminate\Database\Schema\Blueprint($flatInterface->flatModel()->getConnection(), $flatInterface->flatModel()->getTable());
+        } else {
+            $blueprint = new \Illuminate\Database\Schema\Blueprint('');
+        }
+
+
         foreach ($flatInterface->scheme() as $column) {
             $column->migration($blueprint);
         }
