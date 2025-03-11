@@ -316,7 +316,6 @@ class FlatService
             $blueprint = new \Illuminate\Database\Schema\Blueprint('');
         }
 
-
         foreach ($flatInterface->scheme() as $column) {
             $column->migration($blueprint);
         }
