@@ -72,6 +72,6 @@ class SortBuilder extends AbstractBuilder
         }
 
         // Apply
-        $query->orderBy($field, $value);
+        $query->orderBy($this->getColumnFullname($query, $field), $value);
     }
 }

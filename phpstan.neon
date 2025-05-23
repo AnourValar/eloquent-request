@@ -15,6 +15,7 @@ parameters:
         - '#expects string, string\|null given#'
         - '#is used zero times and is not analysed#'
         - '#Blueprint constructor#'
+        - '#Offset 1 on array\{0\} in isset\(\) does not exist#'
 
     excludePaths:
 

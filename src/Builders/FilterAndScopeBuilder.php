@@ -330,7 +330,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 }
             }
         } else {
-            $action['handler']->apply($query, $action['field'], $action['value'], $this->profile['options']);
+            $action['handler']->apply($query, $this->getColumnFullname($query, $action['field']), $action['value'], $this->profile['options']);
         }
     }
 

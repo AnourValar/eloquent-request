@@ -73,4 +73,16 @@ abstract class AbstractBuilder implements BuilderInterface
         // nothing was found
         return null;
     }
+
+    /**
+     * @param Builder $query
+     * @param string $field
+     * @return string
+     */
+    protected function getColumnFullname(Builder &$query, string $field): string
+    {
+        $alias = explode(' ', $query->from);
+        $alias = array_pop($alias);
+        return $alias . '.' . $field;
+    }
 }
