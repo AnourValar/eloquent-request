@@ -12,6 +12,13 @@ class SearchOperation extends LikeOperation
     public const OPTION_TYPO = 'builder.operation.search.typo';
 
     /**
+     * Apply fulltext search
+     *
+     * @var string
+     */
+    public const OPTION_FULLTEXT = 'builder.operation.search.fulltext';
+
+    /**
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\LikeOperation::validate()
      */
@@ -30,6 +37,11 @@ class SearchOperation extends LikeOperation
      */
     public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
     {
+        if (isset($options[self::OPTION_FULLTEXT])) {
+            $query->whereFullText($field, $this->canonizeValueForFullText($value, $options), $options[self::OPTION_FULLTEXT]);
+            return;
+        }
+
         $query->where(function ($query) use ($field, $value, $options) {
             $fullValue = str_replace(' ', '', $value);
 
@@ -37,11 +49,27 @@ class SearchOperation extends LikeOperation
                 ->when(
                     mb_strlen($fullValue) >= static::MIN_LENGTH && $fullValue != $value,
                     function ($query) use ($field, $fullValue, $options) {
-                        $query->where($field, 'LIKE', $this->canonizeValueWithOptions($fullValue, $options));
+                        $query->where($field, 'LIKE', $this->canonizeValueForLike($fullValue, $options));
                     }
                 )
-                ->orWhere($field, 'LIKE', $this->canonizeValueWithOptions($value, $options));
+                ->orWhere($field, 'LIKE', $this->canonizeValueForLike($value, $options));
         });
+    }
+
+    /**
+     * @param string $value
+     * @param array $options
+     * @return string
+     * @psalm-suppress UnusedVariable
+     */
+    protected function canonizeValueForFullText(string $value, array $options): string
+    {
+        if (isset($options[self::OPTION_TYPO])) {
+            $key = array_key_first($options[self::OPTION_TYPO]);
+            $value = \EloquentRequestSearch::typo($value, $key, $options[self::OPTION_TYPO][$key]);
+        }
+
+        return trim(preg_replace('#[^\w\d]#u', ' ', $value)) . '*';
     }
 
     /**
@@ -50,11 +78,10 @@ class SearchOperation extends LikeOperation
      * @return string
      * @psalm-suppress UnusedVariable
      */
-    protected function canonizeValueWithOptions($value, array $options): string
+    protected function canonizeValueForLike($value, array $options): string
     {
         if (isset($options[self::OPTION_TYPO])) {
             $key = array_key_first($options[self::OPTION_TYPO]);
-
             $value = \EloquentRequestSearch::typo($value, $key, $options[self::OPTION_TYPO][$key]);
         }
 
