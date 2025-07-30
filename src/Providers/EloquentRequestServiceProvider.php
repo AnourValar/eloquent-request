@@ -29,7 +29,7 @@ class EloquentRequestServiceProvider extends ServiceProvider
     public function boot()
     {
         // config
-        $this->publishes([ __DIR__.'/../resources/config/eloquent_request.php' => config_path('eloquent_request.php')], 'config');
+        $this->publishes([__DIR__.'/../resources/config/eloquent_request.php' => config_path('eloquent_request.php')], 'config');
 
         // langs
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang/', 'eloquent-request');

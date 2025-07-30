@@ -48,41 +48,13 @@ class JsonInOperation extends InOperation
     {
         $query->where(function ($query) use ($field, $value, $options) {
             $originalField = $field;
-            foreach ($this->getNullableList($value) as $item) {
+            foreach ($value as $item) { // array_unique...
                 $field = $originalField;
                 $this->convertOperands($field, $item, $options);
 
                 $query->orWhereJsonContains($field, $item); // @TODO: @?? 'lax $[*] $ <...>' ?
             }
         });
-    }
-
-    /**
-     * @param array $value
-     * @return array
-     */
-    protected function getNullableList(array $value): array
-    {
-        $nullable = false;
-        $hasNull = false;
-
-        foreach ($value as &$item) {
-            if ($item === '' || $item === 0 || $item === '0') {
-                $nullable = true;
-            }
-
-            if (is_null($item)) {
-                $hasNull = true;
-            }
-        }
-        unset($item);
-
-        if ($nullable && ! $hasNull) {
-            $value[] = null;
-        }
-        $value = array_unique($value);
-
-        return $value;
     }
 
     /**

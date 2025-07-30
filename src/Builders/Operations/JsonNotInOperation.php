@@ -12,7 +12,7 @@ class JsonNotInOperation extends JsonInOperation
     {
         $query->where(function ($query) use ($field, $value, $options) {
             $originalField = $field;
-            foreach ($this->getNullableList($value) as $item) {
+            foreach ($value as $item) { // array_unique...
                 $field = $originalField;
                 $this->convertOperands($field, $item, $options);
 

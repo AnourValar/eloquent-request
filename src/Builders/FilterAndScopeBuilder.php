@@ -402,11 +402,15 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 return (string) $value;
             }
 
+            if (in_array($cast, ['boolean'])) {
+                return (bool) $value;
+            }
+
             if ($value === '') {
                 return $value;
             }
 
-            if (in_array($cast, ['date', 'immutable_date'])) {
+            if (in_array($cast, ['date', 'date:Y-m-d', 'immutable_date'])) {
                 return date('Y-m-d', strtotime($value));
             }
 

@@ -65,21 +65,19 @@ class InOperation implements OperationInterface
     {
         $nullable = false;
         foreach ($value as $key => $item) {
-            if ($item === '' || is_null($item) || $item === 0 || $item === '0') {
+            if (is_null($item)) {
                 $nullable = true;
-
-                if (is_null($item)) {
-                    unset($value[$key]);
-                }
+                unset($value[$key]);
             }
         }
-        $value = array_unique($value);
+        //$value = array_unique($value);
 
         if ($nullable) {
             $query->where(function ($query) use ($field, $value) {
-                $query
-                    ->whereNull($field)
-                    ->orWhereIn($field, $value);
+                $query->whereNull($field);
+                if ($value) {
+                    $query->orWhereIn($field, $value);
+                }
             });
         } else {
             $query->whereIn($field, $value);
