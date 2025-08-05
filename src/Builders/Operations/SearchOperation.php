@@ -38,7 +38,12 @@ class SearchOperation extends LikeOperation
     public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
     {
         if (isset($options[self::OPTION_FULLTEXT])) {
-            $query->whereFullText($field, $this->canonizeValueForFullText($value, $options), $options[self::OPTION_FULLTEXT]);
+            $value = $this->canonizeValueForFullText($value, $options);
+            if (mb_strlen($value) < static::MIN_LENGTH) {
+                $query->whereIn($field, []); // whereRaw('0 = 1')
+            } else {
+                $query->whereFullText($field, $value, $options[self::OPTION_FULLTEXT]);
+            }
             return;
         }
 
