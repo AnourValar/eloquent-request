@@ -37,13 +37,13 @@ class SearchServiceTest extends \Orchestra\Testbench\TestCase
         $this->assertSame('один два', $this->fulltext('Один / два'));
         $this->assertSame('один два', $this->fulltext(' Один  Два '));
         $this->assertSame('елка ежик', $this->fulltext('Ёлка ёжик'));
-        $this->assertSame('жар-птица', $this->fulltext('Жар-птица'));
+        $this->assertSame('жар птица', $this->fulltext('Жар-птица'));
 
-        $this->assertSame('шзрщту 1', $this->fulltext('iphone1'));
+        $this->assertSame('шзрщту1', $this->fulltext('iphone1'));
         $this->assertSame('шзрщту 1', $this->fulltext('iphone 1'));
         $this->assertSame('шзрщту 1', $this->fulltext('iphone_1'));
         $this->assertSame('шзрщту 1', $this->fulltext('IPHONE-1'));
-        $this->assertSame('1 шзрщту', $this->fulltext('1iphone'));
+        $this->assertSame('1шзрщту', $this->fulltext('1iphone'));
         $this->assertSame('1 шзрщту', $this->fulltext('1 iphone'));
         $this->assertSame('1 шзрщту', $this->fulltext('1_iphone'));
         $this->assertSame('1 шзрщту', $this->fulltext('1-IPHONE'));

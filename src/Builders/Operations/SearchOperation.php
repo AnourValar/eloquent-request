@@ -69,12 +69,18 @@ class SearchOperation extends LikeOperation
      */
     protected function canonizeValueForFullText(string $value, array $options): string
     {
+        $typo = [];
         if (isset($options[self::OPTION_TYPO])) {
             $key = array_key_first($options[self::OPTION_TYPO]);
-            $value = \EloquentRequestSearch::typo($value, $key, $options[self::OPTION_TYPO][$key]);
+            $typo = ['from' => $key, 'to' => $options[self::OPTION_TYPO][$key]];
         }
 
-        return trim(preg_replace('#[^\w\d]#u', ' ', $value)) . '*';
+        $suffix = '';
+        if (($options[self::OPTION_FULLTEXT]['mode'] ?? null) == 'boolean') {
+            $suffix = '*';
+        }
+
+        return \EloquentRequestSearch::generateFulltext($value, $typo) . $suffix;
     }
 
     /**
