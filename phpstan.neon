@@ -11,7 +11,6 @@ parameters:
         - '#Call to an undefined method#'
         - '#Variable \$collection might not be defined#'
         - '#Left side of \&\& is always true\.#'
-        - '#Variable \$result might not be defined\.#'
         - '#is used zero times and is not analysed#'
         - '#Blueprint constructor#'
         - '#Offset 1 on array\{0\} in isset\(\) does not exist#'

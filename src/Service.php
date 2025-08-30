@@ -2,7 +2,29 @@
 
 namespace AnourValar\EloquentRequest;
 
-use AnourValar\EloquentRequest\Events\RequestBuiltEvent;
+/**
+ * // Handler example (cache default request)
+ * handler: function ($runAction, $buildRequest) {
+ *     if ($buildRequest->hasOnly([])) {
+ *         return \Cache::remember('list', 86400, fn () => $runAction());
+ *     }
+ *     return $runAction();
+ * }
+ *
+ * // Handler example (cache page requests)
+ * handler: function ($runAction, $buildRequest) {
+ *     if ($buildRequest->hasOnly(['page'])) {
+ *         return \Cache::remember('list:' . $buildRequest->get('page'), 86400, fn () => $runAction());
+ *     }
+ *     return $runAction();
+ * }
+ *
+ * // Handler example (cache all requests)
+ * handler: function ($runAction, $buildRequest) {
+ *     return \Cache::remember($buildRequest->cacheKey(), 86400, fn () => $runAction());
+ * }
+ *
+ */
 
 class Service
 {
@@ -90,11 +112,12 @@ class Service
      * @param array $profile
      * @param array $request
      * @param mixed $buildRequest
-     * @throws \LogicException
-     * @throws \Illuminate\Validation\ValidationException
+     * @param callable|null $handler
      * @return mixed
+     * @throws \Illuminate\Validation\ValidationException
+     * @throws \RuntimeException
      */
-    public function buildBy($query, array $profile, array $request, &$buildRequest = null)
+    public function buildBy($query, array $profile, array $request, &$buildRequest = null, ?callable $handler = null)
     {
         // Prepare query builder
         if (is_string($query)) {
@@ -106,7 +129,7 @@ class Service
         }
 
         if (! $query instanceof \Illuminate\Database\Eloquent\Builder) {
-            throw new \LogicException('First argument must to be Eloquent model.');
+            throw new \RuntimeException('First argument must to be Eloquent model.');
         }
 
 
@@ -130,11 +153,9 @@ class Service
             $buildRequest = array_replace($buildRequest, $builder->build($query, $profile, $request, $this->config, $validator));
         }
 
-        $buildRequest = new \AnourValar\EloquentRequest\Helpers\Request($buildRequest, $profile, $this->config, $query);
-
 
         // Actions
-        foreach ($this->actions as $actionName => $action) {
+        foreach ($this->actions as $action) {
             if (! $action instanceof \AnourValar\EloquentRequest\Actions\ActionInterface) {
                 $action = \App::make($action);
             }
@@ -152,20 +173,27 @@ class Service
             }
             $validator->validate($profile, $this->config);
 
+            // Build request
+            $requestParameters = $action->requestParameters($profile, $request, $this->config);
+            $buildRequest = array_merge($buildRequest, $requestParameters);
+            $buildRequest = new \AnourValar\EloquentRequest\Helpers\Request($buildRequest, $profile, $this->config, $query);
+
             // Handle
             try {
-                $result = $action->action($query, $profile, $request, $this->config, $this->getFailClosure());
+                $runAction = fn () => $action->action($query, $profile, $requestParameters, $this->config, $this->getFailClosure());
+
+                if ($handler) {
+                    return $handler($runAction, $buildRequest);
+                }
+                return $runAction();
             } catch (\AnourValar\EloquentRequest\Helpers\FailException $e) {
                 $validator
                     ->addError($e->getSuffix('action'), trans($e->getMessage(), $e->getParams()))
                     ->validate($profile, $this->config);
             }
-
-            event(new RequestBuiltEvent($result, $profile, $request, $this->config, $actionName));
-            return $result;
         }
 
-        return collect();
+        throw new \RuntimeException('No actions are available for the request.'); // return collect();
     }
 
     /**

@@ -75,12 +75,24 @@ class PaginateAction implements ActionInterface
 
     /**
      * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Actions\ActionInterface::requestParameters()
+     */
+    public function requestParameters(array $profile, array $request, array $config): array
+    {
+        return [
+            $config['per_page_key'] => $request[$config['per_page_key']] ?? null,
+            $config['page_key'] => $request[$config['page_key']] ?? static::DEFAULT_PAGE, // \Illuminate\Pagination\Paginator::resolveCurrentPage($config['page_key']) ?
+        ];
+    }
+
+    /**
+     * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Actions\ActionInterface::action()
      */
-    public function action(Builder &$query, array $profile, array $request, array $config, \Closure $fail)
+    public function action(Builder &$query, array $profile, array $requestParameters, array $config, \Closure $fail)
     {
-        $perPage = $request[$config['per_page_key']] ?? null;
-        $page = $request[$config['page_key']] ?? static::DEFAULT_PAGE; // \Illuminate\Pagination\Paginator::resolveCurrentPage($config['page_key']) ?
+        $perPage = $requestParameters[$config['per_page_key']];
+        $page = $requestParameters[$config['page_key']];
 
         if (in_array(self::OPTION_SIMPLE_PAGINATE, $profile['options'])) {
             $collection = $query->simplePaginate($perPage, ['*'], $config['page_key'], $page);

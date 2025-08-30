@@ -2,8 +2,6 @@
 
 namespace AnourValar\EloquentRequest\Helpers;
 
-use Illuminate\Database\Eloquent\Builder;
-
 class Request implements \ArrayAccess
 {
     use ValidationTrait {
@@ -45,6 +43,17 @@ class Request implements \ArrayAccess
         $this->profile = $profile;
         $this->config = $config;
         $this->query = $query;
+    }
+
+    /**
+     * Cache key for the request
+     *
+     * @return string
+     */
+    public function cacheKey(): string
+    {
+        $keys = [__METHOD__, \EloquentSerialize::serialize($this->query), $this->profile, $this->normalizeKey($this->data), $this->config];
+        return hash('sha256', json_encode($keys));
     }
 
     /**
@@ -171,7 +180,7 @@ class Request implements \ArrayAccess
      * @param array $keys
      * @return bool
      */
-    public function hasFilters(array $keys = ['filter_key', 'scope_key']): bool
+    public function hasFilters(array $keys = ['filter_key', 'relation_key', 'scope_key']): bool
     {
         foreach ($keys as $key) {
             $value = ($this->data[$this->config[$key]] ?? null);
@@ -183,6 +192,41 @@ class Request implements \ArrayAccess
         }
 
         return false;
+    }
+
+    /**
+     * Has any sorts (applied)
+     *
+     * @return bool
+     */
+    public function hasSorts(): bool
+    {
+        return $this->hasFilters(['sort_key']);
+    }
+
+    /**
+     * Has only specific params (applied)
+     *
+     * @param array $includeParams
+     * @return bool
+     */
+    public function hasOnly(array $includeParams): bool
+    {
+        $default = array_merge(['page' => 1], $this->profile['default_request']);
+
+        foreach ($this->get() as $key => $value) {
+            if (array_key_exists($key, $default) && $default[$key] == $value) {
+                continue;
+            }
+
+            if (in_array($key, $includeParams)) {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -223,5 +267,37 @@ class Request implements \ArrayAccess
     public function offsetGet($offset): mixed
     {
         return isset($this->data[$offset]) ? $this->data[$offset] : null;
+    }
+
+    /**
+     * @param array $keys
+     * @return array
+     */
+    private function normalizeKey(array $keys): array
+    {
+        foreach ($keys as &$item) {
+            if (is_array($item)) {
+                $item = $this->normalizeKey($item);
+            }
+
+            if (is_integer($item) || is_double($item)) {
+                $item = (string) $item;
+            }
+
+            if ($item === true) {
+                $item = '1';
+            }
+
+            if ($item === false) {
+                $item = '0';
+            }
+
+            if (is_string($item)) {
+                $item = trim($item);
+            }
+        }
+        unset($item);
+
+        return $keys;
     }
 }

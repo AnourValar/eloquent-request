@@ -36,9 +36,18 @@ class GetAction implements ActionInterface
 
     /**
      * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Actions\ActionInterface::requestParameters()
+     */
+    public function requestParameters(array $profile, array $request, array $config): array
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Actions\ActionInterface::action()
      */
-    public function action(Builder &$query, array $profile, array $request, array $config, \Closure $fail)
+    public function action(Builder &$query, array $profile, array $requestParameters, array $config, \Closure $fail)
     {
         if (isset($profile['options'][self::OPTION_LIMIT])) {
             $query->limit($profile['options'][self::OPTION_LIMIT]);

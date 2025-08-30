@@ -47,13 +47,14 @@ trait ControllerTrait
      * @param array|null $profile
      * @param array|null $request
      * @param mixed $buildRequest
+     * @param callable|null $handler
      * @return mixed
      */
-    protected function buildBy($query, ?array $profile = null, ?array $request = null, &$buildRequest = null)
+    protected function buildBy($query, ?array $profile = null, ?array $request = null, &$buildRequest = null, ?callable $handler = null)
     {
         $this->buildingContext($profile, $request);
 
-        $result = \App::make(\AnourValar\EloquentRequest\Service::class)->buildBy($query, $profile, $request, $buildRequest);
+        $result = \App::make(\AnourValar\EloquentRequest\Service::class)->buildBy($query, $profile, $request, $buildRequest, $handler);
         $this->lastBuildRequest = $buildRequest;
         return $result;
     }

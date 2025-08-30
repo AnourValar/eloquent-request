@@ -46,12 +46,24 @@ class CursorPaginateAction implements ActionInterface
 
     /**
      * {@inheritDoc}
+     * @see \AnourValar\EloquentRequest\Actions\ActionInterface::requestParameters()
+     */
+    public function requestParameters(array $profile, array $request, array $config): array
+    {
+        return [
+            $config['per_page_key'] => $request[$config['per_page_key']] ?? null,
+            $config['cursor_key'] => $request[$config['cursor_key']] ?? null,
+        ];
+    }
+
+    /**
+     * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Actions\ActionInterface::action()
      */
-    public function action(Builder &$query, array $profile, array $request, array $config, \Closure $fail)
+    public function action(Builder &$query, array $profile, array $requestParameters, array $config, \Closure $fail)
     {
-        $perPage = $request[$config['per_page_key']] ?? null;
-        $cursor = $request[$config['cursor_key']] ?? null;
+        $perPage = $requestParameters[$config['per_page_key']];
+        $cursor = $requestParameters[$config['cursor_key']];
 
         $hasCursor = false;
         if (! is_null($cursor)) {
