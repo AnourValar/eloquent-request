@@ -212,7 +212,7 @@ class Request implements \ArrayAccess
      */
     public function hasOnly(array $includeParams): bool
     {
-        $default = array_merge(['page' => 1], $this->profile['default_request']);
+        $default = $this->profile['default_request'];
 
         foreach ($this->get() as $key => $value) {
             if (array_key_exists($key, $default) && $default[$key] == $value) {

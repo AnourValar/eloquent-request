@@ -33,7 +33,7 @@ class CursorPaginateAction implements ActionInterface
     {
         // per page
         $keyPerPage = $config['per_page_key'];
-        $perPage = $request[$keyPerPage] ?? 1;
+        $perPage = $request[$keyPerPage];
 
         if (! filter_var($perPage, FILTER_VALIDATE_INT) || $perPage < 1) {
             $fail('eloquent-request::validation.per_page', [], $keyPerPage);
@@ -51,8 +51,8 @@ class CursorPaginateAction implements ActionInterface
     public function requestParameters(array $profile, array $request, array $config): array
     {
         return [
-            $config['per_page_key'] => $request[$config['per_page_key']] ?? null,
-            $config['cursor_key'] => $request[$config['cursor_key']] ?? null,
+            $config['per_page_key'] => $request[$config['per_page_key']],
+            $config['cursor_key'] => $request[$config['cursor_key']],
         ];
     }
 

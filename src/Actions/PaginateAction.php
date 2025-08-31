@@ -27,11 +27,6 @@ class PaginateAction implements ActionInterface
     protected const MAX_PER_PAGE = 2000;
 
     /**
-     * @var int
-     */
-    protected const DEFAULT_PAGE = 1;
-
-    /**
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Actions\ActionInterface::passes()
      */
@@ -48,7 +43,7 @@ class PaginateAction implements ActionInterface
     {
         // per page
         $keyPerPage = $config['per_page_key'];
-        $perPage = $request[$keyPerPage] ?? 1;
+        $perPage = $request[$keyPerPage];
 
         if (! filter_var($perPage, FILTER_VALIDATE_INT) || $perPage < 1) {
             $fail('eloquent-request::validation.per_page', [], $keyPerPage);
@@ -61,7 +56,7 @@ class PaginateAction implements ActionInterface
 
         // page
         $keyPage = $config['page_key'];
-        $page = $request[$keyPage] ?? static::DEFAULT_PAGE;
+        $page = $request[$keyPage];
 
         if (! filter_var($page, FILTER_VALIDATE_INT) || $page < 1) {
             $fail('eloquent-request::validation.page', [], $keyPage);
@@ -80,8 +75,8 @@ class PaginateAction implements ActionInterface
     public function requestParameters(array $profile, array $request, array $config): array
     {
         return [
-            $config['per_page_key'] => $request[$config['per_page_key']] ?? null,
-            $config['page_key'] => $request[$config['page_key']] ?? static::DEFAULT_PAGE, // \Illuminate\Pagination\Paginator::resolveCurrentPage($config['page_key']) ?
+            $config['per_page_key'] => $request[$config['per_page_key']],
+            $config['page_key'] => $request[$config['page_key']],
         ];
     }
 

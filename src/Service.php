@@ -251,6 +251,11 @@ class Service
      */
     private function prepareProfile(array $profile): array
     {
+        $profile['default_request'] = array_replace(
+            [$this->config['per_page_key'] => 20, $this->config['page_key'] => 1, $this->config['cursor_key'] => null],
+            $profile['default_request'] ?? []
+        );
+
         return array_replace(
             [
                 $this->config['filter_key'] => [],
