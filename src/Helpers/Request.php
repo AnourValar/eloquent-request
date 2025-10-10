@@ -16,6 +16,11 @@ class Request implements \ArrayAccess
     /**
      * @var array
      */
+    private $extraData;
+
+    /**
+     * @var array
+     */
     private $profile;
 
     /**
@@ -43,6 +48,7 @@ class Request implements \ArrayAccess
         $this->profile = $profile;
         $this->config = $config;
         $this->query = $query;
+        $this->extraData = [];
     }
 
     /**
@@ -236,9 +242,9 @@ class Request implements \ArrayAccess
     public function offsetSet($offset, $value): void
     {
         if (is_null($offset)) {
-            $this->data[] = $value;
+            $this->extraData[] = $value;
         } else {
-            $this->data[$offset] = $value;
+            $this->extraData[$offset] = $value;
         }
     }
 
@@ -248,7 +254,7 @@ class Request implements \ArrayAccess
      */
     public function offsetExists($offset): bool
     {
-        return isset($this->data[$offset]);
+        return isset($this->extraData[$offset]);
     }
 
     /**
@@ -257,7 +263,7 @@ class Request implements \ArrayAccess
      */
     public function offsetUnset($offset): void
     {
-        unset($this->data[$offset]);
+        unset($this->extraData[$offset]);
     }
 
     /**
@@ -266,7 +272,7 @@ class Request implements \ArrayAccess
      */
     public function offsetGet($offset): mixed
     {
-        return isset($this->data[$offset]) ? $this->data[$offset] : null;
+        return isset($this->extraData[$offset]) ? $this->extraData[$offset] : null;
     }
 
     /**
