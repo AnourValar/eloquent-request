@@ -13,7 +13,6 @@ parameters:
         - '#Left side of \&\& is always true\.#'
         - '#is used zero times and is not analysed#'
         - '#Blueprint constructor#'
-        - '#Offset 1 on array\{0\} in isset\(\) does not exist#'
 
     excludePaths:
 
