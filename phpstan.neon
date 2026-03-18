@@ -2,6 +2,7 @@ parameters:
 
     paths:
         - src
+        - tests
 
     # The level 10 is the highest level
     level: 5
@@ -10,7 +11,6 @@ parameters:
         - '#Call to static method#'
         - '#Call to an undefined method#'
         - '#Variable \$collection might not be defined#'
-        - '#Left side of \&\& is always true\.#'
         - '#is used zero times and is not analysed#'
         - '#Blueprint constructor#'
 
