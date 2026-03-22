@@ -33,6 +33,10 @@
       <MissingTemplateParam errorLevel="suppress" />
       <UnsupportedPropertyReferenceUsage errorLevel="suppress" />
       <MissingOverrideAttribute errorLevel="suppress" />
+      <MissingPureAnnotation errorLevel="suppress" />
+      <MissingAbstractPureAnnotation errorLevel="suppress" />
+      <MissingInterfaceImmutableAnnotation errorLevel="suppress" />
+      <MissingImmutableAnnotation errorLevel="suppress" />
     </issueHandlers>
 
     <forbiddenFunctions>
