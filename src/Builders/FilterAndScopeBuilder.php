@@ -363,12 +363,12 @@ class FilterAndScopeBuilder extends AbstractBuilder
         $parsedField = $this->parseField($casts, $field);
 
         // casts from model
-        if (! isset($casts[$parsedField])) {
+        if (! isset($casts[$parsedField ?? ''])) {
             $casts = $query->getModel()->getCasts();
             $parsedField = $this->parseField($casts, $field);
         }
 
-        if (! isset($casts[$parsedField])) {
+        if (! isset($casts[$parsedField ?? ''])) {
             if (! in_array(self::OPTION_CASTS_NOT_REQUIRED, $this->profile['options'])) {
                 $this->validator->addError(
                     [$this->config['filter_key'], $field],
