@@ -263,6 +263,7 @@ class Service
                 $this->config['scope_key'] => [],
                 $this->config['sort_key'] => [],
 
+                'alias' => [], // 'tariff->amount' => "(tariff->'amount'::bigint)"
                 'ranges' => [],
 
                 'options' => [],

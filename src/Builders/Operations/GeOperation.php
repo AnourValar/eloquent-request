@@ -2,13 +2,15 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
+use Illuminate\Database\Query\Expression;
+
 class GeOperation extends LtOperation
 {
     /**
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string|Expression $field, $value, array $options): void
     {
         $value = $this->canonizeValue($value, '>=');
 

@@ -77,10 +77,15 @@ abstract class AbstractBuilder implements BuilderInterface
     /**
      * @param Builder $query
      * @param string $field
-     * @return string
+     * @param string|null $alias
+     * @return string|\Illuminate\Database\Query\Expression
      */
-    protected function getColumnFullname(Builder &$query, string $field): string
+    protected function getColumnFullname(Builder &$query, string $field, ?string $alias = null): string|\Illuminate\Database\Query\Expression
     {
+        if (isset($alias)) {
+            return \DB::raw($alias);
+        }
+
         $alias = explode(' ', $query->from);
         $alias = array_pop($alias);
         return $alias . '.' . $field;

@@ -2,6 +2,8 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
+use Illuminate\Database\Query\Expression;
+
 class JsonContainsOperation extends JsonInOperation
 {
     /**
@@ -19,10 +21,8 @@ class JsonContainsOperation extends JsonInOperation
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string|Expression $field, $value, array $options): void
     {
-        $this->convertOperands($field, $value, $options);
-
         $query->whereJsonContains($field, $value);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
+use Illuminate\Database\Query\Expression;
+
 interface OperationInterface
 {
     /**
@@ -33,10 +35,10 @@ interface OperationInterface
      * Apply filter
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $field
+     * @param string|\Illuminate\Database\Query\Expression $field
      * @param mixed $value
      * @param array $options
      * @return void
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void;
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string|Expression $field, $value, array $options): void;
 }

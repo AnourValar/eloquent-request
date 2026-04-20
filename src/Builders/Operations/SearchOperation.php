@@ -2,6 +2,8 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
+use Illuminate\Database\Query\Expression;
+
 class SearchOperation extends LikeOperation
 {
     /**
@@ -35,7 +37,7 @@ class SearchOperation extends LikeOperation
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string|Expression $field, $value, array $options): void
     {
         if (isset($options[self::OPTION_FULLTEXT])) {
             $value = $this->canonizeValueForFullText($value, $options);

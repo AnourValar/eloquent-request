@@ -2,6 +2,8 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
+use Illuminate\Database\Query\Expression;
+
 class IsNullOperation implements OperationInterface
 {
     /**
@@ -35,7 +37,7 @@ class IsNullOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string|Expression $field, $value, array $options): void
     {
         $range = [];
 

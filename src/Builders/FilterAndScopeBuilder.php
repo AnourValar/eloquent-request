@@ -135,6 +135,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
         $path = explode('.', $field);
         $fieldFact = array_pop($path);
         $relation = implode('.', $path);
+        $fieldAlias = $this->profile['alias'][$field] ?? null;
 
 
         // Handler's workflow
@@ -172,7 +173,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
         // Add task
         return [
             'key' => $relation,
-            'value' => ['field' => $fieldFact, 'handler' => $handler, 'value' => $value],
+            'value' => ['field' => $fieldFact, 'alias' => $fieldAlias, 'handler' => $handler, 'value' => $value],
         ];
     }
 
@@ -330,7 +331,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 }
             }
         } else {
-            $action['handler']->apply($query, $this->getColumnFullname($query, $action['field']), $action['value'], $this->profile['options']);
+            $action['handler']->apply($query, $this->getColumnFullname($query, $action['field'], $action['alias']), $action['value'], $this->profile['options']);
         }
     }
 

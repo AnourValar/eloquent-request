@@ -2,6 +2,8 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
+use Illuminate\Database\Query\Expression;
+
 class EqOperation implements OperationInterface
 {
     /**
@@ -44,7 +46,7 @@ class EqOperation implements OperationInterface
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string|Expression $field, $value, array $options): void
     {
         if (is_null($value)) {
             $query->whereNull($field);

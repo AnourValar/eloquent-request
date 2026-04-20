@@ -2,20 +2,18 @@
 
 namespace AnourValar\EloquentRequest\Builders\Operations;
 
+use Illuminate\Database\Query\Expression;
+
 class JsonNotInOperation extends JsonInOperation
 {
     /**
      * {@inheritDoc}
      * @see \AnourValar\EloquentRequest\Builders\Operations\OperationInterface::apply()
      */
-    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string $field, $value, array $options): void
+    public function apply(\Illuminate\Database\Eloquent\Builder &$query, string|Expression $field, $value, array $options): void
     {
-        $query->where(function ($query) use ($field, $value, $options) {
-            $originalField = $field;
+        $query->where(function ($query) use ($field, $value) {
             foreach ($value as $item) { // array_unique...
-                $field = $originalField;
-                $this->convertOperands($field, $item, $options);
-
                 $query->whereJsonDoesntContain($field, $item);
             }
         });
