@@ -58,8 +58,8 @@ class Request implements \ArrayAccess
      */
     public function cacheKey(): string
     {
-        $keys = [__METHOD__, \EloquentSerialize::serialize($this->query), $this->profile, $this->normalizeKey($this->data), $this->config];
-        return hash('sha256', json_encode($keys));
+        $keys = [__METHOD__, \EloquentSerialize::serialize($this->query), $this->profile, \Atom::normalizeKey($this->data), $this->config];
+        return hash('sha256', json_encode($keys, JSON_UNESCAPED_UNICODE));
     }
 
     /**
@@ -273,37 +273,5 @@ class Request implements \ArrayAccess
     public function offsetGet($offset): mixed
     {
         return isset($this->extraData[$offset]) ? $this->extraData[$offset] : null;
-    }
-
-    /**
-     * @param array $keys
-     * @return array
-     */
-    private function normalizeKey(array $keys): array
-    {
-        foreach ($keys as &$item) {
-            if (is_array($item)) {
-                $item = $this->normalizeKey($item);
-            }
-
-            if (is_integer($item) || is_double($item)) {
-                $item = (string) $item;
-            }
-
-            if ($item === true) {
-                $item = '1';
-            }
-
-            if ($item === false) {
-                $item = '0';
-            }
-
-            if (is_string($item)) {
-                $item = trim($item);
-            }
-        }
-        unset($item);
-
-        return $keys;
     }
 }
