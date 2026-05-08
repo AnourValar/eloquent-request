@@ -2,14 +2,72 @@
 
 namespace AnourValar\EloquentRequest\Tests;
 
-class SearchServiceTest extends \Orchestra\Testbench\TestCase
+class SearchServiceTest extends AbstractSuite
 {
     /**
-     * @see \Orchestra\Testbench\TestCase
+     * @return void
      */
-    protected function getPackageProviders($app)
+    public function test_typo()
     {
-        return [\AnourValar\EloquentRequest\Providers\EloquentRequestServiceProvider::class];
+        $this->assertNull(\EloquentRequestSearch::typo(null, 'en', 'ru'));
+        $this->assertSame('123', \EloquentRequestSearch::typo('123', 'en', 'ru'));
+
+
+        $this->assertSame('привет', \EloquentRequestSearch::typo('привет', 'en', 'ru'));
+        $this->assertSame('ПРИВЕТ', \EloquentRequestSearch::typo('ПРИВЕТ', 'en', 'ru'));
+        $this->assertSame('привет', \EloquentRequestSearch::typo('ghbdtn', 'en', 'ru'));
+        $this->assertSame('ПРИВЕТ', \EloquentRequestSearch::typo('GHBDTN', 'en', 'ru'));
+
+        $this->assertSame('ейцукенгшщзхъ', \EloquentRequestSearch::typo('`qwertyuiop[]', 'en', 'ru'));
+        $this->assertSame('фывапролджэ', \EloquentRequestSearch::typo('asdfghjkl;\'', 'en', 'ru'));
+        $this->assertSame('ячсмитьбю', \EloquentRequestSearch::typo('zxcvbnm,.', 'en', 'ru'));
+
+        $this->assertSame('ЕЙЦУКЕНГШЩЗХЪ', \EloquentRequestSearch::typo('~QWERTYUIOP{}', 'en', 'ru'));
+        $this->assertSame('ФЫВАПРОЛДЖЭ', \EloquentRequestSearch::typo('ASDFGHJKL:"', 'en', 'ru'));
+        $this->assertSame('ЯЧСМИТЬБЮ', \EloquentRequestSearch::typo('ZXCVBNM<>', 'en', 'ru'));
+
+        $this->assertSame('~', \EloquentRequestSearch::typo('~', 'en', 'ru'));
+        $this->assertSame('ФЕ', \EloquentRequestSearch::typo('A~', 'en', 'ru'));
+
+
+        $this->assertSame('hello', \EloquentRequestSearch::typo('hello', 'ru', 'en'));
+        $this->assertSame('HELLO', \EloquentRequestSearch::typo('HELLO', 'ru', 'en'));
+        $this->assertSame('hello', \EloquentRequestSearch::typo('руддщ', 'ru', 'en'));
+        $this->assertSame('HELLO', \EloquentRequestSearch::typo('РУДДЩ', 'ru', 'en'));
+
+        $this->assertSame('tqwertyuiop[]', \EloquentRequestSearch::typo('ейцукенгшщзхъ', 'ru', 'en'));
+        $this->assertSame('asdfghjkl;\'', \EloquentRequestSearch::typo('фывапролджэ', 'ru', 'en'));
+        $this->assertSame('zxcvbnm,.', \EloquentRequestSearch::typo('ячсмитьбю', 'ru', 'en'));
+
+        $this->assertSame('TQWERTYUIOP{}', \EloquentRequestSearch::typo('ЕЙЦУКЕНГШЩЗХЪ', 'ru', 'en'));
+        $this->assertSame('ASDFGHJKL:"', \EloquentRequestSearch::typo('ФЫВАПРОЛДЖЭ', 'ru', 'en'));
+        $this->assertSame('ZXCVBNM<>', \EloquentRequestSearch::typo('ЯЧСМИТЬБЮ', 'ru', 'en'));
+    }
+
+    /**
+     * @return void
+     */
+    public function test_similar()
+    {
+        $this->assertNull(\EloquentRequestSearch::similar(null, 'en', 'ru'));
+
+
+        $this->assertSame('`qwеrтуuiор[]', \EloquentRequestSearch::similar('`qwertyuiop[]', 'en', 'ru'));
+        $this->assertSame('аsdfgнjкl;\'', \EloquentRequestSearch::similar('asdfghjkl;\'', 'en', 'ru'));
+        $this->assertSame('zхсvвnм,.', \EloquentRequestSearch::similar('zxcvbnm,.', 'en', 'ru'));
+
+        $this->assertSame('~QWЕRТУUIОР{}', \EloquentRequestSearch::similar('~QWERTYUIOP{}', 'en', 'ru'));
+        $this->assertSame('АSDFGНJКL:"', \EloquentRequestSearch::similar('ASDFGHJKL:"', 'en', 'ru'));
+        $this->assertSame('ZХСVВNМ<>', \EloquentRequestSearch::similar('ZXCVBNM<>', 'en', 'ru'));
+
+
+        $this->assertSame('eйцykehгшщзxъ', \EloquentRequestSearch::similar('ейцукенгшщзхъ', 'ru', 'en'));
+        $this->assertSame('фыbaпpoлджэ', \EloquentRequestSearch::similar('фывапролджэ', 'ru', 'en'));
+        $this->assertSame('ячcmиtьбю', \EloquentRequestSearch::similar('ячсмитьбю', 'ru', 'en'));
+
+        $this->assertSame('EЙЦYKEHГШЩЗXЪ', \EloquentRequestSearch::similar('ЕЙЦУКЕНГШЩЗХЪ', 'ru', 'en'));
+        $this->assertSame('ФЫBAПPOЛДЖЭ', \EloquentRequestSearch::similar('ФЫВАПРОЛДЖЭ', 'ru', 'en'));
+        $this->assertSame('ЯЧCMИTЬБЮ', \EloquentRequestSearch::similar('ЯЧСМИТЬБЮ', 'ru', 'en'));
     }
 
     /**
