@@ -111,6 +111,33 @@ class SearchServiceTest extends AbstractSuite
     }
 
     /**
+     * @return void
+     */
+    public function test_search_service()
+    {
+        $this->assertSame(' hello world ', \EloquentRequestSearch::generate([' Hello ', ' world ']));
+        $this->assertSame(' hello world ', \EloquentRequestSearch::generate([' Hello ', ' world '], 15));
+        $this->assertSame(' hello world ', \EloquentRequestSearch::generate([' Hello ', ' world '], 14));
+        $this->assertSame(' hello world ', \EloquentRequestSearch::generate([' Hello ', ' world '], 13));
+
+        $this->assertSame(' hello ', \EloquentRequestSearch::generate([' Hello ', ' world '], 12));
+        $this->assertSame(' hello ', \EloquentRequestSearch::generate([' Hello ', ' world '], 7));
+        $this->assertNull(\EloquentRequestSearch::generate([' Hello ', ' world '], 6));
+        $this->assertNull(\EloquentRequestSearch::generate([' Hello ', ' world '], 5));
+
+
+        $this->assertSame(' hello world ', \EloquentRequestSearch::generate(['Hello', 'world']));
+        $this->assertSame(' hello world ', \EloquentRequestSearch::generate(['Hello', 'world'], 15));
+        $this->assertSame(' hello world ', \EloquentRequestSearch::generate(['Hello', 'world'], 14));
+        $this->assertSame(' hello world ', \EloquentRequestSearch::generate(['Hello', 'world'], 13));
+
+        $this->assertSame(' hello ', \EloquentRequestSearch::generate(['Hello', 'world'], 12));
+        $this->assertSame(' hello ', \EloquentRequestSearch::generate(['Hello', 'world'], 7));
+        $this->assertNull(\EloquentRequestSearch::generate(['Hello', 'world'], 6));
+        $this->assertNull(\EloquentRequestSearch::generate(['Hello', 'world'], 5));
+    }
+
+    /**
      * @param mixed $phrase
      * @return mixed
      */
