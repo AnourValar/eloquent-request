@@ -304,7 +304,6 @@ class FlatService
     /**
      * @param \AnourValar\EloquentRequest\FlatInterface $flatInterface
      * @return array
-     * @psalm-suppress TooFewArguments
      */
     protected function getActualStructure(\AnourValar\EloquentRequest\FlatInterface $flatInterface): array
     {

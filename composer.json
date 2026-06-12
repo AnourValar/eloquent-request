@@ -14,8 +14,7 @@
         "orchestra/testbench": "^9.0|^10.0|^11.0",
         "phpstan/phpstan": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.26",
-        "squizlabs/php_codesniffer": "^3.7",
-        "psalm/plugin-laravel": "^3.0|^4.0"
+        "squizlabs/php_codesniffer": "^3.7"
     },
     "autoload": {
         "psr-4": {"AnourValar\\EloquentRequest\\": "src/"}

@@ -67,7 +67,6 @@ class SearchOperation extends LikeOperation
      * @param string $value
      * @param array $options
      * @return string
-     * @psalm-suppress UnusedVariable
      */
     protected function canonizeValueForFullText(string $value, array $options): string
     {
@@ -89,7 +88,6 @@ class SearchOperation extends LikeOperation
      * @param mixed $value
      * @param array $options
      * @return string
-     * @psalm-suppress UnusedVariable
      */
     protected function canonizeValueForLike($value, array $options): string
     {
