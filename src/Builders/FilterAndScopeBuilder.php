@@ -100,7 +100,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
         if (! isset($parsedField)) {
             $this->validator->addError(
                 [$key, $field, $operation],
-                trans('eloquent-request::validation.filter_not_supported', ['attribute' => $field])
+                trans('eloquent_request::validation.filter_not_supported', ['attribute' => $field])
             );
 
             return null;
@@ -111,7 +111,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
             $this->validator->addError(
                 [$key, $field, $operation],
                 trans(
-                    'eloquent-request::validation.operation_not_supported',
+                    'eloquent_request::validation.operation_not_supported',
                     ['attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile)]
                 )
             );
@@ -124,7 +124,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
             $this->validator->addError(
                 [$key, $field, $operation],
                 trans(
-                    'eloquent-request::validation.operation_not_exists',
+                    'eloquent_request::validation.operation_not_exists',
                     ['attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile)]
                 )
             );
@@ -196,7 +196,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
         if (! in_array($relation, $this->profile[$key], true)) {
             $this->validator->addError(
                 [$key, $relation, $operation],
-                trans('eloquent-request::validation.relation_not_supported', ['relation' => $relation])
+                trans('eloquent_request::validation.relation_not_supported', ['relation' => $relation])
             );
 
             return null;
@@ -206,7 +206,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
         if (! in_array($operation, ['min', 'max'], true)) {
             $this->validator->addError(
                 [$key, $relation, $operation],
-                trans('eloquent-request::validation.relation_operation_not_supported', ['relation' => $relation])
+                trans('eloquent_request::validation.relation_operation_not_supported', ['relation' => $relation])
             );
 
             return null;
@@ -217,7 +217,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
             $this->validator->addError(
                 [$key, $relation, $operation],
                 trans(
-                    'eloquent-request::validation.relation_out_of_range',
+                    'eloquent_request::validation.relation_out_of_range',
                     ['relation' => $this->getDisplayAttribute($query, $relation, $this->profile), 'max' => static::RELATION_LIMIT]
                 )
             );
@@ -250,7 +250,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
         if (! in_array($scope, $this->profile[$key], true) && ! $closure) {
             $this->validator->addError(
                 [$key, $scope],
-                trans('eloquent-request::validation.scope_not_supported', ['scope' => $scope])
+                trans('eloquent_request::validation.scope_not_supported', ['scope' => $scope])
             );
 
             return null;
@@ -463,7 +463,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 $this->validator->addError(
                     [$this->config['filter_key'], $field, $operation],
                     trans(
-                        'eloquent-request::validation.ranges.min',
+                        'eloquent_request::validation.ranges.min',
                         [
                             'attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile),
                             'min' => $this->profile['ranges'][$parsedField]['min'],
@@ -479,7 +479,7 @@ class FilterAndScopeBuilder extends AbstractBuilder
                 $this->validator->addError(
                     [$this->config['filter_key'], $field, $operation],
                     trans(
-                        'eloquent-request::validation.ranges.max',
+                        'eloquent_request::validation.ranges.max',
                         [
                             'attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile),
                             'min' => ($this->profile['ranges'][$parsedField]['min'] ?? null),

@@ -23,15 +23,15 @@ class JsonInOperation extends InOperation
     public function validate($value, \Closure $fail): void
     {
         if (! is_array($value)) {
-            $fail('eloquent-request::validation.list');
+            $fail('eloquent_request::validation.list');
         }
 
         if (count($value) > static::MAX_JSON_COUNT) {
-            $fail('eloquent-request::validation.list');
+            $fail('eloquent_request::validation.list');
         }
 
         if (mb_strlen(json_encode($value, JSON_UNESCAPED_UNICODE)) > static::MAX_JSON_LENGTH) {
-            $fail('eloquent-request::validation.length');
+            $fail('eloquent_request::validation.length');
         }
     }
 

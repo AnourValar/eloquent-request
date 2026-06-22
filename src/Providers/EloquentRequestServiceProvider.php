@@ -32,8 +32,8 @@ class EloquentRequestServiceProvider extends ServiceProvider
         $this->publishes([__DIR__.'/../resources/config/eloquent_request.php' => config_path('eloquent_request.php')], 'config');
 
         // langs
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang/', 'eloquent-request');
-        $this->publishes([__DIR__.'/../resources/lang/' => lang_path('vendor/eloquent-request')]);
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang/', 'eloquent_request');
+        $this->publishes([__DIR__.'/../resources/lang/' => lang_path('vendor/eloquent_request')]);
 
         // commands
         if ($this->app->runningInConsole()) {

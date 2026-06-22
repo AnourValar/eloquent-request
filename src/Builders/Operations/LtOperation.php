@@ -43,7 +43,7 @@ class LtOperation implements OperationInterface
             return;
         }
 
-        $fail('eloquent-request::validation.scalar');
+        $fail('eloquent_request::validation.scalar');
     }
 
     /**

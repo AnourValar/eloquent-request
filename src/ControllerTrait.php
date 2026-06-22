@@ -38,7 +38,7 @@ trait ControllerTrait
     /**
      * @var \AnourValar\EloquentRequest\Helpers\Request|null
      */
-    private ?\AnourValar\EloquentRequest\Helpers\Request $lastBuildRequest;
+    private ?\AnourValar\EloquentRequest\Helpers\Request $lastBuildRequest = null;
 
     /**
      * @see \AnourValar\EloquentRequest\Service::buildBy()

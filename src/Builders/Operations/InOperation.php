@@ -41,20 +41,20 @@ class InOperation implements OperationInterface
     public function validate($value, \Closure $fail): void
     {
         if (! is_array($value)) {
-            $fail('eloquent-request::validation.list');
+            $fail('eloquent_request::validation.list');
         }
 
         if (count($value) > static::MAX_COUNT) {
-            $fail('eloquent-request::validation.list');
+            $fail('eloquent_request::validation.list');
         }
 
         foreach ($value as $item) {
             if (! is_scalar($item) && ! is_null($item)) {
-                $fail('eloquent-request::validation.list');
+                $fail('eloquent_request::validation.list');
             }
 
             if (mb_strlen($item) > static::MAX_LENGTH) {
-                $fail('eloquent-request::validation.list');
+                $fail('eloquent_request::validation.list');
             }
         }
     }

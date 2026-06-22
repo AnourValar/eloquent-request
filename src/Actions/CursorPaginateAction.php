@@ -36,11 +36,11 @@ class CursorPaginateAction implements ActionInterface
         $perPage = $request[$keyPerPage];
 
         if (! filter_var($perPage, FILTER_VALIDATE_INT) || $perPage < 1) {
-            $fail('eloquent-request::validation.per_page', [], $keyPerPage);
+            $fail('eloquent_request::validation.per_page', [], $keyPerPage);
         }
 
         if (static::MAX_PER_PAGE && $perPage > static::MAX_PER_PAGE) {
-            $fail('eloquent-request::validation.per_page_over_max', ['max' => static::MAX_PER_PAGE], $keyPerPage);
+            $fail('eloquent_request::validation.per_page_over_max', ['max' => static::MAX_PER_PAGE], $keyPerPage);
         }
     }
 
@@ -74,11 +74,11 @@ class CursorPaginateAction implements ActionInterface
         try {
             $collection = $query->cursorPaginate($perPage, ['*'], $config['cursor_key'], $cursor);
         } catch (\UnexpectedValueException $e) {
-            $fail('eloquent-request::validation.cursor_paginate_incorrect', [], $config['cursor_key']);
+            $fail('eloquent_request::validation.cursor_paginate_incorrect', [], $config['cursor_key']);
         }
 
         if ($hasCursor && (! $collection->count() || ! $cursor)) {
-            $fail('eloquent-request::validation.cursor_paginate_incorrect', [], $config['cursor_key']);
+            $fail('eloquent_request::validation.cursor_paginate_incorrect', [], $config['cursor_key']);
         }
 
         return $collection;

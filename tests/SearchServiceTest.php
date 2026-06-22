@@ -138,6 +138,24 @@ class SearchServiceTest extends AbstractSuite
     }
 
     /**
+     * @return void
+     */
+    public function test_prepare()
+    {
+        $search = new \AnourValar\EloquentRequest\SearchService();
+
+        $this->assertSame('%hello%world%', $search->prepare('Hello World'));
+        $this->assertSame('% hello% world%', $search->prepare('Hello World', false));
+
+        // wildcards are escaped
+        $this->assertSame('%a\_b%', $search->prepare('a_b'));
+        $this->assertSame('%a\%b%', $search->prepare('a%b'));
+
+        // a single token
+        $this->assertSame('%bravo%', $search->prepare('Bravo'));
+    }
+
+    /**
      * @param mixed $phrase
      * @return mixed
      */

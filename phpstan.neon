@@ -11,8 +11,8 @@ parameters:
         - '#Call to static method#'
         - '#Call to an undefined method#'
         - '#Variable \$collection might not be defined#'
-        - '#is used zero times and is not analysed#'
         - '#Blueprint constructor#'
+        - '#so it can be removed from the by\-ref type#'
 
     excludePaths:
 

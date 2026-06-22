@@ -48,7 +48,7 @@ class LikeOperation implements OperationInterface
             return;
         }
 
-        $fail('eloquent-request::validation.length');
+        $fail('eloquent_request::validation.length');
     }
 
     /**

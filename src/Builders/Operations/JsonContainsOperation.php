@@ -13,7 +13,7 @@ class JsonContainsOperation extends JsonInOperation
     public function validate($value, \Closure $fail): void
     {
         if (mb_strlen(json_encode($value, JSON_UNESCAPED_UNICODE)) > static::MAX_JSON_LENGTH) {
-            $fail('eloquent-request::validation.length');
+            $fail('eloquent_request::validation.length');
         }
     }
 

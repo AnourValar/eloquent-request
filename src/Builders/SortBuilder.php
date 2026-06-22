@@ -48,7 +48,7 @@ class SortBuilder extends AbstractBuilder
         if (! $parsedField) {
             $this->validator->addError(
                 [$key, $field],
-                trans('eloquent-request::validation.sort_not_supported', ['attribute' => $field])
+                trans('eloquent_request::validation.sort_not_supported', ['attribute' => $field])
             );
 
             return;
@@ -63,7 +63,7 @@ class SortBuilder extends AbstractBuilder
             $this->validator->addError(
                 [$key, $field],
                 trans(
-                    'eloquent-request::validation.sort_not_exists',
+                    'eloquent_request::validation.sort_not_exists',
                     ['attribute' => $this->getDisplayAttribute($query, [$field, $parsedField], $this->profile)]
                 )
             );

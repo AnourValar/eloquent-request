@@ -46,11 +46,11 @@ class PaginateAction implements ActionInterface
         $perPage = $request[$keyPerPage];
 
         if (! filter_var($perPage, FILTER_VALIDATE_INT) || $perPage < 1) {
-            $fail('eloquent-request::validation.per_page', [], $keyPerPage);
+            $fail('eloquent_request::validation.per_page', [], $keyPerPage);
         }
 
         if (static::MAX_PER_PAGE && $perPage > static::MAX_PER_PAGE) {
-            $fail('eloquent-request::validation.per_page_over_max', ['max' => static::MAX_PER_PAGE], $keyPerPage);
+            $fail('eloquent_request::validation.per_page_over_max', ['max' => static::MAX_PER_PAGE], $keyPerPage);
         }
 
 
@@ -59,12 +59,12 @@ class PaginateAction implements ActionInterface
         $page = $request[$keyPage];
 
         if (! filter_var($page, FILTER_VALIDATE_INT) || $page < 1) {
-            $fail('eloquent-request::validation.page', [], $keyPage);
+            $fail('eloquent_request::validation.page', [], $keyPage);
         }
 
         $pageOverMax = $profile['options'][self::OPTION_PAGE_MAX] ?? null;
         if ($pageOverMax && $page > $pageOverMax) {
-            $fail('eloquent-request::validation.page_over_max', ['max' => $pageOverMax], $keyPage);
+            $fail('eloquent_request::validation.page_over_max', ['max' => $pageOverMax], $keyPage);
         }
     }
 
@@ -96,7 +96,7 @@ class PaginateAction implements ActionInterface
         }
 
         if (in_array(self::OPTION_PAGE_OVER_LAST_IS_FORBIDDEN, $profile['options']) && $page > 1 && ! $collection->count()) {
-            $fail('eloquent-request::validation.page_over_last_is_forbidden', [], $config['page_key']);
+            $fail('eloquent_request::validation.page_over_last_is_forbidden', [], $config['page_key']);
         }
 
         return $collection;
