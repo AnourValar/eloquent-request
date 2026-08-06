@@ -131,7 +131,7 @@ class FlatService
         }
 
         $model = new $model();
-        if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses($model))) {
+        if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive($model))) {
             $model = $model->withTrashed();
         }
 
