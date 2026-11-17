@@ -162,7 +162,7 @@ class FlatService
         foreach ($dataSets as $dataSet) {
             $this
                 ->getFlatModelForWrite($flatInterface)
-                ->withCasts($this->getCasts($flatInterface))
+                ->mergeCasts($this->getCasts($flatInterface))
                 ->create(array_merge($dataSet, $identifiers));
         }
     }
@@ -193,7 +193,7 @@ class FlatService
         foreach ($dataSets as $dataSet) {
             $this
                 ->getFlatModelForWrite($flatInterface, true)
-                ->withCasts($this->getCasts($flatInterface))
+                ->mergeCasts($this->getCasts($flatInterface))
                 ->create(array_merge($dataSet, $identifiers));
         }
     }

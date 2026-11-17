@@ -53,7 +53,7 @@ class InOperation implements OperationInterface
                 $fail('eloquent_request::validation.list');
             }
 
-            if (mb_strlen($item) > static::MAX_LENGTH) {
+            if (mb_strlen((string) $item) > static::MAX_LENGTH) {
                 $fail('eloquent_request::validation.list');
             }
         }
